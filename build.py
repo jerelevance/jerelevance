@@ -60,9 +60,9 @@ def fetch_json(url, tries=4):
     return None
 
 
-def build_image_pool():
-    """Collects every image/GIF block from the channels in channels.txt."""
-    path = ROOT / "channels.txt"
+def build_image_pool(list_file="channels.txt", out_file="images.json"):
+    """Collects every image/GIF block from the Are.na channels listed in list_file."""
+    path = ROOT / list_file
     if not path.exists():
         return
     links = [l.strip().rstrip("/") for l in path.read_text().splitlines()
@@ -91,8 +91,8 @@ def build_image_pool():
             page += 1
             time.sleep(0.5)
         time.sleep(0.5)
-    (ROOT / "images.json").write_text(json.dumps(pool))
-    print(f"images.json: {len(pool)} images from {len(links)} channels")
+    (ROOT / out_file).write_text(json.dumps(pool))
+    print(f"{out_file}: {len(pool)} images from {len(links)} channels")
 
 
 def pretty(name):
@@ -145,4 +145,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-    build_image_pool()
+    build_image_pool()                          # daily image
+    build_image_pool("tarot.txt", "tarot.json")  # tarot deck
