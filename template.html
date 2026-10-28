@@ -387,6 +387,12 @@
     padding: 3px; z-index: 1;
   }
   .sleeve iframe, .sleeve > div { width: 200px; height: 200px; display: block; border: 0; }
+  /* the cover sits on the sleeve until the song starts, and comes back when it stops */
+  .sleeve .cover {
+    position: absolute; left: 3px; top: 3px; width: 200px; height: 200px; object-fit: cover;
+    background: #0d0d0d; cursor: pointer; transition: opacity .6s ease;
+  }
+  #song.playing .sleeve .cover { opacity: 0; pointer-events: none; }
   .song-row { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
   #s-play {
     flex: none; width: 34px; height: 34px; display: grid; place-items: center;
@@ -438,7 +444,7 @@
     <p class="take">Song of the day &mdash; check back tomorrow!</p>
     <div class="deck">
       <div class="vinyl" id="s-vinyl"><div class="label"><img id="s-art" alt=""></div></div>
-      <div class="sleeve"><div id="s-player"></div></div>
+      <div class="sleeve"><div id="s-player"></div><img class="cover" id="s-cover" alt=""></div>
     </div>
     <div class="song-row">
       <button id="s-play" type="button" aria-label="Play" title="play" disabled>
@@ -861,13 +867,13 @@
     var sec = document.getElementById('song');
     if (!sec) return;
     var btn = document.getElementById('s-play'), vinyl = document.getElementById('s-vinyl'),
-        art = document.getElementById('s-art'), label = vinyl.querySelector('.label'), name = document.getElementById('s-name');
+        art = document.getElementById('s-art'), label = vinyl.querySelector('.label'), cover = document.getElementById('s-cover'), name = document.getElementById('s-name');
     var day = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
     var h = 2166136261;
     var key = 'song' + day;
     for (var i = 0; i < key.length; i++) { h ^= key.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
     h ^= h >>> 15; h = Math.imul(h, 2246822507) >>> 0; h = (h ^ (h >>> 13)) >>> 0;
-    var player, playing = false, primed = false, song, pool, tries = 0;
+    var player, playing = false, song, pool, tries = 0;
 
     // the record's turn: eases up to 33 1/3 rpm and winds down when paused
     var angle = 0, speed = 0, last = 0;
@@ -881,6 +887,7 @@
     }
     function setPlaying(v) {
       playing = v;
+      sec.classList.toggle('playing', v);
       if (v) sec.classList.add('out'); else setTimeout(function () { if (!playing) sec.classList.remove('out'); }, 1400);
       btn.querySelector('.i-play').style.display = v ? 'none' : '';
       btn.querySelector('.i-pause').style.display = v ? '' : 'none';
@@ -891,7 +898,7 @@
       name.innerHTML = '';
       name.appendChild(document.createTextNode(s.title + ' '));
       var em = document.createElement('em'); em.textContent = '– ' + s.artist; name.appendChild(em);
-      art.src = 'https://i.ytimg.com/vi/' + s.id + '/hqdefault.jpg';
+      art.src = cover.src = 'https://i.ytimg.com/vi/' + s.id + '/hqdefault.jpg';
     }
     function show(s) {
       song = s; showText(s);
@@ -903,35 +910,29 @@
     window.onYouTubeIframeAPIReady = function () {
       player = new YT.Player('s-player', {
         width: 200, height: 200, videoId: song.id, host: 'https://www.youtube-nocookie.com',
-        playerVars: { controls: 0, disablekb: 1, fs: 0, rel: 0, playsinline: 1, iv_load_policy: 3, modestbranding: 1 },
+        playerVars: { controls: 0, disablekb: 1, fs: 0, rel: 0, playsinline: 1, iv_load_policy: 3, modestbranding: 1, cc_load_policy: 0 },
         events: {
-          onReady: function () {
-            // start muted and pause on the first frame, so the sleeve shows the cover
-            // rather than YouTube's big play button
-            player.mute(); player.playVideo();
-            btn.disabled = false;
-          },
+          onReady: function () { btn.disabled = false; },
           onError: function () {
             // that one won't play here (removed, or no embedding); take the next song instead
             if (!pool || tries++ > 8) { sec.hidden = true; return; }
             h = (h + 1) % pool.length; song = pool[h]; primed = false;
             showText(song); player.cueVideoById(song.id);
-            setTimeout(function () { player.mute(); player.playVideo(); }, 300);
+            if (playing) setTimeout(function () { player.playVideo(); }, 300);
           },
           onStateChange: function (e) {
-            if (e.data === YT.PlayerState.PLAYING && !primed) { primed = true; player.pauseVideo(); player.seekTo(0, true); return; }
             if (e.data === YT.PlayerState.PLAYING) setPlaying(true);
             if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) setPlaying(false);
-            if (e.data === YT.PlayerState.PLAYING && player.isMuted()) player.unMute();
           }
         }
       });
     };
-    btn.addEventListener('click', function () {
+    function toggle() {
       if (!player || !player.playVideo) return;
-      primed = true;
-      if (playing) player.pauseVideo(); else { player.unMute(); player.setVolume(100); player.playVideo(); setPlaying(true); }
-    });
+      if (playing) player.pauseVideo(); else { player.playVideo(); setPlaying(true); }
+    }
+    btn.addEventListener('click', toggle);
+    cover.addEventListener('click', toggle);
     fetch('songs.json').then(function (r) { return r.json(); }).then(function (list) {
       if (list.length) { pool = list; h = h % list.length; show(list[h]); }
     }).catch(function () {});
