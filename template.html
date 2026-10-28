@@ -34,9 +34,56 @@
     -webkit-font-smoothing: antialiased;
   }
   main {
-    max-width: 760px;
+    max-width: 1120px;
     margin: 0 auto;
     padding: 48px 20px 72px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-areas: "head side" "list side";
+    grid-template-rows: auto 1fr;
+    column-gap: 64px;
+  }
+  h1 { grid-area: head; }
+  ol { grid-area: list; align-self: start; }
+  /* Daily image */
+  #daily {
+    grid-area: side;
+    align-self: start;
+    position: sticky;
+    top: 48px;
+    padding-top: 14px;
+  }
+  #daily[hidden] { display: none; }
+  .take {
+    font-style: italic;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  #d-img {
+    display: block;
+    max-width: 100%;
+    max-height: 400px;
+    width: auto;
+    height: auto;
+    border: 1px solid var(--rule);
+  }
+  .src {
+    margin-top: 8px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+  }
+  .src a { color: var(--muted); font-weight: 400; }
+  .src a:hover { color: var(--hover); }
+  @media (max-width: 880px) {
+    main {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "head" "side" "list";
+      grid-template-rows: auto;
+    }
+    #daily { position: static; padding-top: 0; margin-bottom: 28px; max-width: 340px; }
+    #d-img { max-height: 300px; }
   }
   h1 {
     font-family: "Pinyon Script", cursive;
@@ -88,7 +135,8 @@
     color: var(--muted);
   }
   @media (max-width: 520px) {
-    li { grid-template-columns: 2em 1fr auto; }
+    li { grid-template-columns: 2em minmax(0, 1fr) auto; }
+    li a { overflow: hidden; text-overflow: ellipsis; }
     .note { display: none; }
   }
 </style>
@@ -109,12 +157,41 @@
   <ol id="list">
 <!-- LIST -->
   </ol>
+
+  <aside id="daily" hidden>
+    <p class="take">Here, take this with you:</p>
+    <a id="d-link" target="_blank" rel="noopener"><img id="d-img" alt="Today's image from Are.na"></a>
+    <p class="src">source: <a id="d-src" target="_blank" rel="noopener"></a></p>
+  </aside>
 </main>
 
 <script>
   // Sets the count so numbering runs down to 01 at the bottom
   var l = document.getElementById('list');
   l.style.counterReset = 'item ' + (l.children.length + 1);
+
+  // Image of the day: same pick for everyone, changes at midnight Eastern
+  (function () {
+    var day = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+    var h = 2166136261;
+    for (var i = 0; i < day.length; i++) { h ^= day.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+    fetch('images.json').then(function (r) { return r.json(); }).then(function (pool) {
+      if (!pool.length) return;
+      var tries = 0, idx = h % pool.length;
+      var img = document.getElementById('d-img');
+      function show() {
+        var p = pool[idx];
+        img.onload = function () { document.getElementById('daily').hidden = false; };
+        img.onerror = function () { if (++tries < 5) { idx = (idx + 1) % pool.length; show(); } };
+        img.src = p.src;
+        document.getElementById('d-link').href = 'https://www.are.na/block/' + p.id;
+        var a = document.getElementById('d-src');
+        a.href = p.channel;
+        a.textContent = p.channel.replace(/^https?:\/\/(www\.)?/, '');
+      }
+      show();
+    }).catch(function () {});
+  })();
 </script>
 
 </body>

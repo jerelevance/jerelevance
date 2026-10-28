@@ -47,6 +47,54 @@ def from_pdf(path):
         return (None, None)
 
 
+def fetch_json(url, tries=4):
+    import urllib.request
+    for attempt in range(tries):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "jerelevance-site"})
+            with urllib.request.urlopen(req, timeout=20) as r:
+                return json.load(r)
+        except Exception as e:
+            print(f"  retry {attempt + 1} for {url}: {e}")
+            time.sleep(2 * (attempt + 1))
+    return None
+
+
+def build_image_pool():
+    """Collects every image/GIF block from the channels in channels.txt."""
+    path = ROOT / "channels.txt"
+    if not path.exists():
+        return
+    links = [l.strip().rstrip("/") for l in path.read_text().splitlines()
+             if l.strip() and not l.strip().startswith("#")]
+    pool, seen = [], set()
+    for link in links:
+        slug = link.split("/")[-1]
+        page = 1
+        while True:
+            data = fetch_json(f"https://api.are.na/v2/channels/{slug}/contents?per=100&page={page}")
+            if not data:
+                print(f"  skipped {slug} (Are.na didn't answer)")
+                break
+            blocks = data.get("contents") or []
+            for b in blocks:
+                img = b.get("image") or {}
+                if b.get("class") != "Image" or b.get("id") in seen:
+                    continue
+                gif = img.get("content_type") == "image/gif"
+                src = (img.get("original") if gif else img.get("display") or img.get("large") or {}).get("url")
+                if src:
+                    seen.add(b["id"])
+                    pool.append({"id": b["id"], "src": src, "channel": link})
+            if len(blocks) < 100:
+                break
+            page += 1
+            time.sleep(0.5)
+        time.sleep(0.5)
+    (ROOT / "images.json").write_text(json.dumps(pool))
+    print(f"images.json: {len(pool)} images from {len(links)} channels")
+
+
 def pretty(name):
     return re.sub(r"[-_]+", " ", Path(name).stem).strip().title()
 
@@ -97,3 +145,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    build_image_pool()
