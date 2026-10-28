@@ -4,14 +4,17 @@ For each file in reports/ (HTML, PDF, or anything else):
   title   -> the page's <title>, else the PDF's title, else the filename
   comment -> <meta name="description">, else a sidecar file with the same
              name ending in .txt (e.g. skynet.pdf -> skynet.txt), else blank
-  date    -> the date the file was first added to the repo
+  date    -> the date the file was first added; order is by exact upload time
 
 Optional overrides go in reports/_meta.json, keyed by filename:
   {"skynet.pdf": {"title": "...", "comment": "...", "date": "2026-10-23"}}
 """
-import html, json, re, subprocess
-from datetime import date
+import html, json, re, subprocess, time
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
+
+TZ = ZoneInfo("America/New_York")
 
 ROOT = Path(__file__).parent
 REPORTS = ROOT / "reports"
@@ -19,11 +22,12 @@ SKIP = {"_meta.json", ".gitkeep", ".DS_Store"}
 
 
 def first_added(path):
+    """Exact time (unix seconds) the file was first committed."""
     out = subprocess.run(
-        ["git", "log", "--diff-filter=A", "--follow", "--format=%as", "--", str(path)],
+        ["git", "log", "--diff-filter=A", "--follow", "--format=%at", "--", str(path)],
         capture_output=True, text=True, cwd=ROOT,
     ).stdout.split()
-    return out[-1] if out else date.today().isoformat()
+    return int(out[-1]) if out else int(time.time())
 
 
 def from_html(path):
@@ -68,14 +72,17 @@ def main():
         if side in sidecars:
             comment = side.read_text().strip() or comment
         o = overrides.get(f.name, {})
+        ts = first_added(f)
         items.append({
+            "ts": ts,
             "href": f"reports/{f.name}",
             "title": o.get("title") or title or pretty(f.name),
             "comment": o.get("comment") or comment or "",
-            "date": o.get("date") or first_added(f),
+            "date": o.get("date") or datetime.fromtimestamp(ts, TZ).date().isoformat(),
         })
 
-    items.sort(key=lambda i: (i["date"], i["title"]), reverse=True)
+    # Newest upload on top (highest number); oldest at the bottom is 01
+    items.sort(key=lambda i: i["ts"], reverse=True)
 
     rows = "\n".join(
         f'    <li><a href="{html.escape(i["href"])}">{html.escape(i["title"])}</a>'
