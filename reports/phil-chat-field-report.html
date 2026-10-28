@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Phil Chat Field Report</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a single reading column of field notes, broken once by a full-width interactive sociogram */
+:root{
+  --paper:#eef1f4; --ink:#141a22; --muted:#5a6573; --rule:#cfd6de; --card:#f8fafb;
+  --accent:#1f4fd1; --hot:#d2462c;
+  --c0:#1f4fd1; --c1:#c08a10; --c2:#d2462c; --c3:#7a3fb5; --c4:#0f8a6a; --c5:#5d6b7a; --c6:#c2417e; --c7:#8a6d3b;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0f1318; --ink:#e6eaef; --muted:#9aa5b2; --rule:#28303a; --card:#161b22;
+  --accent:#7d9cff; --hot:#ff7a5c;
+  --c0:#7d9cff; --c1:#e7b53a; --c2:#ff7a5c; --c3:#b88af0; --c4:#3cc9a0; --c5:#9aa8b6; --c6:#f07ab0; --c7:#c9a46a;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f1318; --ink:#e6eaef; --muted:#9aa5b2; --rule:#28303a; --card:#161b22;
+  --accent:#7d9cff; --hot:#ff7a5c;
+  --c0:#7d9cff; --c1:#e7b53a; --c2:#ff7a5c; --c3:#b88af0; --c4:#3cc9a0; --c5:#9aa8b6; --c6:#f07ab0; --c7:#c9a46a;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 80px}
+.col{max-width:700px;margin:0 auto}
+.wide{max-width:1100px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.1;margin:0}
+h1{font-size:clamp(2.2rem,6vw,3.6rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.6rem;font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.15rem;font-weight:700}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:1.2rem;color:var(--ink);margin:18px 0 0}
+p{margin:0}
+.stack{display:flex;flex-direction:column;gap:14px}
+.mono{font-family:var(--mono);font-size:.85em}
+.num{font-variant-numeric:tabular-nums}
+header{display:flex;flex-direction:column;gap:14px;padding-bottom:28px;border-bottom:1px solid var(--rule)}
+.meta{display:flex;flex-wrap:wrap;gap:8px 22px;font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);margin:28px 0}
+.facts div{background:var(--paper);padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.facts b{font-family:var(--display);font-size:1.7rem;font-weight:700;font-variant-numeric:tabular-nums}
+.facts span{font-size:.85rem;color:var(--muted);line-height:1.35}
+section{margin-top:56px}
+.obs{display:grid;grid-template-columns:3.2rem 1fr;gap:6px 14px;padding-top:28px;margin-top:28px;border-top:1px solid var(--rule)}
+.obs .n{font-family:var(--display);font-weight:800;font-size:1.6rem;color:var(--accent);line-height:1}
+.obs .body{min-width:0;display:flex;flex-direction:column;gap:12px}
+.name{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--hot)}
+blockquote{margin:0;padding:10px 14px;background:var(--card);border-left:3px solid var(--rule);font-size:.95rem;color:var(--ink)}
+blockquote .who{font-family:var(--mono);font-size:.75rem;color:var(--muted);display:block;margin-top:4px}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+.tbl{overflow-x:auto}
+th,td{text-align:left;padding:6px 10px 6px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:400}
+td.r,th.r{text-align:right}
+/* sociogram */
+.graph-wrap{background:var(--card);border:1px solid var(--rule);margin-top:20px;position:relative}
+.controls{display:flex;flex-wrap:wrap;gap:8px;padding:12px;border-bottom:1px solid var(--rule);align-items:center}
+.controls button{font-family:var(--mono);font-size:.78rem;padding:6px 12px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);cursor:pointer;border-radius:3px}
+.controls button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.controls button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.controls .hint{font-size:.8rem;color:var(--muted);margin-left:auto}
+#graph{width:100%;height:640px;display:block;touch-action:none}
+@media (max-width:600px){#graph{height:520px}.controls .hint{margin-left:0}}
+#tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:.75rem;padding:8px 10px;border-radius:3px;max-width:260px;line-height:1.45}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px 20px;padding:14px;border-top:1px solid var(--rule)}
+.legend div{display:flex;gap:10px;align-items:flex-start;font-size:.88rem;line-height:1.35;min-width:0}
+.sw{width:12px;height:12px;border-radius:50%;flex:none;margin-top:4px}
+.legend b{font-family:var(--display);font-weight:700}
+.legend small{color:var(--muted);display:block}
+.bars{display:flex;flex-direction:column;gap:6px;font-size:.85rem}
+.bar{display:grid;grid-template-columns:9rem 1fr 3rem;gap:10px;align-items:center}
+.bar .track{height:10px;background:var(--rule);position:relative}
+.bar .fill{position:absolute;top:0;bottom:0;left:0;background:var(--accent)}
+.bar .fill.hot{background:var(--hot)}
+.bar .mid{position:absolute;top:-4px;bottom:-4px;width:1px;background:var(--ink);left:33.33%}
+.bar span:first-child{font-family:var(--mono);font-size:.78rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar span:last-child{font-family:var(--mono);font-size:.78rem;text-align:right}
+.caveats{font-size:.92rem;color:var(--muted)}
+.caveats li{margin-bottom:6px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="col">
+<header>
+  <div class="eyebrow">Field report · Discord channel 554792975696134159 · “phil chat”</div>
+  <h1>A sociology of the Phil Chat</h1>
+  <p class="lede">Ten observations and one map, drawn from 28,130 messages by 139 people over four weeks. In a nominally philosophy channel, philosophy turns out to be the rare currency that backs everything else, the main bridges are rivalries rather than weak ties, and the members have begun writing for an AI historian.</p>
+  <div class="meta"><span>30 Sep – 27 Oct 2026</span><span>2 Oracle Bot exports, merged and de-duplicated</span><span>Reply + @mention network</span></div>
+</header>
+
+<div class="facts">
+  <div><b class="num">0.81</b><span>Gini of message volume. The top 10 posters write 57% of everything.</span></div>
+  <div><b class="num">1.1%</b><span>of messages are dense philosophy, yet they draw 2.6× the replies.</span></div>
+  <div><b class="num">0.77</b><span>Weighted reciprocity. When someone answers you, you usually answer back.</span></div>
+  <div><b class="num">86</b><span>messages addressed to “editors”, the AI that writes up the chat.</span></div>
+</div>
+</div>
+
+<div class="wide">
+  <div class="col"><div class="eyebrow">The map you asked the editors for</div><h2 style="margin-top:6px">Strong ties, weak ties, and the bridges between clusters</h2>
+  <p style="margin-top:12px">Each circle is a member with 40 or more messages, sized by volume. Lines are reply and @mention ties, thicker for stronger ones. Colors are communities found by modularity clustering. <b>Bridges</b> are ties that cross between communities. Granovetter predicts those should be weak. Here, the heaviest bridge is the heaviest tie in the whole server.</p></div>
+  <div class="graph-wrap">
+    <div class="controls" role="toolbar" aria-label="Network view">
+      <button id="v-all" aria-pressed="true">All ties</button>
+      <button id="v-bridge" aria-pressed="false">Bridges only</button>
+      <button id="v-strong" aria-pressed="false">Strong ties (30+)</button>
+      <button id="v-weak" aria-pressed="false">Weak ties (4–9)</button>
+      <span class="hint">Hover or tap a member to isolate their ties · drag to rearrange</span>
+    </div>
+    <svg id="graph" role="img" aria-label="Force-directed network of chat members"></svg>
+    <div id="tip" hidden></div>
+    <div class="legend" id="legend"></div>
+  </div>
+</div>
+
+<div class="col">
+
+<section>
+<div class="eyebrow">Observations</div>
+<h2 style="margin-top:6px">What the logs say</h2>
+
+<div class="obs"><div class="n">1</div><div class="body">
+<div class="name">The gold-standard hypothesis</div>
+<h3>Philosophy is rarely spent, but it backs the whole currency</h3>
+<p>I flagged a message as “dense philosophy” when it used at least two terms of art (ought, normative, realism, epistemic, a philosopher’s name, and so on). Only 305 of 28,130 messages qualify. Those 305 are five times longer than average, get 0.75 replies each against 0.29 for everything else, and are ten times more likely to be followed by another dense-philosophy message (10% vs a 1% base rate). They also decay fast: one exchange, maybe two, then the room drifts back to banter.</p>
+<p>So the channel is not a philosophy seminar with jokes on the side. It is a sociality engine whose prestige good is philosophy. Like gold in a reserve, the serious argument is rarely spent, but it licenses everything else. It is why the place is called Phil Chat, why a username like “in the relevant sense” reads as a joke, and why newcomers get tested on definitions.</p>
+<div class="tbl"><table>
+<thead><tr><th>Message type</th><th class="r">Count</th><th class="r">Mean length</th><th class="r">Replies each</th><th class="r">Share answered</th></tr></thead>
+<tbody>
+<tr><td>Dense philosophy</td><td class="r num">305</td><td class="r num">352</td><td class="r num">0.75</td><td class="r num">57%</td></tr>
+<tr><td>Everything else</td><td class="r num">24,984</td><td class="r num">66</td><td class="r num">0.29</td><td class="r num">26%</td></tr>
+<tr><td>Jokes and emotes</td><td class="r num">2,841</td><td class="r num">72</td><td class="r num">0.24</td><td class="r num">21%</td></tr>
+</tbody></table></div>
+<p>A corollary: jokes get <i>fewer</i> explicit replies than baseline. Humor works as ambient atmosphere (probably answered with reactions, which the export doesn’t capture), not as a conversational move.</p>
+</div></div>
+
+<div class="obs"><div class="n">2</div><div class="body">
+<div class="name">Agonistic bridging</div>
+<h3>Granovetter half-holds: the bridges here are rivalries</h3>
+<p>The first half of Granovetter’s argument checks out. Split ties into quartiles by strength, and neighborhood overlap (how many friends two people share) rises steadily: 0.25, 0.28, 0.32, 0.38. Strong ties sit inside dense clumps.</p>
+<p>The second half fails. In <i>The Strength of Weak Ties</i>, bridges between clusters are weak acquaintances. Here, the top inter-community bridge is Hugh ↔ Jere at 236 interactions, the strongest tie in the server, joining the AI and science cluster to the theory salon. The next bridges are also heavy: Hugh ↔ OkPhilosopher (97), SuperVillainy ↔ Jere (92), Jere ↔ Angel (89).</p>
+<p>My proposed mechanism: in a job market, a bridge carries <i>information</i>, and a weak tie suffices. In a debate server, disagreement <i>is</i> the content, so a bridge exists because two people from different clusters keep arguing. Cross-cluster friction generates engagement, engagement strengthens the tie, and the tie stays a bridge because neither side converts. Call it agonistic bridging. Modularity is only 0.21, and removing both main hubs still leaves the network in one piece. The clusters are temperaments, not factions.</p>
+</div></div>
+
+<div class="obs"><div class="n">3</div><div class="body">
+<div class="name">Switchboards, conveners, magnets and chasers</div>
+<h3>The attention ledger</h3>
+<p>Compare how many replies a person receives with how many they send. Below 1, you spend more attention than you earn. Above 1, the room comes to you.</p>
+<div class="bars" id="ledger"></div>
+<p>Two different kinds of hub emerge. <b>Hugh is a switchboard</b>: most messages (2,960), most replies sent (1,028), the highest betweenness (0.66) and the lowest Burt constraint, so he sits on more shortest paths than anyone. He spends attention outward and is the top first contact for newcomers. <b>Jere is a convener</b>: ratio 1.17, opener of 13 of the 73 large sessions (more than anyone), and 81% of his tie weight leaves his own cluster. His cluster is essentially the set of people he convenes. <b>Magnets</b> such as Stackhouse (1.96), hpaigecr (1.86) and Brutus (1.64) post less but get answered far more than they answer. <b>Chasers</b> like Jambe (0.51) pursue specific interlocutors.</p>
+</div></div>
+
+<div class="obs"><div class="n">4</div><div class="body">
+<div class="name">A dyad typology</div>
+<h3>Duels, pursuits, and sparring partnerships</h3>
+<div class="tbl"><table>
+<thead><tr><th>Type</th><th>Pair</th><th class="r">A → B</th><th class="r">B → A</th><th>Signature</th></tr></thead>
+<tbody>
+<tr><td>Duel</td><td>SuperVillainy · Zone</td><td class="r num">104</td><td class="r num">106</td><td>Near-perfect symmetry; produced the deepest reply tree in the logs (154 nested replies from one William James quote).</td></tr>
+<tr><td>Sparring partnership</td><td>Hugh · Jere</td><td class="r num">138</td><td class="r num">80</td><td>Heavy, long-running, cross-cluster; the server’s spine.</td></tr>
+<tr><td>Pursuit</td><td>Jambe · Ixtlimal</td><td class="r num">59</td><td class="r num">19</td><td>3:1 asymmetry; a two-person cluster on scripture.</td></tr>
+<tr><td>Pursuit</td><td>Hugh · hpaigecr</td><td class="r num">97</td><td class="r num">30</td><td>The switchboard chasing a magnet.</td></tr>
+</tbody></table></div>
+<p>Duels are where the actual philosophy happens. SuperVillainy’s cluster (with Zone, Janne and SuparB) has the most formal vocabulary in the server (truth, speech, discursive, metaphysics), and three of the ten deepest reply trees start with him.</p>
+</div></div>
+
+<div class="obs"><div class="n">5</div><div class="body">
+<div class="name">The imagined machine historian</div>
+<h3>The chat now writes partly for an AI reader</h3>
+<p>Stackhouse publishes the “Phil Chat Times”, an AI-written paper of the channel, and the AI that writes it is addressed as “editors”. Members talk to this future reader directly, in at least four registers:</p>
+<blockquote>Editors, make a scatter plot in the next paper showing my iq dominance<span class="who">commission · My Name</span></blockquote>
+<blockquote>editors note that everything i say in here is satire before you place me in an evil orientation<span class="who">disclaimer · aura</span></blockquote>
+<blockquote>Editors, insert a thought this chat never actually did.<span class="who">request to falsify the record · My Name</span></blockquote>
+<blockquote>editors, reconcile my extrapolation and hugh’s correction into one larger theory that makes us both correct and me save face<span class="who">face-saving by proxy · Jere</span></blockquote>
+<p>Goffman split social life into front stage and back stage. This chat adds a third audience: the archive that will later summarize it. Members hedge for it, perform for it, and try to bribe it. “Editors take note” works like a courtroom “let the record show”. When Hugh caught Jere retreating on 26 Oct, he didn’t say it to Jere; he wrote “Editors take note that jere ran in the relevant sense.” The archive has become a referee.</p>
+<p>This report is one of those commissions. On 27 Oct at 00:07 UTC you asked the editors for a Granovetter weak-ties map of the server; the map above is that request filled.</p>
+</div></div>
+
+<div class="obs"><div class="n">6</div><div class="body">
+<div class="name">Eponymous concept capture</div>
+<h3>A username turned into a contested term, then a weapon</h3>
+<p>“Jere, in the relevant sense” starts as a joke name. Over four weeks it gets 35 uses across 8 people and moves through three stages. First it is an address: “@Jere, in the relevant sense”. Then Jere uses it as a real hedge: “meaningful in any relevant sense”, “Bake does not mean create in the relevant sense”. Finally, in the 26 Oct argument over whether LLMs have concepts, Hugh turns it into the object of dispute:</p>
+<blockquote>What’s the difference in practice between a thing which has concepts and communicates “in the relevant sense” and the thing which doesn’t, or are we just using the relevant sense to presume a distinction and never elaborate<span class="who">Hugh · 26 Oct</span></blockquote>
+<p>In this server, a person’s handle can become a philosophical move, and the move can then be used against its owner. That fits the gold-standard hypothesis: the only way to turn a name into ammunition is through a conceptual argument.</p>
+</div></div>
+
+<div class="obs"><div class="n">7</div><div class="body">
+<div class="name">The most-cited figure is Claude</div>
+<h3>The chat debates whether LLMs mean anything while using one as its historian</h3>
+<p>Counting messages that name them: Claude, GPT and other LLMs appear in 435 messages. Nick Land, the top human thinker, is in roughly 117; Plato 30, Deleuze 26, Marx 26, Nietzsche 23, Kant 16. AI plays three roles at once. It is the tool (Hugh’s Photoshop clone, KSP mod installs, game mods). It is the topic (p(doom), mechanistic interpretability, whether LLMs “manipulate concepts”). And it is the institution (the editors, the Oracle Bot that produced these logs: “consult the machine god for a verdict”). The most heated philosophical question of the month, whether a machine communicates “in the relevant sense”, is being argued in front of a machine that will write the minutes.</p>
+</div></div>
+
+<div class="obs"><div class="n">8</div><div class="body">
+<div class="name">Norm genesis, live</div>
+<h3>The geolocation affair produced the server’s first AI-era rule</h3>
+<p>On 6–7 Oct a member ran another member’s publicly posted, metadata-scrubbed photo through an AI to locate her. Nothing private was accessed, so the old category of “doxxing” did not obviously apply. The channel had to decide in real time whether a new capability changes an old offense. Both sides argued it out (“I put a publicly posted picture through an AI, death by ten million lashes” vs “This is a day for justice”), and the moderation that followed was written up as precedent: banned for “Using AI to geo locate another user’s exact location from a photo already scrubbed of metadata,” with a secondary ban for “defending a doxxing idiot, rule lawyering.”</p>
+<p>That is a textbook case of a norm forming. A capability arrives, an act gets reclassified, sanctions fall on the actor and on the defender, and a rationale is written down for future cases. The people involved also cluster together in the network map (the grey community), so the incident left a structural trace as well.</p>
+</div></div>
+
+<div class="obs"><div class="n">9</div><div class="body">
+<div class="name">Office-hours philosophy</div>
+<h3>A third place lodged inside the workday</h3>
+<p>Activity peaks at 1 PM Eastern (3,057 messages in that hour across the month) and bottoms out at 6 AM (101). The core posters are almost purely daytime: Hugh 3% of their messages overnight (midnight–6 AM ET), Jere 1%, aura 1%, SuperVillainy 1%. A small night watch keeps the lights on: Jack (32% overnight, and the person who most often closes a large session, 15 times), Jambe (peak hour 3 AM) and February2084 (30%). The day has a ritual shape: Jere opens, Jack closes.</p>
+</div></div>
+
+<div class="obs"><div class="n">10</div><div class="body">
+<div class="name">Diffusion by deflation</div>
+<h3>Concepts spread by turning into jokes</h3>
+<p>Track who introduces a term and who picks it up. “Status”, Jere’s recurring frame (status games, the satirical golden rule “treat them according to identity and status”, which set off an 886-message session), reaches 28 people and 170 uses. But by the end it circulates as banter: “Ape updated their status”, “he status mogged”. “Clanker” (Hugh) reaches 9 people, “hypergamy” (Stackhouse) 10, “cope” 22. The theory spreads, but it spreads by losing its argumentative load. The chat adopts the theorist’s vocabulary and drops the theory, which may be the general price of influence in a high-throughput room.</p>
+</div></div>
+</section>
+
+<section>
+<div class="eyebrow">Method and limits</div>
+<h2 style="margin-top:6px">How much weight these claims can bear</h2>
+<ul class="caveats" style="margin-top:14px;padding-left:18px">
+<li>The two exports overlap (21–23 Oct); I merged them by message ID into 28,130 unique messages.</li>
+<li>Ties are explicit replies plus @mentions, about 30% of messages. Casual back-and-forth without a reply arrow is invisible, which undercounts ties for people who don’t use the reply button.</li>
+<li>Reactions and images aren’t in the export, so “jokes get fewer replies” may just mean jokes get emoji instead.</li>
+<li>The dense-philosophy flag is a keyword heuristic. It misses careful arguments in plain language and catches some name-dropping.</li>
+<li>Communities are soft (modularity 0.21) and depend on the random seed; treat the colors as tendencies, not memberships. The Oracle Bot’s own reply table splits names on spaces and is unreliable, so I rebuilt the network from the raw transcript.</li>
+<li>Timestamps have minute resolution, so reply latency (a median of one minute for nearly everyone) carried no signal.</li>
+</ul>
+</section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+const DATA={"nodes":[{"id":"jere.mi.as","name":"Jere, in the relevant sense","c":2,"m":2398,"b":0.4331,"k":0.179},{"id":"okphilosopher","name":"OkPhilosopher","c":1,"m":475,"b":0.0,"k":0.248},{"id":"simon_432","name":"Simon","c":6,"m":359,"b":0.0662,"k":0.214},{"id":"hughchungus","name":"Hugh Chungus","c":0,"m":2960,"b":0.6591,"k":0.132},{"id":"terrapin.station.","name":". (dot)","c":5,"m":927,"b":0.1013,"k":0.169},{"id":"harpo4528","name":"Harpo","c":5,"m":66,"b":0.0,"k":0.482},{"id":"threefoldsynthesis","name":"Rem","c":4,"m":69,"b":0.0,"k":0.407},{"id":"exso_lam","name":"Brutus","c":0,"m":1951,"b":0.0766,"k":0.227},{"id":"myname1","name":"My Name","c":1,"m":1401,"b":0.0617,"k":0.16},{"id":"youv.philip","name":"Youv / Philip","c":0,"m":530,"b":0.0987,"k":0.31},{"id":"ice_chicken12","name":"Jeh","c":1,"m":186,"b":0.0,"k":0.183},{"id":"hpcr","name":"hpaigecr","c":0,"m":1126,"b":0.0078,"k":0.247},{"id":"zone8383","name":"Zone","c":4,"m":268,"b":0.0338,"k":0.373},{"id":"stack.house","name":"Stackhouse","c":3,"m":814,"b":0.0039,"k":0.157},{"id":"timebag","name":"timebag","c":6,"m":83,"b":0.0,"k":0.436},{"id":"rn911","name":"Rn!","c":0,"m":62,"b":0.0,"k":0.291},{"id":"sizzurp1","name":"Angel","c":3,"m":1466,"b":0.0825,"k":0.189},{"id":"wisdomcube","name":"Awesomebill","c":2,"m":94,"b":0.0,"k":0.344},{"id":"thunderstud","name":"thunderstud","c":1,"m":857,"b":0.0006,"k":0.163},{"id":"jambe","name":"Jambe","c":7,"m":377,"b":0.0357,"k":0.212},{"id":"papagaio","name":"papagaio","c":1,"m":912,"b":0.0,"k":0.17},{"id":"puckspartan","name":"Puckspartan","c":5,"m":154,"b":0.0,"k":0.276},{"id":"bardiel1","name":"bardiel1","c":2,"m":471,"b":0.0,"k":0.256},{"id":"nyabeille","name":"lizzie","c":3,"m":79,"b":0.0,"k":0.312},{"id":"seinzumtode","name":"Charlie","c":0,"m":222,"b":0.0,"k":0.221},{"id":"pearlian.","name":"Pearl","c":0,"m":75,"b":0.0,"k":0.321},{"id":"ape1284","name":"Ape","c":0,"m":702,"b":0.0591,"k":0.164},{"id":"meliorne","name":"Meliorne","c":1,"m":133,"b":0.0,"k":0.252},{"id":"anonymousjohnson","name":"Anonymous Johnson","c":3,"m":283,"b":0.0,"k":0.166},{"id":"thewillowofdarkness","name":"willow","c":2,"m":103,"b":0.0,"k":0.217},{"id":"1111lightbeam","name":"Zack","c":5,"m":341,"b":0.0,"k":0.192},{"id":"olangotang","name":"Olang","c":3,"m":46,"b":0.0,"k":0.437},{"id":"synth.wav","name":"synth.wav","c":0,"m":202,"b":0.0,"k":0.438},{"id":"oggmaster","name":"Taliban Chud","c":5,"m":61,"b":0.0,"k":0.379},{"id":"vannak","name":"vannak","c":0,"m":246,"b":0.0,"k":0.416},{"id":"comte4420","name":"Comte","c":6,"m":86,"b":0.0,"k":0.273},{"id":"neura1998","name":"Neura","c":0,"m":182,"b":0.0,"k":0.187},{"id":"bossonothin","name":"bossOnothin","c":3,"m":495,"b":0.0,"k":0.25},{"id":"ixtlimal","name":"Ixtlimal","c":7,"m":129,"b":0.0,"k":0.486},{"id":"unused_alt_","name":"xayori","c":2,"m":122,"b":0.0,"k":0.339},{"id":"dourhand","name":"El Don","c":2,"m":49,"b":0.0,"k":0.326},{"id":"dionysus_dude","name":"SuperVillainy","c":4,"m":881,"b":0.1156,"k":0.175},{"id":"woolierthanthou","name":"WoolierThanThou","c":0,"m":267,"b":0.0416,"k":0.22},{"id":"fencejumper1","name":"FenceJumper","c":5,"m":90,"b":0.0,"k":0.244},{"id":"bedbug0450","name":"Bedbug","c":6,"m":125,"b":0.0,"k":0.412},{"id":"mentanje","name":"mentanje","c":4,"m":94,"b":0.0,"k":0.408},{"id":"_janne","name":"Janne","c":4,"m":342,"b":0.013,"k":0.263},{"id":"february2084","name":"February2084","c":1,"m":420,"b":0.0,"k":0.2},{"id":".wrlccywrlfh","name":"saint.","c":5,"m":104,"b":0.0325,"k":0.335},{"id":"youvious.com","name":"Youvious","c":0,"m":319,"b":0.0058,"k":0.272},{"id":"aurasurfer","name":"aura","c":2,"m":1977,"b":0.1214,"k":0.192},{"id":"officialthenero","name":"BryGon","c":2,"m":44,"b":0.0,"k":0.423},{"id":"nikkolasmical","name":"Nikkolas Mical","c":3,"m":79,"b":0.0,"k":0.311},{"id":"citizenoftheair","name":"Jack","c":1,"m":800,"b":0.0156,"k":0.18},{"id":"goodnessqualia","name":"normative qualia","c":1,"m":65,"b":0.0,"k":0.419},{"id":"businessrodent","name":"business rodent","c":1,"m":80,"b":0.0,"k":0.452},{"id":"superbsoftie","name":"SuparB","c":4,"m":250,"b":0.0,"k":0.414}],
+"links":[["hughchungus","okphilosopher",97],["hughchungus","jere.mi.as",236],["hughchungus","ice_chicken12",12],["hughchungus","terrapin.station.",76],["hughchungus","youv.philip",179],["hughchungus","simon_432",9],["hughchungus","thunderstud",47],["hughchungus","stack.house",27],["hughchungus","papagaio",25],["hughchungus","seinzumtode",39],["hughchungus","pearlian.",17],["hughchungus","meliorne",12],["hughchungus","myname1",68],["hughchungus","vannak",84],["hughchungus","wisdomcube",4],["hughchungus","thewillowofdarkness",24],["hughchungus","puckspartan",13],["hughchungus","sizzurp1",29],["hughchungus","synth.wav",32],["hughchungus","zone8383",16],["hughchungus","olangotang",13],["hughchungus","youvious.com",95],["hughchungus","oggmaster",4],["hughchungus","unused_alt_",13],["hughchungus","ixtlimal",12],["hughchungus","superbsoftie",5],["okphilosopher","papagaio",27],["okphilosopher","thunderstud",11],["okphilosopher","youv.philip",8],["okphilosopher","vannak",4],["okphilosopher","stack.house",9],["okphilosopher","terrapin.station.",9],["okphilosopher","simon_432",15],["okphilosopher","pearlian.",4],["jere.mi.as","simon_432",79],["jere.mi.as","terrapin.station.",57],["jere.mi.as","papagaio",21],["jere.mi.as","thunderstud",6],["jere.mi.as","okphilosopher",7],["jere.mi.as","puckspartan",7],["jere.mi.as","myname1",38],["jere.mi.as","vannak",24],["jere.mi.as","zone8383",45],["jere.mi.as","stack.house",25],["jere.mi.as","sizzurp1",89],["jere.mi.as","officialthenero",14],["jere.mi.as","seinzumtode",10],["jere.mi.as","thewillowofdarkness",15],["jere.mi.as","neura1998",8],["jere.mi.as","mentanje",21],["jere.mi.as","unused_alt_",11],["jere.mi.as","nikkolasmical",7],["jere.mi.as","superbsoftie",9],["ice_chicken12","okphilosopher",5],["ice_chicken12","thunderstud",18],["ice_chicken12","terrapin.station.",5],["ice_chicken12","simon_432",14],["ice_chicken12","jere.mi.as",22],["ice_chicken12","youv.philip",6],["ice_chicken12","myname1",19],["ice_chicken12","youvious.com",6],["simon_432","timebag",43],["simon_432","sizzurp1",26],["simon_432","thunderstud",5],["simon_432","stack.house",4],["harpo4528","hughchungus",33],["harpo4528","terrapin.station.",29],["harpo4528","jere.mi.as",9],["harpo4528","hpcr",10],["terrapin.station.","youv.philip",5],["terrapin.station.","thunderstud",18],["terrapin.station.","unused_alt_",6],["terrapin.station.","thewillowofdarkness",11],["exso_lam","hughchungus",157],["exso_lam","hpcr",44],["exso_lam","neura1998",18],["exso_lam","meliorne",5],["exso_lam","papagaio",34],["exso_lam","jere.mi.as",16],["exso_lam","vannak",10],["exso_lam","terrapin.station.",13],["exso_lam","thunderstud",38],["exso_lam","jambe",6],["exso_lam","youv.philip",16],["exso_lam","woolierthanthou",25],["exso_lam","myname1",11],["exso_lam","february2084",10],["exso_lam","threefoldsynthesis",7],["exso_lam","zone8383",5],["stack.house","terrapin.station.",14],["stack.house","thunderstud",15],["stack.house","thewillowofdarkness",12],["stack.house","youv.philip",15],["stack.house","zone8383",8],["stack.house","synth.wav",6],["stack.house","youvious.com",14],["hpcr","jere.mi.as",36],["hpcr","youv.philip",78],["hpcr","zone8383",8],["hpcr","sizzurp1",22],["hpcr","okphilosopher",20],["hpcr","hughchungus",130],["hpcr","stack.house",12],["hpcr","terrapin.station.",65],["hpcr","wisdomcube",5],["hpcr","vannak",7],["hpcr","jambe",8],["hpcr","woolierthanthou",9],["hpcr","seinzumtode",4],["hpcr","youvious.com",24],["hpcr","superbsoftie",7],["aurasurfer","exso_lam",21],["aurasurfer","youv.philip",4],["aurasurfer","hughchungus",88],["aurasurfer","bossonothin",33],["aurasurfer","sizzurp1",23],["aurasurfer","youvious.com",25],["aurasurfer","jere.mi.as",156],["aurasurfer","terrapin.station.",40],["aurasurfer","puckspartan",7],["aurasurfer","myname1",31],["aurasurfer","february2084",16],["aurasurfer","bardiel1",42],["aurasurfer","thewillowofdarkness",14],["aurasurfer","hpcr",5],["aurasurfer","jambe",25],["aurasurfer","stack.house",27],["aurasurfer","citizenoftheair",51],["aurasurfer","unused_alt_",17],["aurasurfer","ixtlimal",5],["aurasurfer","thunderstud",28],["aurasurfer","zone8383",7],["aurasurfer","woolierthanthou",6],["aurasurfer","rn911",4],["aurasurfer","wisdomcube",25],["aurasurfer","dourhand",5],["aurasurfer","superbsoftie",4],["ape1284","hpcr",56],["ape1284","hughchungus",42],["ape1284","papagaio",12],["ape1284","exso_lam",4],["ape1284","terrapin.station.",13],["ape1284","youv.philip",16],["ape1284","woolierthanthou",23],["ape1284","myname1",9],["ape1284","bardiel1",14],["ape1284","jere.mi.as",26],["ape1284","comte4420",5],["ape1284","bossonothin",21],["ape1284","ice_chicken12",12],["ape1284","neura1998",39],["ape1284","sizzurp1",61],["ape1284","dionysus_dude",17],["ape1284","youvious.com",56],["ape1284","seinzumtode",4],["ape1284","aurasurfer",48],["ape1284","goodnessqualia",36],["ape1284","businessrodent",4],["ape1284","superbsoftie",28],["sizzurp1","timebag",9],["sizzurp1","terrapin.station.",35],["sizzurp1","thewillowofdarkness",7],["sizzurp1","stack.house",42],["sizzurp1","vannak",8],["sizzurp1","zone8383",18],["sizzurp1","thunderstud",7],["sizzurp1","synth.wav",11],["rn911","timebag",5],["rn911","youv.philip",24],["rn911","youvious.com",6],["rn911","terrapin.station.",5],["myname1","stack.house",11],["myname1","papagaio",31],["myname1","terrapin.station.",22],["myname1","thunderstud",30],["myname1","sizzurp1",16],["myname1","puckspartan",5],["myname1","okphilosopher",68],["myname1","youv.philip",16],["myname1","unused_alt_",4],["myname1","thewillowofdarkness",4],["myname1","neura1998",10],["myname1","nyabeille",7],["myname1","officialthenero",4],["thunderstud","timebag",18],["thunderstud","unused_alt_",4],["thunderstud","zone8383",5],["jambe","youv.philip",12],["jambe","woolierthanthou",48],["jambe","pearlian.",4],["jambe","neura1998",6],["jambe","myname1",5],["jambe","thunderstud",12],["jambe","papagaio",17],["neura1998","terrapin.station.",10],["neura1998","youv.philip",13],["neura1998","okphilosopher",12],["neura1998","stack.house",4],["neura1998","seinzumtode",5],["seinzumtode","sizzurp1",13],["seinzumtode","stack.house",10],["seinzumtode","vannak",19],["seinzumtode","terrapin.station.",8],["seinzumtode","youvious.com",4],["seinzumtode","thewillowofdarkness",5],["papagaio","thunderstud",38],["papagaio","stack.house",19],["papagaio","terrapin.station.",7],["papagaio","sizzurp1",26],["papagaio","simon_432",10],["papagaio","woolierthanthou",4],["oggmaster","terrapin.station.",23],["oggmaster","okphilosopher",8],["pearlian.","stack.house",6],["pearlian.","terrapin.station.",5],["meliorne","papagaio",6],["meliorne","myname1",12],["meliorne","stack.house",4],["meliorne","seinzumtode",10],["anonymousjohnson","hpcr",5],["anonymousjohnson","thewillowofdarkness",6],["anonymousjohnson","terrapin.station.",6],["anonymousjohnson","stack.house",24],["anonymousjohnson","papagaio",10],["anonymousjohnson","myname1",7],["anonymousjohnson","thunderstud",5],["anonymousjohnson","exso_lam",4],["anonymousjohnson","jere.mi.as",18],["anonymousjohnson","hughchungus",8],["anonymousjohnson","february2084",9],["anonymousjohnson","woolierthanthou",16],["anonymousjohnson","aurasurfer",13],["anonymousjohnson","sizzurp1",13],["anonymousjohnson","wisdomcube",4],["bardiel1","hughchungus",47],["bardiel1","stack.house",6],["bardiel1","papagaio",7],["bardiel1","okphilosopher",8],["bardiel1","hpcr",10],["bardiel1","vannak",7],["bardiel1","thunderstud",14],["bardiel1","sizzurp1",5],["bardiel1","seinzumtode",4],["bardiel1","exso_lam",23],["bardiel1","jere.mi.as",26],["bardiel1","thewillowofdarkness",4],["bardiel1","dionysus_dude",8],["bardiel1","citizenoftheair",5],["bardiel1","myname1",4],["1111lightbeam","thunderstud",4],["1111lightbeam","stack.house",5],["1111lightbeam","okphilosopher",11],["1111lightbeam","terrapin.station.",9],["1111lightbeam","meliorne",8],["1111lightbeam","oggmaster",7],["1111lightbeam","hughchungus",16],["1111lightbeam","myname1",8],["1111lightbeam","papagaio",4],["1111lightbeam","simon_432",7],["1111lightbeam","exso_lam",13],["1111lightbeam","dourhand",4],["1111lightbeam","seinzumtode",4],["1111lightbeam","fencejumper1",8],["synth.wav","thunderstud",5],["vannak","youv.philip",11],["vannak","zone8383",7],["dionysus_dude","hughchungus",18],["dionysus_dude","terrapin.station.",53],["dionysus_dude","okphilosopher",7],["dionysus_dude","jere.mi.as",92],["dionysus_dude","seinzumtode",21],["dionysus_dude","myname1",12],["dionysus_dude","february2084",8],["dionysus_dude","nyabeille",5],["dionysus_dude","stack.house",18],["dionysus_dude","sizzurp1",17],["dionysus_dude","neura1998",7],["dionysus_dude","ice_chicken12",4],["dionysus_dude","hpcr",7],["dionysus_dude","zone8383",211],["dionysus_dude","exso_lam",6],["dionysus_dude","threefoldsynthesis",6],["dionysus_dude","simon_432",26],["dionysus_dude","mentanje",49],["dionysus_dude","ixtlimal",5],["dionysus_dude","rn911",7],["dionysus_dude","wisdomcube",9],["dionysus_dude","superbsoftie",9],["comte4420","hughchungus",16],["comte4420","papagaio",8],["comte4420","sizzurp1",9],["comte4420","simon_432",8],["comte4420","myname1",5],["comte4420","jere.mi.as",7],["comte4420","hpcr",6],["puckspartan","thunderstud",10],["puckspartan","terrapin.station.",7],["bossonothin","jere.mi.as",57],["bossonothin","sizzurp1",81],["bossonothin","stack.house",15],["bossonothin","exso_lam",12],["bossonothin","hpcr",24],["bossonothin","hughchungus",10],["bossonothin","dionysus_dude",40],["bossonothin","myname1",9],["bossonothin","february2084",4],["bossonothin","zone8383",5],["bossonothin","citizenoftheair",6],["dourhand","jere.mi.as",9],["dourhand","terrapin.station.",4],["nyabeille","sizzurp1",9],["woolierthanthou","youv.philip",60],["woolierthanthou","youvious.com",64],["bedbug0450","simon_432",37],["bedbug0450","ice_chicken12",6],["bedbug0450","dionysus_dude",22],["bedbug0450","stack.house",5],["bedbug0450","february2084",4],["fencejumper1","ice_chicken12",5],["fencejumper1","myname1",7],["fencejumper1","seinzumtode",6],["february2084","myname1",35],["february2084","thunderstud",22],["february2084","hughchungus",29],["february2084","seinzumtode",5],["february2084","okphilosopher",23],["february2084","zone8383",5],["february2084","jere.mi.as",9],["february2084","stack.house",10],["ixtlimal","jere.mi.as",6],["ixtlimal","stack.house",4],["ixtlimal","jambe",78],["olangotang","stack.house",7],[".wrlccywrlfh","ice_chicken12",4],[".wrlccywrlfh","terrapin.station.",22],[".wrlccywrlfh","fencejumper1",18],[".wrlccywrlfh","puckspartan",6],["_janne","hughchungus",17],["_janne","exso_lam",87],["_janne","neura1998",28],["_janne","bossonothin",8],["_janne","february2084",10],["_janne","jambe",4],["_janne","woolierthanthou",5],["_janne","youvious.com",6],["_janne","anonymousjohnson",15],["_janne","dionysus_dude",102],["_janne","thunderstud",25],["_janne","papagaio",5],["_janne","citizenoftheair",7],["officialthenero","stack.house",5],["citizenoftheair","hughchungus",22],["citizenoftheair","myname1",75],["citizenoftheair","stack.house",14],["citizenoftheair","okphilosopher",5],["citizenoftheair","ice_chicken12",12],["citizenoftheair","ixtlimal",7],["citizenoftheair","terrapin.station.",12],["citizenoftheair","jere.mi.as",15],["citizenoftheair","thunderstud",30],["citizenoftheair","fencejumper1",9],["citizenoftheair","february2084",8],["citizenoftheair","dionysus_dude",39],["citizenoftheair","hpcr",4],["citizenoftheair","zone8383",7],["citizenoftheair","dourhand",11],["citizenoftheair","jambe",15],["citizenoftheair","thewillowofdarkness",10],["citizenoftheair","woolierthanthou",7],["citizenoftheair","unused_alt_",11],["citizenoftheair","superbsoftie",4],["citizenoftheair","nikkolasmical",4],["mentanje","thewillowofdarkness",11],["mentanje","papagaio",7],["nikkolasmical","terrapin.station.",10],["nikkolasmical","sizzurp1",12],["goodnessqualia","myname1",22],["goodnessqualia","thunderstud",6],["businessrodent","goodnessqualia",9],["businessrodent","myname1",12],["businessrodent","february2084",9],["superbsoftie","terrapin.station.",16],["superbsoftie","zone8383",65]]};
+
+const COMS=[
+ {n:"The Lab",d:"AI, physics, risk, math. Hugh, Brutus, hpaigecr, Ape, Woolier, vannak."},
+ {n:"The Pit",d:"Markets, memes, emotes. My Name, papagaio, thunderstud, Jack, February2084."},
+ {n:"The Salon",d:"Status, power, Sartre, Girard. Jere, aura, bardiel1, willow."},
+ {n:"The Culture Front",d:"Gender, religion, class. Angel, Stackhouse, bossOnothin, Anon Johnson."},
+ {n:"The Ring",d:"Truth, speech, metaphysics; formal duels. SuperVillainy, Zone, Janne, SuparB."},
+ {n:"The Continent",d:"Deleuze, Land, Watts, and the geolocation affair. dot, Zack, saint., FenceJumper."},
+ {n:"The Metaethics Seminar",d:"Ought, axioms, moral realism. Simon, Bedbug, Comte, timebag."},
+ {n:"The Chapel",d:"Scripture and Paul. Jambe and Ixtlimal, a two-person cluster."}
+];
+
+// attention ledger
+(function(){
+  const rows=[["Stackhouse",1.96],["hpaigecr",1.86],["Brutus",1.64],["bardiel1",1.46],["WoolierThanThou",1.40],["bossOnothin",1.23],["Jere",1.17],["Angel",1.19],["aura",0.97],["SuperVillainy",0.83],["Hugh",0.71],["Youv / Philip",0.68],["Jambe",0.51]].sort((a,b)=>b[1]-a[1]);
+  const max=2.1, el=document.getElementById('ledger');
+  el.innerHTML=rows.map(([n,v])=>`<div class="bar"><span>${n}</span><div class="track"><div class="fill ${v<1?'hot':''}" style="width:${v/max*100}%"></div><div class="mid" style="left:${1/max*100}%"></div></div><span>${v.toFixed(2)}</span></div>`).join('')+
+  `<div class="bar"><span></span><span style="font-family:var(--mono);font-size:.72rem;color:var(--muted)">replies received ÷ replies sent · vertical line = 1.0</span><span></span></div>`;
+})();
+
+// legend
+document.getElementById('legend').innerHTML=COMS.map((c,i)=>`<div><span class="sw" style="background:var(--c${i})"></span><span><b>${c.n}</b><small>${c.d}</small></span></div>`).join('');
+
+// graph
+(function(){
+  if(!window.d3){document.getElementById('graph').outerHTML='<p style="padding:20px">The network library failed to load. Reload the page to see the map.</p>';return;}
+  const svg=d3.select('#graph'), tip=document.getElementById('tip'), wrap=document.querySelector('.graph-wrap');
+  const css=getComputedStyle(document.documentElement);
+  const col=i=>`var(--c${i})`;
+  const nodes=DATA.nodes.map(d=>({...d}));
+  const byId=new Map(nodes.map(n=>[n.id,n]));
+  const links=DATA.links.map(([s,t,w])=>({source:s,target:t,w,bridge:byId.get(s).c!==byId.get(t).c}));
+  const r=d=>4+Math.sqrt(d.m)/3.2;
+  let W=svg.node().clientWidth, H=svg.node().clientHeight;
+  const g=svg.append('g');
+  const linkSel=g.append('g').selectAll('line').data(links).join('line')
+    .attr('stroke-width',d=>Math.max(.6,Math.sqrt(d.w)/2.2))
+    .attr('stroke',d=>d.bridge?'var(--hot)':'var(--muted)')
+    .attr('stroke-dasharray',d=>d.bridge&&d.w<10?'3 3':null)
+    .attr('stroke-opacity',d=>d.bridge?.55:.35);
+  const nodeSel=g.append('g').selectAll('g').data(nodes).join('g').attr('tabindex',0).attr('role','button')
+    .attr('aria-label',d=>`${d.name}, ${d.m} messages`).style('cursor','pointer');
+  nodeSel.append('circle').attr('r',r).attr('fill',d=>col(d.c)).attr('stroke','var(--card)').attr('stroke-width',1.5);
+  nodeSel.append('text').text(d=>d.name.replace(', in the relevant sense','')).attr('x',d=>r(d)+3).attr('y',4)
+    .attr('font-family','JetBrains Mono, monospace').attr('font-size',d=>d.m>700?12:10).attr('fill','var(--ink)')
+    .attr('opacity',d=>d.m>250?1:.65).style('pointer-events','none').style('paint-order','stroke').attr('stroke','var(--card)').attr('stroke-width',3);
+  const sim=d3.forceSimulation(nodes)
+    .force('link',d3.forceLink(links).id(d=>d.id).distance(d=>d.bridge?140:70).strength(d=>Math.min(1,d.w/60)))
+    .force('charge',d3.forceManyBody().strength(-260))
+    .force('center',d3.forceCenter(W/2,H/2))
+    .force('collide',d3.forceCollide().radius(d=>r(d)+6))
+    .force('x',d3.forceX(W/2).strength(.04)).force('y',d3.forceY(H/2).strength(.06));
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  sim.on('tick',()=>{
+    nodes.forEach(n=>{n.x=clamp(n.x,20,W-90);n.y=clamp(n.y,20,H-20)});
+    linkSel.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+    nodeSel.attr('transform',d=>`translate(${d.x},${d.y})`);
+  });
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){sim.stop();for(let i=0;i<300;i++)sim.tick();sim.on('tick')();}
+  nodeSel.call(d3.drag().on('start',(e,d)=>{if(!e.active)sim.alphaTarget(.2).restart();d.fx=d.x;d.fy=d.y})
+    .on('drag',(e,d)=>{d.fx=e.x;d.fy=e.y}).on('end',(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null}));
+  let view='all', focus=null;
+  const visible=l=>view==='all'||(view==='bridge'&&l.bridge)||(view==='strong'&&l.w>=30)||(view==='weak'&&l.w<10);
+  function paint(){
+    const nb=new Set(); if(focus){nb.add(focus.id);links.forEach(l=>{if(visible(l)&&(l.source.id===focus.id||l.target.id===focus.id)){nb.add(l.source.id);nb.add(l.target.id)}})}
+    linkSel.attr('display',l=>visible(l)?null:'none')
+      .attr('stroke-opacity',l=>focus?((l.source.id===focus.id||l.target.id===focus.id)?.9:.04):(l.bridge?.55:.35));
+    nodeSel.attr('opacity',d=>focus?(nb.has(d.id)?1:.15):1);
+  }
+  function show(e,d){
+    focus=d;paint();
+    const ties=links.filter(l=>visible(l)&&(l.source.id===d.id||l.target.id===d.id)).sort((a,b)=>b.w-a.w).slice(0,4)
+      .map(l=>{const o=l.source.id===d.id?l.target:l.source;return `${o.name.replace(', in the relevant sense','')} ${l.w}${l.bridge?' ⇄':''}`}).join('<br>');
+    tip.innerHTML=`<b>${d.name}</b><br>${COMS[d.c].n} · ${d.m.toLocaleString()} msgs<br>betweenness ${d.b.toFixed(2)} · constraint ${d.k.toFixed(2)}<br><br>${ties||'no ties in this view'}`;
+    tip.hidden=false;
+    const b=wrap.getBoundingClientRect(), sv=svg.node().getBoundingClientRect();
+    let x=(e.clientX??(sv.left+d.x))-b.left+14, y=(e.clientY??(sv.top+d.y))-b.top+14;
+    if(x>b.width-270)x=x-290; tip.style.left=Math.max(8,x)+'px'; tip.style.top=y+'px';
+  }
+  function hide(){focus=null;tip.hidden=true;paint()}
+  nodeSel.on('mouseenter',show).on('mouseleave',hide).on('focus',(e,d)=>show({},d)).on('blur',hide)
+    .on('click',(e,d)=>{e.stopPropagation();focus&&focus.id===d.id?hide():show(e,d)});
+  svg.on('click',hide);
+  const btns={all:'v-all',bridge:'v-bridge',strong:'v-strong',weak:'v-weak'};
+  Object.entries(btns).forEach(([k,id])=>document.getElementById(id).addEventListener('click',()=>{
+    view=k;Object.values(btns).forEach(b=>document.getElementById(b).setAttribute('aria-pressed',b===id));paint()}));
+  window.addEventListener('resize',()=>{W=svg.node().clientWidth;H=svg.node().clientHeight;
+    sim.force('center',d3.forceCenter(W/2,H/2)).force('x',d3.forceX(W/2).strength(.04)).force('y',d3.forceY(H/2).strength(.06)).alpha(.3).restart()});
+  paint();
+})();
+</script>
+</body>
+</html>
