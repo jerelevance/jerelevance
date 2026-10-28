@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: "7 4 * * *"   # daily refresh of the Are.na image pool
 
 permissions:
   contents: read
@@ -36,6 +38,7 @@ jobs:
       - run: |
           mkdir _site
           cp index.html _site/
+          cp images.json _site/ 2>/dev/null || echo "[]" > _site/images.json
           cp -r reports _site/
           touch _site/.nojekyll
 
