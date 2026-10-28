@@ -95,6 +95,97 @@ def build_image_pool(list_file="channels.txt", out_file="images.json"):
     print(f"{out_file}: {len(pool)} images from {len(links)} channels")
 
 
+def _walk(o, items, tokens):
+    if isinstance(o, dict):
+        if "musicResponsiveListItemRenderer" in o:
+            items.append(o["musicResponsiveListItemRenderer"])
+            return
+        tok = (o.get("continuationCommand") or {}).get("token") or (o.get("nextContinuationData") or {}).get("continuation")
+        if tok:
+            tokens.append(tok)
+        for v in o.values():
+            _walk(v, items, tokens)
+    elif isinstance(o, list):
+        for v in o:
+            _walk(v, items, tokens)
+
+
+def _ytm(body, tries=3):
+    import urllib.request
+    body = {"context": {"client": {"clientName": "WEB_REMIX", "clientVersion": "1.20261027.10.00",
+                                   "hl": "en", "gl": "US"}}, **body}
+    for attempt in range(tries):
+        try:
+            req = urllib.request.Request(
+                "https://music.youtube.com/youtubei/v1/browse?prettyPrint=false",
+                data=json.dumps(body).encode(), method="POST",
+                headers={"Content-Type": "application/json", "Origin": "https://music.youtube.com",
+                         "Referer": "https://music.youtube.com/",
+                         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+                                       "(KHTML, like Gecko) Chrome/130.0 Safari/537.36"})
+            with urllib.request.urlopen(req, timeout=30) as r:
+                return json.load(r)
+        except Exception as e:
+            print(f"  retry {attempt + 1} for playlist: {e}")
+            time.sleep(3 * (attempt + 1))
+    return None
+
+
+def _clean(title, artist, ugc):
+    """Plain YouTube uploads come in as 'Artist - Song (Official Video)' by some channel."""
+    if ugc:
+        title = re.sub(r"\s*[\(\[](official|lyric|lyrics|audio|music video|hd|hq|visualizer)[^\)\]]*[\)\]]",
+                       "", title, flags=re.I).strip()
+        m = re.match(r"^([^()\[\]]+?)\s+[-\u2013\u2014]\s+(.+)$", title)
+        if m:
+            artist, title = m.group(1).strip(), m.group(2).strip()
+    return title, artist
+
+
+def build_songs(list_file="playlist.txt", out_file="songs.json"):
+    """Every track in the YouTube Music playlist, for the song of the day.
+    If YouTube doesn't answer, the songs.json already in the repo is kept."""
+    path = ROOT / list_file
+    if not path.exists():
+        return
+    lines = [l.strip() for l in path.read_text().splitlines() if l.strip() and not l.startswith("#")]
+    pid = re.search(r"list=([\w-]+)", lines[0]).group(1) if lines else None
+    if not pid:
+        return
+    items, tokens, seen = [], [], set()
+    data = _ytm({"browseId": "VL" + pid})
+    if data:
+        _walk(data, items, tokens)
+    while tokens and len(seen) < 200:
+        t = tokens.pop(0)
+        if t in seen:
+            continue
+        seen.add(t)
+        page = _ytm({"continuation": t})
+        if page:
+            _walk(page, items, tokens)
+    songs, ids = [], set()
+
+    def text(col):
+        return "".join(r.get("text", "") for r in
+                       ((col or {}).get("musicResponsiveListItemFlexColumnRenderer", {}).get("text", {}).get("runs") or []))
+
+    for r in items:
+        vid = (r.get("playlistItemData") or {}).get("videoId")
+        if not vid or vid in ids:
+            continue
+        ids.add(vid)
+        cols = r.get("flexColumns") or [{}, {}]
+        ugc = "MUSIC_VIDEO_TYPE_UGC" in json.dumps(r.get("overlay") or {})
+        title, artist = _clean(text(cols[0]), text(cols[1]) if len(cols) > 1 else "", ugc)
+        songs.append({"id": vid, "title": title, "artist": artist})
+    if len(songs) < 10:
+        print(f"{out_file}: YouTube gave {len(songs)} songs, keeping the old list")
+        return
+    (ROOT / out_file).write_text(json.dumps(songs, ensure_ascii=False))
+    print(f"{out_file}: {len(songs)} songs")
+
+
 def pretty(name):
     return re.sub(r"[-_]+", " ", Path(name).stem).strip().title()
 
@@ -147,3 +238,4 @@ if __name__ == "__main__":
     main()
     build_image_pool()                          # daily image
     build_image_pool("tarot.txt", "tarot.json")  # tarot deck
+    build_songs()                               # song of the day

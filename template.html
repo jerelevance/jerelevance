@@ -41,8 +41,8 @@
     padding: 48px 20px 72px;
     display: grid;
     grid-template-columns: minmax(0, 1fr) 320px;
-    grid-template-areas: "head side" "list side";
-    grid-template-rows: auto 1fr;
+    grid-template-areas: "head side" "list side" "song side";
+    grid-template-rows: auto auto 1fr;
     column-gap: 64px;
   }
   h1 { grid-area: head; }
@@ -123,7 +123,7 @@
   @media (max-width: 880px) {
     main {
       grid-template-columns: minmax(0, 1fr);
-      grid-template-areas: "head" "side" "list";
+      grid-template-areas: "head" "side" "list" "song";
       grid-template-rows: auto;
     }
     .side { position: static; padding-top: 0; margin-bottom: 28px; max-width: 340px; }
@@ -350,6 +350,56 @@
   @media (prefers-reduced-motion: reduce) {
     .grow, .shrink, #seed svg { animation: none; }
   }
+  /* Song of the day: a record that slides out of its sleeve and spins */
+  #song { grid-area: song; align-self: start; margin-top: 44px; }
+  #song[hidden] { display: none; }
+  #song .take { margin-bottom: 14px; }
+  .deck { position: relative; width: 340px; max-width: 100%; height: 206px; }
+  .vinyl {
+    position: absolute; left: 12px; top: 5px; width: 196px; height: 196px; border-radius: 50%;
+    background:
+      radial-gradient(circle, transparent 0 31%, rgba(255,255,255,.05) 31.5% 32%, transparent 32.5%),
+      repeating-radial-gradient(circle, #121212 0 1.6px, #1d1d1d 1.6px 2.6px),
+      #141414;
+    box-shadow: 0 6px 18px rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.06);
+    transition: transform 1s cubic-bezier(.5,0,.2,1);
+    will-change: transform;
+  }
+  .vinyl::after {
+    /* a soft sheen that stays put while the record turns under it */
+    content: ""; position: absolute; inset: 0; border-radius: 50%;
+    background: conic-gradient(from 30deg, transparent 0 8%, rgba(255,255,255,.09) 12%, transparent 18% 58%, rgba(255,255,255,.07) 62%, transparent 68%);
+    pointer-events: none;
+  }
+  .vinyl .label {
+    position: absolute; left: 50%; top: 50%; width: 66px; height: 66px; margin: -33px 0 0 -33px;
+    border-radius: 50%; overflow: hidden; background: #333; box-shadow: 0 0 0 2px #0d0d0d;
+  }
+  .vinyl .label img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.4); }
+  .vinyl .label::after {
+    content: ""; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px 0 0 -3px;
+    border-radius: 50%; background: var(--paper);
+  }
+  #song.out .vinyl { transform: translateX(118px); }
+  .sleeve {
+    position: absolute; left: 0; top: 0; width: 206px; height: 206px; background: #0d0d0d;
+    box-shadow: 0 8px 22px rgba(0,0,0,.22), inset 0 0 0 1px rgba(255,255,255,.04);
+    padding: 3px; z-index: 1;
+  }
+  .sleeve iframe, .sleeve > div { width: 200px; height: 200px; display: block; border: 0; }
+  .song-row { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+  #s-play {
+    flex: none; width: 34px; height: 34px; display: grid; place-items: center;
+    border: 1px solid var(--rule); border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer;
+    transition: color .2s, border-color .2s, transform .3s cubic-bezier(.3,1.5,.5,1);
+  }
+  #s-play:hover { color: var(--hover); border-color: var(--hover); transform: scale(1.06); }
+  #s-play:focus-visible { outline: 2px solid var(--hover); outline-offset: 2px; }
+  #s-play[disabled] { opacity: .4; cursor: default; }
+  .song-name { font-style: italic; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .song-name em { font-style: normal; color: var(--muted); }
+  @media (max-width: 880px) { #song { margin-top: 36px; } }
+  @media (prefers-reduced-motion: reduce) { .vinyl { transition: none; } }
 </style>
 </head>
 <body>
@@ -383,6 +433,20 @@
   <ol id="list">
 <!-- LIST -->
   </ol>
+
+  <section id="song" hidden>
+    <p class="take">Song of the day &mdash; check back tomorrow!</p>
+    <div class="deck">
+      <div class="vinyl" id="s-vinyl"><div class="label"><img id="s-art" alt=""></div></div>
+      <div class="sleeve"><div id="s-player"></div></div>
+    </div>
+    <div class="song-row">
+      <button id="s-play" type="button" aria-label="Play" title="play" disabled>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path class="i-play" d="M8 5.5v13l11-6.5z"/><g class="i-pause" style="display:none"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></g></svg>
+      </button>
+      <p class="song-name" id="s-name"></p>
+    </div>
+  </section>
 
   <div class="side">
   <aside id="daily" hidden>
@@ -788,6 +852,90 @@
       img.onload = function () { card.hidden = false; };
       img.src = deck[hash(id + '|' + day) % deck.length].src;
     }).catch(function () {});
+  })();
+
+  // Song of the day: one song from the playlist each day, the same for everyone.
+  // YouTube's player is the sleeve (it has to stay visible, at least 200 x 200);
+  // the record slides out of it and spins while the song plays.
+  (function () {
+    var sec = document.getElementById('song');
+    if (!sec) return;
+    var btn = document.getElementById('s-play'), vinyl = document.getElementById('s-vinyl'),
+        art = document.getElementById('s-art'), label = vinyl.querySelector('.label'), name = document.getElementById('s-name');
+    var day = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+    var h = 2166136261;
+    var key = 'song' + day;
+    for (var i = 0; i < key.length; i++) { h ^= key.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+    h ^= h >>> 15; h = Math.imul(h, 2246822507) >>> 0; h = (h ^ (h >>> 13)) >>> 0;
+    var player, playing = false, primed = false, song, pool, tries = 0;
+
+    // the record's turn: eases up to 33 1/3 rpm and winds down when paused
+    var angle = 0, speed = 0, last = 0;
+    function turn(t) {
+      var dt = last ? Math.min(.05, (t - last) / 1000) : 0; last = t;
+      var target = playing ? 200 : 0;
+      speed += (target - speed) * Math.min(1, dt * (playing ? 2.2 : 1.1));
+      angle = (angle + speed * dt) % 360;
+      label.style.transform = 'rotate(' + angle.toFixed(1) + 'deg)';
+      requestAnimationFrame(turn);
+    }
+    function setPlaying(v) {
+      playing = v;
+      if (v) sec.classList.add('out'); else setTimeout(function () { if (!playing) sec.classList.remove('out'); }, 1400);
+      btn.querySelector('.i-play').style.display = v ? 'none' : '';
+      btn.querySelector('.i-pause').style.display = v ? '' : 'none';
+      btn.setAttribute('aria-label', v ? 'Pause' : 'Play');
+      btn.title = v ? 'pause' : 'play';
+    }
+    function showText(s) {
+      name.innerHTML = '';
+      name.appendChild(document.createTextNode(s.title + ' '));
+      var em = document.createElement('em'); em.textContent = '– ' + s.artist; name.appendChild(em);
+      art.src = 'https://i.ytimg.com/vi/' + s.id + '/hqdefault.jpg';
+    }
+    function show(s) {
+      song = s; showText(s);
+      sec.hidden = false;
+      var tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(tag);
+    }
+    window.onYouTubeIframeAPIReady = function () {
+      player = new YT.Player('s-player', {
+        width: 200, height: 200, videoId: song.id, host: 'https://www.youtube-nocookie.com',
+        playerVars: { controls: 0, disablekb: 1, fs: 0, rel: 0, playsinline: 1, iv_load_policy: 3, modestbranding: 1 },
+        events: {
+          onReady: function () {
+            // start muted and pause on the first frame, so the sleeve shows the cover
+            // rather than YouTube's big play button
+            player.mute(); player.playVideo();
+            btn.disabled = false;
+          },
+          onError: function () {
+            // that one won't play here (removed, or no embedding); take the next song instead
+            if (!pool || tries++ > 8) { sec.hidden = true; return; }
+            h = (h + 1) % pool.length; song = pool[h]; primed = false;
+            showText(song); player.cueVideoById(song.id);
+            setTimeout(function () { player.mute(); player.playVideo(); }, 300);
+          },
+          onStateChange: function (e) {
+            if (e.data === YT.PlayerState.PLAYING && !primed) { primed = true; player.pauseVideo(); player.seekTo(0, true); return; }
+            if (e.data === YT.PlayerState.PLAYING) setPlaying(true);
+            if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) setPlaying(false);
+            if (e.data === YT.PlayerState.PLAYING && player.isMuted()) player.unMute();
+          }
+        }
+      });
+    };
+    btn.addEventListener('click', function () {
+      if (!player || !player.playVideo) return;
+      primed = true;
+      if (playing) player.pauseVideo(); else { player.unMute(); player.setVolume(100); player.playVideo(); setPlaying(true); }
+    });
+    fetch('songs.json').then(function (r) { return r.json(); }).then(function (list) {
+      if (list.length) { pool = list; h = h % list.length; show(list[h]); }
+    }).catch(function () {});
+    requestAnimationFrame(turn);
   })();
 
   // Image of the day: same pick for everyone, changes at midnight Eastern
