@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+
+<title>Phil Chat Weak Ties, Oct 21–27</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a journal reprint — one wide figure in the manner of AJS 1973, then the reading notes beneath it in a single measured column. */
+:root{
+  --paper:#f7f8f6; --sheet:#ffffff; --ink:#1b1d1f; --ink-2:#4a4f55; --rule:#c9ccd0; --faint:#e6e8ea;
+  --catnip:#2d6b5e; --versus:#a8432f; --mixed:#94721e; --hull:#eef0ef;
+  --display:"Old Standard TT", "Iowan Old Style", Georgia, serif;
+  --body:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#15171a; --sheet:#1c1f23; --ink:#e7e5df; --ink-2:#a9adb3; --rule:#3b4046; --faint:#2a2e33;
+  --catnip:#6fb7a5; --versus:#e38870; --mixed:#d4ae55; --hull:#202428; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#15171a; --sheet:#1c1f23; --ink:#e7e5df; --ink-2:#a9adb3; --rule:#3b4046; --faint:#2a2e33;
+  --catnip:#6fb7a5; --versus:#e38870; --mixed:#d4ae55; --hull:#202428; color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
+.wrap{max-width:1120px;margin:0 auto;padding-block:40px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.col{max-width:720px}
+header .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,5vw,46px);line-height:1.1;margin:.3em 0 .35em;text-wrap:balance}
+h1 em{font-style:italic}
+h2{font-family:var(--display);font-weight:400;font-size:28px;margin:0 0 .4em;text-wrap:balance}
+h3{font-family:var(--display);font-weight:700;font-size:20px;margin:0;text-wrap:balance}
+p{margin:0 0 1em}
+.lede{font-size:19px;color:var(--ink)}
+.stats{display:flex;flex-wrap:wrap;gap:8px 28px;font-family:var(--mono);font-size:13px;color:var(--ink-2);margin:18px 0 0;padding:12px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.stats b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
+section{margin-top:56px}
+
+/* figure */
+figure{margin:36px 0 0;background:var(--sheet);border:1px solid var(--rule);padding:18px 18px 14px}
+.controls{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--ink-2);margin-bottom:8px}
+.controls label{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
+.controls input{accent-color:var(--ink)}
+.key{display:inline-flex;gap:6px;align-items:center}
+.key svg{display:block}
+.scroller{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#net{display:block;width:100%;min-width:760px;height:auto;touch-action:manipulation}
+figcaption{font-family:var(--display);font-size:16px;margin-top:10px;line-height:1.45;color:var(--ink)}
+figcaption .sc{font-variant:small-caps;letter-spacing:.03em}
+.hint{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin-top:6px}
+#info{min-height:3.2em;font-size:15px;margin-top:10px;padding-top:10px;border-top:1px dotted var(--rule);color:var(--ink-2)}
+#info b{color:var(--ink);font-weight:600}
+
+.edge{fill:none;stroke:var(--ink);transition:opacity .15s}
+.edge.strong{stroke-width:1.6}
+.edge.strong-x{stroke-width:1.3;opacity:.38}
+.edge.weak{stroke-width:1;stroke-dasharray:6 5;opacity:.55}
+.edge.weak-x{stroke-width:.9;stroke-dasharray:5 5;opacity:.28}
+.edge.bridge{stroke-width:1.7;stroke-dasharray:9 6}
+.edge.bridge.catnip{stroke:var(--catnip)} .edge.bridge.versus{stroke:var(--versus)} .edge.bridge.mixed{stroke:var(--mixed)}
+.node text .cnt{font-family:var(--mono);font-size:10px;fill:var(--ink-2)}
+svg.nocount .cnt{display:none}
+svg.plain .edge.bridge{display:none}
+svg.plain .badge{display:none}
+.sortbar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+.sortbar .seg{display:inline-flex;border:1px solid var(--rule);background:var(--sheet)}
+.sortbar button{font:inherit;background:none;border:0;border-right:1px solid var(--rule);color:var(--ink-2);padding:4px 10px;cursor:pointer}
+.sortbar button:last-child{border-right:0}
+.sortbar button[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
+.sortbar button:focus-visible,.roster summary:focus-visible{outline:2px solid var(--catnip);outline-offset:1px}
+.roster{display:grid;grid-template-columns:1fr;column-gap:36px;margin-top:12px;align-items:start}
+@media (min-width:900px){.roster{grid-template-columns:1fr 1fr}}
+.rhead,.roster summary{display:grid;grid-template-columns:22px minmax(0,1fr) 58px 70px 48px 12px;gap:8px;align-items:center}
+.rhead{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);padding:0 2px 5px;border-bottom:1px solid var(--ink)}
+.rhead.h2{display:none} @media (min-width:900px){.rhead.h2{display:grid}}
+.rhead span:nth-child(n+3){text-align:right}
+.rcol{min-width:0}
+.roster details{border-bottom:1px solid var(--faint);min-width:0}
+.roster summary{list-style:none;cursor:pointer;padding:4px 2px;font-size:14.5px;line-height:1.3}
+.roster summary::-webkit-details-marker{display:none}
+.roster summary:hover{background:var(--faint)}
+.roster .rk{font-family:var(--mono);font-size:11px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.roster .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.roster .nm b{font-weight:600}
+.roster .gp{font-family:var(--mono);font-size:11px;color:var(--ink-2);margin-left:6px}
+.roster .v{font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums;display:flex;align-items:center;justify-content:flex-end;gap:5px}
+.roster .v i{display:block;height:7px;background:var(--ink);opacity:.7}
+.roster .v.w i{opacity:.3}
+.roster .v.m{color:var(--ink-2);font-size:11.5px}
+.roster .chev{width:7px;height:7px;border-right:1.4px solid var(--ink-2);border-bottom:1.4px solid var(--ink-2);transform:rotate(-45deg);transition:transform .15s;justify-self:center}
+.roster details[open] .chev{transform:rotate(45deg)}
+.roster details[open] summary{background:var(--faint)}
+.brief{padding:8px 4px 12px 32px;font-size:14.5px;line-height:1.5}
+.brief p{margin:0 0 .45em}
+.brief .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2);margin-right:6px}
+.brief .meta{font-family:var(--mono);font-size:11.5px;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;margin-top:6px}
+.brief button{font:inherit;background:none;border:1px solid var(--rule);color:var(--ink-2);padding:1px 7px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.roster .chev{transition:none}}
+@media (max-width:600px){.roster .gp{display:none}.rhead,.roster summary{grid-template-columns:20px minmax(0,1fr) 44px 56px 44px 10px;gap:6px}.roster .v i{max-width:16px}.brief{padding-left:26px}}
+.stlist{display:grid;grid-template-columns:1fr;column-gap:36px;margin-top:14px;align-items:start}
+@media (min-width:900px){.stlist{grid-template-columns:1fr 1fr}}
+.stcol{min-width:0}
+.stlist details.who{border-bottom:1px solid var(--faint)}
+.stlist summary{list-style:none;cursor:pointer}
+.stlist summary::-webkit-details-marker{display:none}
+.stlist summary:focus-visible{outline:2px solid var(--catnip);outline-offset:1px}
+.who>summary{display:grid;grid-template-columns:minmax(0,1fr) auto 12px;gap:10px;align-items:center;padding:6px 2px;font-size:15px}
+.who>summary:hover,.who[open]>summary{background:var(--faint)}
+.who>summary .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who>summary .nm b{font-weight:600}
+.who>summary .with{font-family:var(--mono);font-size:11px;color:var(--ink-2);margin-left:8px}
+.who>summary .cnt{font-family:var(--mono);font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.chev{width:7px;height:7px;border-right:1.4px solid var(--ink-2);border-bottom:1.4px solid var(--ink-2);transform:rotate(-45deg);transition:transform .15s;justify-self:center}
+details[open]>summary .chev{transform:rotate(45deg)}
+.ties{padding:4px 0 10px 18px;border-left:2px solid var(--rule);margin:2px 0 8px 10px}
+.tie{border-bottom:1px dotted var(--rule)}
+.tie:last-child{border-bottom:0}
+.tie>summary{display:grid;grid-template-columns:minmax(0,1fr) auto 12px;gap:10px;align-items:center;padding:6px 2px;font-size:14.5px}
+.tie>summary:hover{background:var(--faint)}
+.tie>summary .meta{display:flex;gap:8px;align-items:center;font-family:var(--mono);font-size:11px;color:var(--ink-2);white-space:nowrap}
+.tie .body{padding:4px 2px 12px;font-size:14.5px;line-height:1.55}
+.tie .body p{margin:0 0 .5em}
+.tie .body .bm{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+@media (max-width:600px){.who>summary .with{display:none}.tie>summary .meta .wkl{display:none}}
+@media (prefers-reduced-motion:reduce){.chev{transition:none}}
+.tally{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px}
+.tally .tl{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2);margin-right:4px}
+.tally .none{font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
+.group .tally{margin:8px 0 2px}
+.hullc{fill:var(--hull);stroke:var(--rule);stroke-dasharray:2 4}
+.glabel{font-family:var(--display);font-style:italic;font-size:17px;fill:var(--ink-2)}
+.node circle{fill:var(--ink);stroke:var(--sheet);stroke-width:1.5}
+.node text{font-family:var(--body);font-size:12.5px;fill:var(--ink);paint-order:stroke;stroke:var(--sheet);stroke-width:3.2px;stroke-linejoin:round}
+.node{cursor:pointer}
+.node:focus{outline:none}
+.node:focus-visible circle{stroke:var(--catnip);stroke-width:3}
+.badge{cursor:pointer}
+.badge circle{fill:var(--sheet);stroke-width:1.3}
+.badge.catnip circle{stroke:var(--catnip)} .badge.versus circle{stroke:var(--versus)} .badge.mixed circle{stroke:var(--mixed)}
+.badge text{font-family:var(--mono);font-size:10.5px;font-weight:500;text-anchor:middle;dominant-baseline:central}
+.badge.catnip text{fill:var(--catnip)} .badge.versus text{fill:var(--versus)} .badge.mixed text{fill:var(--mixed)}
+svg.focus .edge,svg.focus .badge{opacity:.07}
+svg.focus .node{opacity:.25}
+svg.focus .on{opacity:1!important}
+svg.focus .edge.on.weak-x,svg.focus .edge.on.weak{opacity:.9!important}
+
+/* tags */
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:1px 7px;border:1px solid currentColor;border-radius:2px;line-height:1.6;white-space:nowrap;vertical-align:1px}
+.tag.catnip{color:var(--catnip)} .tag.versus{color:var(--versus)} .tag.mixed{color:var(--mixed)}
+.trend{font-family:var(--mono);font-size:11.5px;color:var(--ink-2);white-space:nowrap}
+.trend.warming::before{content:"↗ "} .trend.cooling::before{content:"↘ "}
+
+/* groups */
+.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,470px),1fr));gap:22px}
+.group{background:var(--sheet);border:1px solid var(--rule);padding:20px 22px;min-width:0}
+.group .members{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:6px 0 12px;line-height:1.6}
+.group ul{margin:0;padding-left:1.1em}
+.group li{margin:0 0 .55em;font-size:15.5px}
+.group .note{font-size:14.5px;color:var(--ink-2);border-top:1px dotted var(--rule);padding-top:10px;margin:12px 0 0;font-style:italic}
+
+/* bridges */
+.legend-line{font-size:15.5px;color:var(--ink-2)}
+ol.bridges{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:0}
+ol.bridges li{display:grid;grid-template-columns:44px 1fr;gap:4px 14px;padding:16px 0;border-top:1px solid var(--rule);scroll-margin-top:24px}
+ol.bridges li:last-child{border-bottom:1px solid var(--rule)}
+ol.bridges li.hl{background:linear-gradient(90deg,var(--faint),transparent 70%)}
+.bn{font-family:var(--mono);font-size:13px;color:var(--ink-2);padding-top:3px;cursor:pointer}
+.bhead{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline}
+.bhead .pair{font-family:var(--display);font-weight:700;font-size:18px}
+.bhead .route{font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+.bbody{grid-column:2;min-width:0;font-size:15.5px}
+.bbody p{margin:.35em 0 0}
+.weeks{display:inline-flex;gap:3px;align-items:flex-end;height:18px;vertical-align:-3px;margin-right:4px}
+.weeks i{display:block;width:7px;background:var(--ink-2);opacity:.75}
+.wkl{font-family:var(--mono);font-size:11.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.bmeta{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:6px}
+
+.prose p{max-width:68ch}
+.method{font-size:14.5px;color:var(--ink-2);max-width:72ch}
+.method p{margin:0 0 .7em}
+button.reset{font:inherit;font-family:var(--mono);font-size:12px;background:none;border:1px solid var(--rule);color:var(--ink-2);padding:2px 8px;cursor:pointer}
+button.reset:focus-visible{outline:2px solid var(--catnip)}
+@media (prefers-reduced-motion:reduce){.edge{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="col">
+  <div class="eyebrow">Network sociology · #debate log · Oct 21 – 27, 2026</div>
+  <h1>The Strength of Weak Ties, <em>in Phil Chat</em>: week of Oct 21</h1>
+  <p class="lede">Granovetter argued that the ties holding a network together are rarely the close ones. Inside a clique everyone already knows what everyone knows; new information crosses between cliques on weak ties. This is the debate channel's latest five days drawn his way: six groups, the strong and weak ties inside them, and the weak-tie bridges between them.</p>
+  <div class="stats"><span><b>5,958</b> messages</span><span><b>33</b> regulars (30+ messages)</span><span><b>117</b> ties</span><span><b>12</b> strong · <b>105</b> weak</span><span><b>17</b> bridges annotated</span></div>
+</header>
+
+<figure>
+  <div class="controls">
+    <span class="key"><svg width="34" height="8"><line x1="0" y1="4" x2="34" y2="4" stroke="currentColor" stroke-width="1.6"/></svg>strong tie</span>
+    <span class="key"><svg width="34" height="8"><line x1="0" y1="4" x2="34" y2="4" stroke="currentColor" stroke-width="1.1" stroke-dasharray="6 5"/></svg>weak tie</span>
+    <span class="key" style="color:var(--catnip)"><svg width="34" height="8"><line x1="0" y1="4" x2="34" y2="4" stroke="currentColor" stroke-width="1.8" stroke-dasharray="9 6"/></svg>catnip bridge</span>
+    <span class="key" style="color:var(--versus)"><svg width="34" height="8"><line x1="0" y1="4" x2="34" y2="4" stroke="currentColor" stroke-width="1.8" stroke-dasharray="9 6"/></svg>versus bridge</span>
+    <span class="key" style="color:var(--mixed)"><svg width="34" height="8"><line x1="0" y1="4" x2="34" y2="4" stroke="currentColor" stroke-width="1.8" stroke-dasharray="9 6"/></svg>mixed</span>
+  </div>
+  <div class="controls">
+    <label><input type="checkbox" id="tWeakIn" checked> weak ties within groups</label>
+    <label><input type="checkbox" id="tStrongX" checked> strong ties between groups</label>
+    <label><input type="checkbox" id="tWeakX"> all other weak ties between groups</label>
+    <label><input type="checkbox" id="tColor" checked> colored bridges</label>
+    <label><input type="checkbox" id="tCounts" checked> tie counts on names</label>
+    <button class="reset" id="reset" type="button">Clear selection</button>
+  </div>
+  <div class="scroller"><svg id="net" viewBox="0 0 1080 920" role="img" aria-label="Network diagram of six chat groups with strong and weak ties and numbered weak-tie bridges"></svg></div>
+  <figcaption><span class="sc">Fig. 1.</span>—Groups and bridges in the debate channel, Oct 21 – 27, 2026. Solid line = strong tie; dashed line = weak tie. Numbered dashed lines are the weak-tie bridges discussed below, colored by whether the talk drew people together (catnip) or apart (versus).</figcaption>
+  <div class="hint">Tap a name to isolate its ties. Tap a number to jump to that bridge.</div>
+  <div id="info" aria-live="polite">Nothing selected.</div>
+</figure>
+
+<section>
+  <h2>Tie counts by chatter</h2>
+  <p class="col legend-line">Every tie with at least 4 exchanges, including the weak ones the figure leaves out by default. The same counts appear beside each name in the figure (s = strong, w = weak). Open a name for a short brief on what they talk about and how they come across, led by a count of the labeled ties they are in (the numbered bridges and the strong ties below).</p>
+  <div class="sortbar"><span>Sort by</span><span class="seg" id="sortSeg"><button type="button" data-k="s" aria-pressed="true">Strong</button><button type="button" data-k="wt" aria-pressed="false">Weak</button><button type="button" data-k="n" aria-pressed="false">Messages</button><button type="button" data-k="label" aria-pressed="false">Name</button><button type="button" data-k="g" aria-pressed="false">Group</button></span><button type="button" class="reset" id="collapseAll">Close all</button></div>
+  <div class="roster" id="roster"></div>
+</section>
+
+<section>
+  <h2>The strong ties</h2>
+  <p class="col legend-line">The 12 ties in the top tenth by strength, listed under each person who holds one; chatters without a strong tie are left out. Open a name to see who they are strongly tied to, then open a tie for what it was made of. Each tie reads the same from either end.</p>
+  <div class="stlist" id="stlist"></div>
+</section>
+
+<section>
+  <h2>Six groups</h2>
+  <p class="col legend-line">Groups were found by community detection on who replies to whom. The channel is one room, so the walls are thin: modularity is 0.30, and 76 of the 117 ties cross a group line. Each group is named for what it kept returning to. <span class="tag catnip">catnip</span> marks talk that fed the tie; <span class="tag versus">versus</span> marks talk that put distance between people. Each group’s count adds its listed topics to every labeled tie (bridge or strong tie) that touches a member.</p>
+  <div class="groups" id="groups"></div>
+</section>
+
+<section>
+  <h2>The weak-tie bridges</h2>
+  <p class="col legend-line">Each bridge joins two groups through people who are not close. The bars show exchanges in three stretches (Oct 21–23, Oct 24–25, Oct 26–27). A trend appears only where the tie clearly warmed toward a strong one or cooled off. Where nothing changed, nothing is said.</p>
+  <ol class="bridges" id="bridges"></ol>
+</section>
+
+<section class="prose">
+  <h2>Where the map departs from Granovetter</h2>
+  <p>Granovetter predicted that no strong tie is a bridge. In the last log, five people carried strong ties into several groups at once. This week the switchboard narrowed. Only 12 ties count as strong, and just four of them cross a group line: Jere to Hugh, Angel and SuperVillainy, and aura to Hugh. aura, Hugh and Jere sit on the most shortest paths between chatters, roughly twice as many as anyone else. Everything else that crosses between groups, 72 ties, is weak.</p>
+  <p>The time part of Granovetter's definition shows up clearly. Jambe and Ixtlimal traded 120 messages in a single overnight session on Oct 24, about the gnostics and St Paul, and never spoke again, so their tie counts as weak despite its volume. SuparB and Zone are the same: 65 exchanges in one afternoon on Oct 26. Volume without repetition does not make a strong tie. aura and Jere, who talked on five of the six days, do.</p>
+  <p>Versus talk was mostly kept inside groups this week. SuperVillainy and Zone remained the strongest pair in their group after the lying-with-true-information fight, then went silent after Oct 24. Hugh and hpaigecr, whose tie collapsed in the last log, said nothing to each other until Oct 26, when they agreed that LLM concepts are "constituted differently" and fought anyway. Only one bridge is versus (hpaigecr and SuparB). Three are mixed, and in two of them (bossOnothin with SuperVillainy, aura with Angel) the friction turned into agreement within the same conversation.</p>
+</section>
+
+<section class="method">
+  <h2>How this was measured</h2>
+  <p>The source is the debate channel export from Oct 21, 23:17 UTC to Oct 27, 01:31 UTC (5,958 messages). Ties come from direct replies (weight 1) plus quick back-and-forth, meaning messages from two people within two minutes of each other with no reply marker (weight 0.25). Following Granovetter's mix of time, intensity and reciprocity, a tie's strength combines its volume, how many days it appeared, how many of the three stretches it was active in, and how even the replies were in both directions. The top tenth of ties count as strong; all other ties with at least 4 exchanges count as weak.</p>
+  <p>Only the 33 people with 30 or more messages are drawn. The moderator, Pearl, is left out. Groups come from community detection on the weighted reply network. Briefs and the catnip and versus judgments come from reading the exchanges, so they are calls, not counts. Health details that came up in chat are left out of the briefs.</p>
+</section>
+</div>
+
+<script>
+const DATA = {"nodes": [{"id": "hughchungus", "label": "Hugh", "name": "Hugh Chungus", "handle": "hughchungus", "g": 0, "n": 504, "x": 215, "y": 250, "s": 2, "wt": 16}, {"id": "terrapin.station.", "label": "dot", "name": ".", "handle": "terrapin.station.", "g": 0, "n": 167, "x": 282.5, "y": 251.9, "s": 0, "wt": 8}, {"id": "youvious.com", "label": "Youvious", "name": "Youvious", "handle": "youvious.com", "g": 0, "n": 135, "x": 289.2, "y": 328.4, "s": 1, "wt": 4}, {"id": "hpcr", "label": "hpaigecr", "name": "hpaigecr", "handle": "hpcr", "g": 0, "n": 126, "x": 136.6, "y": 324.2, "s": 0, "wt": 7}, {"id": "exso_lam", "label": "Brutus", "name": "Brutus", "handle": "exso_lam", "g": 0, "n": 122, "x": 147.5, "y": 248.1, "s": 0, "wt": 5}, {"id": "seinzumtode", "label": "Charlie", "name": "Charlie", "handle": "seinzumtode", "g": 0, "n": 74, "x": 213.1, "y": 317.5, "s": 0, "wt": 4}, {"id": "woolierthanthou", "label": "Woolier", "name": "WoolierThanThou", "handle": "woolierthanthou", "g": 0, "n": 54, "x": 140.8, "y": 171.6, "s": 1, "wt": 0}, {"id": "vannak", "label": "vannak", "name": "vannak", "handle": "vannak", "g": 0, "n": 49, "x": 293.4, "y": 175.8, "s": 0, "wt": 3}, {"id": "meliorne", "label": "Meliorne", "name": "The Wounded Deer Meliorne", "handle": "meliorne", "g": 0, "n": 44, "x": 216.9, "y": 182.5, "s": 0, "wt": 2}, {"id": "aurasurfer", "label": "aura", "name": "aura", "handle": "aurasurfer", "g": 1, "n": 798, "x": 540, "y": 450, "s": 5, "wt": 16}, {"id": "jere.mi.as", "label": "Jere", "name": "Jere, in the relevant sense", "handle": "jere.mi.as", "g": 1, "n": 705, "x": 490.2, "y": 342.1, "s": 5, "wt": 17}, {"id": "stack.house", "label": "Stackhouse", "name": "Stackhouse", "handle": "stack.house", "g": 1, "n": 314, "x": 565.7, "y": 380.3, "s": 2, "wt": 12}, {"id": "thunderstud", "label": "thunderstud", "name": "thunderstud", "handle": "thunderstud", "g": 1, "n": 122, "x": 514.3, "y": 519.7, "s": 1, "wt": 5}, {"id": "bossonothin", "label": "bossOnothin", "name": "bossOnothin", "handle": "bossonothin", "g": 1, "n": 107, "x": 589.8, "y": 557.9, "s": 0, "wt": 6}, {"id": "bardiel1", "label": "bardiel1", "name": "bardiel1", "handle": "bardiel1", "g": 1, "n": 90, "x": 432.1, "y": 499.8, "s": 1, "wt": 3}, {"id": "anonymousjohnson", "label": "Anon Johnson", "name": "Anonymous Johnson", "handle": "anonymousjohnson", "g": 1, "n": 74, "x": 647.9, "y": 400.2, "s": 0, "wt": 5}, {"id": "wisdomcube", "label": "Awesomebill", "name": "Awesomebillfromdawsonville", "handle": "wisdomcube", "g": 1, "n": 41, "x": 609.7, "y": 475.7, "s": 0, "wt": 3}, {"id": "olangotang", "label": "Olang", "name": "Olang", "handle": "olangotang", "g": 1, "n": 31, "x": 470.3, "y": 424.3, "s": 0, "wt": 3}, {"id": "jambe", "label": "Jambe", "name": "Jambe", "handle": "jambe", "g": 2, "n": 162, "x": 540, "y": 800, "s": 0, "wt": 5}, {"id": "papagaio", "label": "papagaio", "name": "papagaio do statusquo", "handle": "papagaio", "g": 2, "n": 124, "x": 488.7, "y": 773.8, "s": 0, "wt": 5}, {"id": "ixtlimal", "label": "Ixtlimal", "name": "Ixtlimal", "handle": "ixtlimal", "g": 2, "n": 78, "x": 591.3, "y": 826.2, "s": 0, "wt": 1}, {"id": "citizenoftheair", "label": "Jack", "name": "Jack", "handle": "citizenoftheair", "g": 3, "n": 264, "x": 215, "y": 660, "s": 1, "wt": 8}, {"id": "myname1", "label": "My Name", "name": "My Name", "handle": "myname1", "g": 3, "n": 178, "x": 216.8, "y": 739.2, "s": 1, "wt": 7}, {"id": "february2084", "label": "February2084", "name": "February2084", "handle": "february2084", "g": 3, "n": 103, "x": 282.7, "y": 618.8, "s": 0, "wt": 6}, {"id": "unused_alt_", "label": "xayori", "name": "xayori", "handle": "unused_alt_", "g": 3, "n": 70, "x": 145.5, "y": 622.0, "s": 0, "wt": 4}, {"id": "sizzurp1", "label": "Angel", "name": "Angel", "handle": "sizzurp1", "g": 4, "n": 298, "x": 865, "y": 650, "s": 1, "wt": 13}, {"id": "nikkolasmical", "label": "Nikkolas", "name": "Nikkolas Mical", "handle": "nikkolasmical", "g": 4, "n": 70, "x": 809.3, "y": 706.3, "s": 0, "wt": 4}, {"id": "synth.wav", "label": "synth.wav", "name": "synth.wav", "handle": "synth.wav", "g": 4, "n": 30, "x": 941.6, "y": 670.1, "s": 0, "wt": 1}, {"id": "thewillowofdarkness", "label": "Willow", "name": "thewillowofdarkness", "handle": "thewillowofdarkness", "g": 4, "n": 30, "x": 844.1, "y": 573.6, "s": 0, "wt": 4}, {"id": "dionysus_dude", "label": "SuperVillainy", "name": "SuperVillainy", "handle": "dionysus_dude", "g": 5, "n": 263, "x": 865, "y": 250, "s": 2, "wt": 10}, {"id": "superbsoftie", "label": "SuparB", "name": "SuparB", "handle": "superbsoftie", "g": 5, "n": 250, "x": 846.8, "y": 172.9, "s": 0, "wt": 10}, {"id": "zone8383", "label": "Zone", "name": "Zone", "handle": "zone8383", "g": 5, "n": 125, "x": 807.3, "y": 304.3, "s": 1, "wt": 8}, {"id": "ape1284", "label": "Ape", "name": "Ape", "handle": "ape1284", "g": 5, "n": 76, "x": 940.8, "y": 272.8, "s": 0, "wt": 5}], "centers": {"1": [540, 450], "0": [215, 250], "5": [865, 250], "4": [865, 650], "3": [215, 660], "2": [540, 800]}, "R": {"1": 165, "0": 150, "5": 110, "4": 110, "3": 110, "2": 80}, "edges": [{"a": "exso_lam", "b": "zone8383", "k": "weak-x", "w": 4.2, "wk": [1, 1.2, 2], "n": null}, {"a": "hughchungus", "b": "zone8383", "k": "weak-x", "w": 8.5, "wk": [1.2, 0, 7.2], "n": null}, {"a": "hughchungus", "b": "terrapin.station.", "k": "weak", "w": 27.5, "wk": [12.5, 0, 15.0], "n": null}, {"a": "hughchungus", "b": "jere.mi.as", "k": "strong-x", "w": 68.2, "wk": [3.5, 9.5, 55.2], "n": null}, {"a": "ape1284", "b": "terrapin.station.", "k": "weak-x", "w": 4.2, "wk": [2.2, 2, 0], "n": null}, {"a": "jere.mi.as", "b": "terrapin.station.", "k": "weak-x", "w": 10.2, "wk": [8.8, 1.2, 0.2], "n": null}, {"a": "hughchungus", "b": "myname1", "k": "weak-x", "w": 8.0, "wk": [4.0, 0, 4.0], "n": null}, {"a": "aurasurfer", "b": "jere.mi.as", "k": "strong", "w": 112.5, "wk": [32.8, 70.2, 9.5], "n": null}, {"a": "bossonothin", "b": "jere.mi.as", "k": "weak", "w": 28.2, "wk": [1, 27.2, 0], "n": null}, {"a": "hughchungus", "b": "thunderstud", "k": "weak-x", "w": 6.5, "wk": [1, 0, 5.5], "n": null}, {"a": "february2084", "b": "myname1", "k": "weak", "w": 7.5, "wk": [6.0, 0.2, 1.2], "n": null}, {"a": "bossonothin", "b": "stack.house", "k": "weak", "w": 6.8, "wk": [3.5, 3.2, 0], "n": null}, {"a": "stack.house", "b": "thewillowofdarkness", "k": "weak-x", "w": 5.0, "wk": [2.2, 2.8, 0], "n": null}, {"a": "stack.house", "b": "thunderstud", "k": "weak", "w": 8.8, "wk": [8.8, 0, 0], "n": null}, {"a": "february2084", "b": "stack.house", "k": "weak-x", "w": 6.5, "wk": [6.5, 0, 0], "n": null}, {"a": "citizenoftheair", "b": "february2084", "k": "weak", "w": 7.8, "wk": [2.5, 2.0, 3.2], "n": null}, {"a": "anonymousjohnson", "b": "stack.house", "k": "weak", "w": 11.2, "wk": [6.8, 4.5, 0], "n": null}, {"a": "february2084", "b": "thunderstud", "k": "weak-x", "w": 4.2, "wk": [4.2, 0, 0], "n": null}, {"a": "citizenoftheair", "b": "myname1", "k": "strong", "w": 17.2, "wk": [3.2, 9.5, 4.5], "n": null}, {"a": "dionysus_dude", "b": "stack.house", "k": "bridge", "w": 15.2, "wk": [1.8, 8.0, 5.5], "n": 7}, {"a": "citizenoftheair", "b": "jere.mi.as", "k": "bridge", "w": 11.5, "wk": [10.2, 0.5, 0.8], "n": 11}, {"a": "citizenoftheair", "b": "dionysus_dude", "k": "weak-x", "w": 10.0, "wk": [8, 0, 2], "n": null}, {"a": "papagaio", "b": "sizzurp1", "k": "weak-x", "w": 4.0, "wk": [4, 0, 0], "n": null}, {"a": "aurasurfer", "b": "wisdomcube", "k": "weak", "w": 27.2, "wk": [25.2, 2, 0], "n": null}, {"a": "aurasurfer", "b": "terrapin.station.", "k": "weak-x", "w": 5.5, "wk": [5.0, 0.5, 0], "n": null}, {"a": "nikkolasmical", "b": "terrapin.station.", "k": "bridge", "w": 12.0, "wk": [7.0, 5, 0], "n": 3}, {"a": "jere.mi.as", "b": "stack.house", "k": "strong", "w": 27.2, "wk": [19.2, 6.8, 1.2], "n": null}, {"a": "dionysus_dude", "b": "terrapin.station.", "k": "weak-x", "w": 5.2, "wk": [5.2, 0, 0], "n": null}, {"a": "jere.mi.as", "b": "sizzurp1", "k": "strong-x", "w": 30.8, "wk": [7.2, 23.5, 0], "n": null}, {"a": "nikkolasmical", "b": "sizzurp1", "k": "weak", "w": 18.2, "wk": [10.5, 7.8, 0], "n": null}, {"a": "sizzurp1", "b": "zone8383", "k": "weak-x", "w": 8.8, "wk": [3.5, 5.2, 0], "n": null}, {"a": "jere.mi.as", "b": "nikkolasmical", "k": "weak-x", "w": 8.0, "wk": [1, 7.0, 0], "n": null}, {"a": "jere.mi.as", "b": "papagaio", "k": "weak-x", "w": 6.2, "wk": [0.5, 5.5, 0.2], "n": null}, {"a": "sizzurp1", "b": "stack.house", "k": "bridge", "w": 16.8, "wk": [1.8, 15.0, 0], "n": 6}, {"a": "hughchungus", "b": "sizzurp1", "k": "weak-x", "w": 8.8, "wk": [6.2, 0, 2.5], "n": null}, {"a": "bossonothin", "b": "sizzurp1", "k": "bridge", "w": 15.0, "wk": [2, 13.0, 0], "n": 12}, {"a": "jere.mi.as", "b": "olangotang", "k": "weak", "w": 6.0, "wk": [0.2, 0, 5.8], "n": null}, {"a": "aurasurfer", "b": "hughchungus", "k": "strong-x", "w": 32.8, "wk": [19.5, 4.2, 9.0], "n": null}, {"a": "aurasurfer", "b": "bardiel1", "k": "strong", "w": 22.5, "wk": [13.2, 3.2, 6.0], "n": null}, {"a": "aurasurfer", "b": "february2084", "k": "weak-x", "w": 8.5, "wk": [8.2, 0.2, 0], "n": null}, {"a": "aurasurfer", "b": "thunderstud", "k": "strong", "w": 26.8, "wk": [24.2, 2.5, 0], "n": null}, {"a": "bardiel1", "b": "thunderstud", "k": "weak", "w": 4.0, "wk": [3.5, 0.5, 0], "n": null}, {"a": "bardiel1", "b": "jere.mi.as", "k": "weak", "w": 9.8, "wk": [2.5, 7.0, 0.2], "n": null}, {"a": "aurasurfer", "b": "myname1", "k": "weak-x", "w": 10.8, "wk": [6.0, 2.5, 2.2], "n": null}, {"a": "aurasurfer", "b": "citizenoftheair", "k": "weak-x", "w": 8.8, "wk": [2.0, 6.8, 0], "n": null}, {"a": "bossonothin", "b": "dionysus_dude", "k": "bridge", "w": 24.2, "wk": [8, 16.2, 0], "n": 14}, {"a": "aurasurfer", "b": "stack.house", "k": "strong", "w": 32.0, "wk": [15.2, 16.8, 0], "n": null}, {"a": "aurasurfer", "b": "dionysus_dude", "k": "weak-x", "w": 5.5, "wk": [0.8, 4.8, 0], "n": null}, {"a": "jere.mi.as", "b": "zone8383", "k": "bridge", "w": 17.2, "wk": [11.8, 5.2, 0.2], "n": 10}, {"a": "dionysus_dude", "b": "zone8383", "k": "strong", "w": 71.0, "wk": [52.8, 18.2, 0], "n": null}, {"a": "jere.mi.as", "b": "thewillowofdarkness", "k": "weak-x", "w": 7.2, "wk": [1, 6.2, 0], "n": null}, {"a": "dionysus_dude", "b": "jere.mi.as", "k": "strong-x", "w": 61.0, "wk": [12.2, 39.5, 9.2], "n": null}, {"a": "jere.mi.as", "b": "myname1", "k": "weak-x", "w": 8.2, "wk": [7.8, 0.2, 0.2], "n": null}, {"a": "february2084", "b": "jere.mi.as", "k": "weak-x", "w": 5.0, "wk": [5.0, 0, 0], "n": null}, {"a": "dionysus_dude", "b": "wisdomcube", "k": "weak-x", "w": 10.2, "wk": [10.2, 0, 0], "n": null}, {"a": "myname1", "b": "papagaio", "k": "bridge", "w": 16.0, "wk": [0.8, 15.2, 0], "n": 5}, {"a": "dionysus_dude", "b": "sizzurp1", "k": "weak-x", "w": 4.5, "wk": [1, 3.5, 0], "n": null}, {"a": "hughchungus", "b": "unused_alt_", "k": "bridge", "w": 14.8, "wk": [2, 0, 12.8], "n": 1}, {"a": "citizenoftheair", "b": "unused_alt_", "k": "weak", "w": 12.0, "wk": [11.5, 0.5, 0], "n": null}, {"a": "jambe", "b": "thunderstud", "k": "weak-x", "w": 9.8, "wk": [9.8, 0, 0], "n": null}, {"a": "aurasurfer", "b": "unused_alt_", "k": "weak-x", "w": 8.2, "wk": [6.2, 0.2, 1.8], "n": null}, {"a": "jere.mi.as", "b": "unused_alt_", "k": "weak-x", "w": 4.2, "wk": [2.2, 0, 2], "n": null}, {"a": "anonymousjohnson", "b": "aurasurfer", "k": "weak", "w": 6.5, "wk": [1.2, 5, 0.2], "n": null}, {"a": "citizenoftheair", "b": "zone8383", "k": "weak-x", "w": 4.0, "wk": [1, 0, 3], "n": null}, {"a": "exso_lam", "b": "hughchungus", "k": "weak", "w": 24.8, "wk": [11.2, 2, 11.5], "n": null}, {"a": "stack.house", "b": "terrapin.station.", "k": "weak-x", "w": 7.8, "wk": [7.5, 0.2, 0], "n": null}, {"a": "hughchungus", "b": "vannak", "k": "weak", "w": 22.0, "wk": [4.8, 0, 17.2], "n": null}, {"a": "hughchungus", "b": "stack.house", "k": "weak-x", "w": 6.5, "wk": [2.2, 4.0, 0.2], "n": null}, {"a": "vannak", "b": "zone8383", "k": "weak-x", "w": 7.0, "wk": [1, 0, 6], "n": null}, {"a": "anonymousjohnson", "b": "jere.mi.as", "k": "weak", "w": 11.0, "wk": [4.2, 4.8, 2], "n": null}, {"a": "aurasurfer", "b": "zone8383", "k": "weak-x", "w": 4.0, "wk": [0.5, 3.5, 0], "n": null}, {"a": "aurasurfer", "b": "jambe", "k": "weak-x", "w": 11.2, "wk": [7.8, 3.5, 0], "n": null}, {"a": "jambe", "b": "myname1", "k": "weak-x", "w": 4.0, "wk": [0.2, 3.8, 0], "n": null}, {"a": "hpcr", "b": "stack.house", "k": "weak-x", "w": 6.5, "wk": [0.2, 2.2, 4], "n": null}, {"a": "hpcr", "b": "youvious.com", "k": "weak", "w": 19.0, "wk": [1, 0, 18.0], "n": null}, {"a": "hpcr", "b": "jere.mi.as", "k": "bridge", "w": 18.2, "wk": [3.2, 7.0, 8.0], "n": 2}, {"a": "woolierthanthou", "b": "youvious.com", "k": "strong", "w": 50.8, "wk": [10.8, 0, 40.0], "n": null}, {"a": "sizzurp1", "b": "synth.wav", "k": "weak", "w": 7.5, "wk": [3, 4.5, 0], "n": null}, {"a": "exso_lam", "b": "papagaio", "k": "weak-x", "w": 7.0, "wk": [2.5, 4.5, 0], "n": null}, {"a": "jambe", "b": "papagaio", "k": "weak", "w": 17.2, "wk": [0, 17.2, 0], "n": null}, {"a": "citizenoftheair", "b": "nikkolasmical", "k": "weak-x", "w": 6.0, "wk": [0, 6.0, 0], "n": null}, {"a": "ixtlimal", "b": "jambe", "k": "weak", "w": 88.5, "wk": [0, 88.5, 0], "n": null}, {"a": "aurasurfer", "b": "bossonothin", "k": "weak", "w": 22.2, "wk": [0, 22.2, 0], "n": null}, {"a": "bossonothin", "b": "hpcr", "k": "bridge", "w": 9.2, "wk": [0, 9.2, 0], "n": 13}, {"a": "dionysus_dude", "b": "hpcr", "k": "weak-x", "w": 5.0, "wk": [0, 3.2, 1.8], "n": null}, {"a": "bardiel1", "b": "hughchungus", "k": "bridge", "w": 12.8, "wk": [0, 10.2, 2.5], "n": 4}, {"a": "aurasurfer", "b": "sizzurp1", "k": "bridge", "w": 24.2, "wk": [0, 24.2, 0], "n": 15}, {"a": "aurasurfer", "b": "exso_lam", "k": "weak-x", "w": 4.2, "wk": [0, 0.5, 3.8], "n": null}, {"a": "exso_lam", "b": "sizzurp1", "k": "weak-x", "w": 4.8, "wk": [0, 4.8, 0], "n": null}, {"a": "sizzurp1", "b": "thewillowofdarkness", "k": "weak", "w": 5.5, "wk": [0, 5.5, 0], "n": null}, {"a": "myname1", "b": "sizzurp1", "k": "weak-x", "w": 5.0, "wk": [0, 5.0, 0], "n": null}, {"a": "aurasurfer", "b": "thewillowofdarkness", "k": "weak-x", "w": 6.0, "wk": [0, 6.0, 0], "n": null}, {"a": "ape1284", "b": "sizzurp1", "k": "weak-x", "w": 4.8, "wk": [0, 4.8, 0], "n": null}, {"a": "ape1284", "b": "youvious.com", "k": "weak-x", "w": 4.0, "wk": [0, 4, 0], "n": null}, {"a": "citizenoftheair", "b": "superbsoftie", "k": "weak-x", "w": 5.0, "wk": [0, 5.0, 0], "n": null}, {"a": "dionysus_dude", "b": "superbsoftie", "k": "weak", "w": 11.8, "wk": [0, 11.8, 0], "n": null}, {"a": "hpcr", "b": "superbsoftie", "k": "bridge", "w": 8.5, "wk": [0, 8.0, 0.5], "n": 17}, {"a": "jere.mi.as", "b": "superbsoftie", "k": "bridge", "w": 11.0, "wk": [0, 10.5, 0.5], "n": 9}, {"a": "ape1284", "b": "superbsoftie", "k": "weak", "w": 30.5, "wk": [0, 30.5, 0], "n": null}, {"a": "aurasurfer", "b": "superbsoftie", "k": "weak-x", "w": 8.8, "wk": [0, 8.8, 0], "n": null}, {"a": "ape1284", "b": "aurasurfer", "k": "bridge", "w": 11.2, "wk": [0, 11.2, 0], "n": 8}, {"a": "superbsoftie", "b": "terrapin.station.", "k": "bridge", "w": 18.2, "wk": [0, 18.2, 0], "n": 16}, {"a": "dionysus_dude", "b": "seinzumtode", "k": "weak-x", "w": 4.0, "wk": [0, 0, 4], "n": null}, {"a": "anonymousjohnson", "b": "superbsoftie", "k": "weak-x", "w": 6.0, "wk": [0, 0, 6.0], "n": null}, {"a": "anonymousjohnson", "b": "wisdomcube", "k": "weak", "w": 4.5, "wk": [0, 0, 4.5], "n": null}, {"a": "superbsoftie", "b": "zone8383", "k": "weak", "w": 65.2, "wk": [0, 0, 65.2], "n": null}, {"a": "hughchungus", "b": "superbsoftie", "k": "weak-x", "w": 8.5, "wk": [0, 0, 8.5], "n": null}, {"a": "hughchungus", "b": "youvious.com", "k": "weak", "w": 51.5, "wk": [0, 0, 51.5], "n": null}, {"a": "hpcr", "b": "hughchungus", "k": "weak", "w": 19.0, "wk": [0, 0, 19.0], "n": null}, {"a": "jere.mi.as", "b": "vannak", "k": "weak-x", "w": 7.5, "wk": [0, 0, 7.5], "n": null}, {"a": "olangotang", "b": "stack.house", "k": "weak", "w": 6.0, "wk": [0, 0, 6.0], "n": null}, {"a": "hughchungus", "b": "olangotang", "k": "weak-x", "w": 5.5, "wk": [0, 0, 5.5], "n": null}, {"a": "hughchungus", "b": "meliorne", "k": "weak", "w": 7.5, "wk": [0, 0, 7.5], "n": null}, {"a": "jere.mi.as", "b": "seinzumtode", "k": "weak-x", "w": 7.5, "wk": [0, 0, 7.5], "n": null}, {"a": "hughchungus", "b": "seinzumtode", "k": "weak", "w": 22.0, "wk": [0, 0, 22.0], "n": null}, {"a": "stack.house", "b": "youvious.com", "k": "weak-x", "w": 6.0, "wk": [0, 0, 6], "n": null}, {"a": "meliorne", "b": "seinzumtode", "k": "weak", "w": 9.0, "wk": [0, 0, 9], "n": null}], "bridges": [{"n": 1, "a": "hughchungus", "b": "unused_alt_", "v": "catnip", "t": "warming", "wk": [2, 0, 12.8], "w": 14.8, "recip": 0.55}, {"n": 2, "a": "hpcr", "b": "jere.mi.as", "v": "catnip", "t": null, "wk": [3.2, 7.0, 8.0], "w": 18.2, "recip": 0.66}, {"n": 3, "a": "nikkolasmical", "b": "terrapin.station.", "v": "catnip", "t": null, "wk": [7.0, 5, 0], "w": 12.0, "recip": 0.37}, {"n": 4, "a": "bardiel1", "b": "hughchungus", "v": "catnip", "t": null, "wk": [0, 10.2, 2.5], "w": 12.8, "recip": 0.7}, {"n": 5, "a": "myname1", "b": "papagaio", "v": "catnip", "t": null, "wk": [0.8, 15.2, 0], "w": 16.0, "recip": 0.78}, {"n": 6, "a": "sizzurp1", "b": "stack.house", "v": "catnip", "t": null, "wk": [1.8, 15.0, 0], "w": 16.8, "recip": 0.97}, {"n": 7, "a": "dionysus_dude", "b": "stack.house", "v": "catnip", "t": null, "wk": [1.8, 8.0, 5.5], "w": 15.2, "recip": 0.61}, {"n": 8, "a": "ape1284", "b": "aurasurfer", "v": "catnip", "t": null, "wk": [0, 11.2, 0], "w": 11.2, "recip": 0.96}, {"n": 9, "a": "jere.mi.as", "b": "superbsoftie", "v": "catnip", "t": null, "wk": [0, 10.5, 0.5], "w": 11.0, "recip": 0.38}, {"n": 10, "a": "jere.mi.as", "b": "zone8383", "v": "catnip", "t": "cooling", "wk": [11.8, 5.2, 0.2], "w": 17.2, "recip": 0.92}, {"n": 11, "a": "citizenoftheair", "b": "jere.mi.as", "v": "catnip", "t": "cooling", "wk": [10.2, 0.5, 0.8], "w": 11.5, "recip": 0.7}, {"n": 12, "a": "bossonothin", "b": "sizzurp1", "v": "catnip", "t": null, "wk": [2, 13.0, 0], "w": 15.0, "recip": 0.94}, {"n": 13, "a": "bossonothin", "b": "hpcr", "v": "catnip", "t": null, "wk": [0, 9.2, 0], "w": 9.2, "recip": 0.68}, {"n": 14, "a": "bossonothin", "b": "dionysus_dude", "v": "mixed", "t": null, "wk": [8, 16.2, 0], "w": 24.2, "recip": 0.67}, {"n": 15, "a": "aurasurfer", "b": "sizzurp1", "v": "mixed", "t": null, "wk": [0, 24.2, 0], "w": 24.2, "recip": 0.9}, {"n": 16, "a": "superbsoftie", "b": "terrapin.station.", "v": "mixed", "t": null, "wk": [0, 18.2, 0], "w": 18.2, "recip": 0.97}, {"n": 17, "a": "hpcr", "b": "superbsoftie", "v": "versus", "t": null, "wk": [0, 8.0, 0.5], "w": 8.5, "recip": 0.89}]};
+const GROUPS = {
+ "1":{name:"The Hypothetical Salon", note:"aura and Jere are this week's center of gravity: 1,503 messages between them and the heaviest tie in the log (112 exchanges). Most of the channel's crossings run through this group.", topics:[
+  ["catnip","The Ethan Klein cheating news (Oct 23) turned into a long riff on trust, homewreckers and whether people get over an affair (Jere, aura, Dot, February2084)."],
+  ["catnip","Afterlife logistics on Oct 24: organ and body donation, paradise and its virgins, and wireheading (boss, aura, Stackhouse, Jere)."],
+  ["mixed","Abortion: aura's point that a “clump of cells” view sits oddly with calling it killing (Oct 22), then aura and Angel on a viral late-abortion post (Oct 24)."],
+  ["catnip","Gadgets: Arduino against esp32 against Raspberry Pi (bardiel1 asking aura), DGX Sparks, thunderstud's window apps, letting Claude merge everything."],
+  ["catnip","Prompts for the Editors bot: a cocktail for every chatter, and Stackhouse's “skynet apocalypse report card.”"],
+  ["mixed","Do LLMs have concepts? Jere (“just guessing which word comes next”) and Olang (“statistical machines”) against Hugh, Oct 26. Jere conceded the point once hpaigecr gave the animal-cognition definition."]]},
+ "0":{name:"The Many-Worlds Lab", note:"Still Hugh's group, though he is quieter (504 messages in five days). He and hpaigecr, whose tie collapsed in the last log, exchanged nothing until Oct 26, then fought while agreeing (see below).", topics:[
+  ["catnip","Many-worlds, Oct 26: Youvious asked Woolier to explain it, and Woolier, hpaigecr and Hugh worked through decoherence, tensor-product decompositions and when a system “becomes entangled.” Youvious signed off with thanks."],
+  ["versus","Are LLM concepts grounded? Hugh against hpaigecr, Oct 26. Both said they agreed that models are \u201cconstituted differently\u201d; it still ended in \u201cYou\u2019re insufferable.\u201d"],
+  ["versus","What mechanistic interpretability can claim: Hugh against vannak on causal accounts and universal function approximation (Oct 26–27). Civil, but nobody moved."],
+  ["catnip","Brutus's OCR pipeline for scanned plates (olmOCR, Qwen), with Claude doing most of the fixing."],
+  ["catnip","Music drops from Hugh: a new Machine Girl album, drum and bass, whether Suno can make it."],
+  ["catnip","UK politics: a teenager arrested over a remark about a councillor, and Count Binface's helmet (Hugh and bardiel1)."],
+  ["catnip","Dot recommending Cixous and Wittig; Meliorne asking about Žižek ahead of his visit to Meliorne's city."]]},
+ "5":{name:"The Pragmatism Trench", note:"SuparB posted his first message on Oct 25 and wrote 250 in about a day, almost all of it into this group's arguments.", topics:[
+  ["versus","Can you lie using only true information? SuperVillainy against Zone, Oct 22, with Awesomebill's example of Mary and the “stuff.” Their 71 exchanges are the strongest tie in the group, and they went quiet after Oct 24."],
+  ["versus","Can there be truth about unreal things, and are thoughts real? SuparB against Zone, Oct 26: 65 exchanges in one afternoon."],
+  ["mixed","SuparB on friendship and politics (Oct 25): “say something stupid after I say something socially reprehensible.” Ape, aura and Jere played along; hpaigecr did not."],
+  ["catnip","Streamers: Asmongold, Hasan, Vaush and Reckless Ben (SuparB, Dot, Ape)."],
+  ["catnip","SuperVillainy teaching moral theories to his ESL students, and Dewey quotes."]]},
+ "4":{name:"The Materialist Caucus", note:"Angel is the hub. Nikkolas Mical, new among the regulars, is the group's reader, pasting long passages on Putin and the CCP.", topics:[
+  ["catnip","Marxism and the Enlightenment, Stalin and Mao, the CCP line that all party thought is continuous (Angel and Nikkolas, Oct 22)."],
+  ["versus","Pinker-style progress: Angel against the dollar-a-day poverty line (“now they’re starving a little less aggressively”), with Jere pushing back."],
+  ["mixed","Men, feminism and material conditions (Oct 24): Angel against “man-hating idealism,” sparring with aura and Jere; Nikkolas and Dot on Lacan and French feminism."],
+  ["versus","Is sex distinct from biological states? Willow against camman, Oct 24."]]},
+ "3":{name:"The Lasagna Lodge", note:"The lightest group: few fights, lots of links and reaction images. Its outside ties run mostly to the Salon.", topics:[
+  ["catnip","Lasagna metaphysics, continued: February2084 on why there is no “piece” of lasagna, only a lasagna."],
+  ["catnip","Brazil's election night and Polymarket (My Name, with papagaio as the local)."],
+  ["catnip","Jack on law: “beyond reasonable doubt,” and countries that ban body armor."],
+  ["mixed","Do most people “really understand” anything? Jack against SuperVillainy, Oct 22. Jack retreated to “it was a bad example.”"],
+  ["catnip","Hinton's gloom and investing (My Name); xayori on AI self-correction."]]},
+ "2":{name:"The Heresy Desk", note:"The smallest group, held together by one all-night argument. Ixtlimal talked to almost nobody but Jambe.", topics:[
+  ["versus","Oct 24, 06:15 to 08:20 UTC: Jambe's gnosticism, astral projection and near-death accounts against Ixtlimal's Orthodox Christianity, St Paul and the resurrection. 120 messages back and forth; neither side moved."],
+  ["catnip","Brazil's election night with papagaio narrating: voting extended after polls closed, Lula against Bolsonaro."],
+  ["catnip","OCR advice for Brutus: “do OCR first, then feed a general model.”"]]}
+};
+const BTEXT = {
+1:"Noble lies (Oct 22), then a late-night run on Oct 26: whether AI is trapped in its context, why models repeat the same mistakes, “jagged” capability, and a self-recognition neuron. xayori kept conceding ground while pressing the point.",
+2:"Mostly banter. hpaigecr left the server “cause it made the joke funnier” and Jere asked him back. Then deaf people who hear an inner stream of sign language, and the animal-cognition definition of a concept, which hpaigecr used to argue that LLMs have concepts of a different kind.",
+3:"Dot asked Nikkolas whether he had read Cixous, sent her best-known essay and explained her: changing language to make new connections in the unconscious. Later, Lacanian “otherness” and a critique of reactive feminism. Lopsided: Dot does most of the recommending.",
+4:"UK politics: a teenager arrested over a remark about a councillor, and whether Count Binface could keep his helmet on in Parliament. Later, Claude's endless hedging.",
+5:"Brazil's election night, Oct 25: voting extended after the polls closed, papagaio narrating as the local, My Name refreshing Polymarket and expecting a rug-pull.",
+6:"Banter: a pizza costing fifteen times the poverty line, Jigglypuff's bandana in Melee, Stackhouse's dad retiring to fly a plane, and Angel asking him not to repeat what was said in voice chat.",
+7:"Afterlife logistics on Oct 24: where paradise's virgins come from, body-donation horror stories, a Pete Hegseth joke. Later, Lost in Translation and a shared dig at Olang.",
+8:"Oct 25, inside SuparB's friendship thread: whether you drop a friend who lowers your status, and Ape's insistence that he is nothing like Asmongold, on pain of a walrus. Play-fighting.",
+9:"SuparB read Jere's painting as a curious younger self under a cynical older one; Jere: “needs work but good idea.” Then online activists, and a day later whether truth can be more real than material existence. Jere did most of the replying.",
+10:"Pragmatism and liars on Oct 22 (does calling someone a liar need a correspondence theory of truth?), whether parents lie about God, lies of omission. Then Gatorade flavors. Busy early in the week, nearly silent after Oct 24.",
+11:"Jere explaining a running joke to Jack (“the joke is that he didn't say it AND that him not saying it is common knowledge”), Burger King loyalty, whether politics will push people offline. Faded after Oct 23.",
+12:"Mostly agreement: man-hating content on TikTok (“most women irl aren't these crazy woke middle class radicals”), a streamer who fell off, one joke about physicalism and qualia.",
+13:"Organ donation, Oct 24. boss can choose which organs to give; would hpaigecr give his skin and eyes? hpaigecr: “Why would you care if it's helping others.” boss: probably family pressure.",
+14:"Began as a standoff on Oct 22 (can we assume what someone means by understanding?), then turned friendly: Ibn Sina's naturalistic afterlife, the pop-culture golden mean, and SuperVillainy teaching moral theories to 10-year-olds.",
+15:"Oct 24: a viral post about a late abortion. aura doubted how common it is and suspected bots; Angel said the applause mattered more. Then “what will save men”: Angel on material conditions, aura on shame. They ended closer than they started.",
+16:"Streamers on Oct 25: Reckless Ben against Hasan, a mix-up over which Ben Dot meant, then benaminute. Disagreement at low heat.",
+17:"SuparB said you should test friends by questioning their politics. hpaigecr: “Shared values aren't that hard to find,” then “You're just stupid and people don't want to be around you probably.” A day later, quantum theories, more civilly."
+};
+const BRIEF={
+"aurasurfer":["Gadgets and dev projects (esp32, Arduino, GitHub), abortion and ensoulment, cheating and trust, Socrates, and whatever the channel is fighting about.","The busiest chatter this week (798 messages) and the person most paths run through. Playful, quick to tease, and easy to get along with: friction with Angel, Ape and SuparB ended in agreement or jokes."],
+"jere.mi.as":["Whether LLMs manipulate concepts or just guess, pragmatism and liars, Nietzsche, cheating scandals, Christianity and compassion.","The Salon's host and the room's straight man, explaining jokes, inviting people back, conceding when a definition settles it. Strong ties into three other groups."],
+"hughchungus":["Mechanistic interpretability and what's inside models, many-worlds, UK politics, music drops (Machine Girl, drum and bass), Deleuze and Žižek.","Still the default explainer, with links and papers for every claim. Argues hard on AI and gives ground rarely; :Depresstiny: remains his signature."],
+"stack.house":["Paradise and its virgins, hadith, JBP, Melee, AI “clankers,” and his Editors prompts (the skynet report card).","The provocateur-chronicler: edgy dating takes, roasts, stirring the pot. Friendly with nearly everyone in the Salon."],
+"sizzurp1":["Marxism and the Enlightenment, Stalin and Mao, feminism and men, poverty statistics, abortion ethics.","The interrogator: long, careful messages, combative openings, and a habit of landing on common ground (with aura, with boss)."],
+"citizenoftheair":["Lasagna counting, law and “reasonable doubt,” fast food, what people “really understand.”","Earnest and literal; asks what a joke means and gets an honest answer. Funny without trying."],
+"dionysus_dude":["Lying with true information, the discursive process, liberal values, Dewey and Rorty, teaching philosophy to kids.","The patient formal debater, polite even mid-fight. His standing rivalry with Zone went quiet after Oct 24."],
+"superbsoftie":["Truth and reality, whether thoughts or abstractions are real, Kierkegaard, streamers (Hasan, Asmongold, Reckless Ben), friendship and politics.","New this week and loud: 250 messages in about a day. Contrarian and self-deprecating; he drew a pile-on and kept arguing."],
+"myname1":["Brazil's election and Polymarket, investing, Hinton's AI gloom, the Ethan Klein news, lasagna.","The room's live-ticker: screenshots, links and :KEKW:. Feeds the bit and rarely fights."],
+"terrapin.station.":["Cixous, Wittig and French feminism, Lacan, streamers, cheating and forgiveness.","Provocateur and genuine reader at once; recommends books, starts fights, roasts thunderstud's country."],
+"jambe":["Gnosticism, astral projection, the Monroe books, near-death accounts, faerie lore against St Paul.","A gadfly with a cause this week: argued with Ixtlimal through a whole night and pokes at everyone else."],
+"youvious.com":["Quantum mechanics and many-worlds, which he is studying, and AI tools for students.","The student who asks: question after question until the picture is clear, and thanks people when it is."],
+"hpcr":["Concepts in animal cognition and LLMs, many-worlds, deaf people's inner signing, organ donation.","Blunt and quick with an insult (SuparB got one), but the most precise voice in the AI-concepts argument."],
+"zone8383":["Truth, lying, information and reality; abstractions and what exists.","The Socratic questioner, fighting two rivals this week (SuperVillainy, then SuparB). Calm, persistent, and warmly treated outside the fights."],
+"papagaio":["Brazil's election night, AI and OCR advice, doom and buying land with clean water.","The local correspondent and the practical one; short, dry messages."],
+"thunderstud":["Gadgets and apps he builds (window managers, spell-checkers), iPhones, Claude merging PRs.","The tech friend and laugh track; posts late and keeps it low-drama."],
+"exso_lam":["OCR pipelines for scanned plates (olmOCR, Qwen), scripts and Claude, cooking with aura.","The workhorse: heads-down on a project, asking for help, sharing results."],
+"bossonothin":["Ibn Sina, Aristotle's ethics, organ donation, TikTok “analytic larpers,” ordoliberalism.","A reluctant combatant who keeps turning disagreements into reading notes. Friendly with SuperVillainy and Angel this week."],
+"february2084":["Lasagna and brownie metaphysics, Smash Bros, game arcs, the Ethan Klein news.","The surreal poster: emote-heavy one-liners and odd, careful puzzles."],
+"bardiel1":["Hardware (Arduino, esp32, self-hostable models, Boston Dynamics dogs), UK politics, AI senators.","The court jester who also asks good basic questions."],
+"ixtlimal":["Orthodox Christianity, St Paul, the resurrection, demons and deception, scripture quoted at length.","Earnest and steady under pressure; spent a whole night defending the faith to Jambe and spoke to almost no one else."],
+"ape1284":["Asmongold and streamers, friendship and status, AI doom and rising fascism.","Playful sparring partner this week, threatening walrus transformations rather than picking heavyweight fights."],
+"seinzumtode":["Close reading, millennium problems, Nick Land.","Dry and sarcastic, mostly late at night; keeps it short."],
+"anonymousjohnson":["Kierkegaard, film and TV news, self-ID and gender, old internet scandals.","A low-key observer with a deadpan line, stepping in now and then."],
+"nikkolasmical":["Feminism and patriarchy, Chinese and Soviet history (Deng, Mao, Putin), capitalism.","The reader of the Materialist Caucus: long quotations and sources, open about being a layman."],
+"unused_alt_":["AI self-correction and context, Reddit and social media, noble lies.","Thoughtful and self-deprecating; trades ideas with Hugh and orbits aura."],
+"woolierthanthou":["Many-worlds, decoherence, measurement, Hilbert spaces.","The physicist in residence; patient explanations for Youvious."],
+"vannak":["Mechanistic interpretability, causal modeling, symbols and function approximation.","The formalist who wants the causal story first; argued it out with Hugh."],
+"meliorne":["Žižek and Deleuze, Paul as the great liar of the gospels, AI as a hydra.","The eccentric with a contrarian streak."],
+"wisdomcube":["Lying with true information, revelation and its beasts, Gatorade strategy.","A light-hearted drop-in who argues scripture with aura and doesn't budge."],
+"olangotang":["LLMs as statistical machines, frontier labs, AI bros.","An AI skeptic who arrived swinging on Oct 26; Stackhouse thinks he argues through Twitter."],
+"thewillowofdarkness":["Sex, biology and agency, collective responsibility, power.","Abstract and hard to pin down, as before; argued with camman and Angel."],
+"synth.wav":["Philosophy explainers, music links, the occasional theatrical threat.","A background voice."]
+};
+const GSHORT={"1":"Salon","0":"Many-Worlds","5":"Trench","4":"Caucus","3":"Lasagna","2":"Heresy"};
+const GORD={"1":0,"0":1,"5":2,"4":3,"3":4,"2":5};
+
+const TRENDTXT={warming:"warming toward strong",cooling:"cooling"};
+const NS="http://www.w3.org/2000/svg";
+const svg=document.getElementById('net');
+const byId={}; DATA.nodes.forEach(n=>byId[n.id]=n);
+const gname=g=>GROUPS[g].name;
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
+
+// hulls
+const gHull=el('g',{});
+Object.entries(DATA.centers).forEach(([g,[x,y]])=>{
+  const r=DATA.R[g];
+  el('circle',{cx:x,cy:y,r:r,class:'hullc'},gHull);
+});
+const gEdges=el('g',{}), gBadges=el('g',{}), gNodes=el('g',{}), gLab=el('g',{});
+Object.entries(DATA.centers).forEach(([g,[x,y]])=>{
+  const r=DATA.R[g]; const up = y<440;
+  const t=el('text',{x:x,y:up? y-r-8 : y+r+20,'text-anchor':'middle',class:'glabel'},gLab); t.textContent=gname(g);
+});
+const bmap={}; DATA.bridges.forEach(b=>bmap[b.n]=b);
+const edgeEls=[];
+function curve(a,b,bend){const mx=(a.x+b.x)/2,my=(a.y+b.y)/2,dx=b.x-a.x,dy=b.y-a.y;const L=Math.hypot(dx,dy)||1;const cx=mx-dy/L*bend,cy=my+dx/L*bend;return {d:`M${a.x},${a.y} Q${cx},${cy} ${b.x},${b.y}`,cx,cy,mx:(a.x+2*cx+b.x)/4,my:(a.y+2*cy+b.y)/4}}
+const order={'weak-x':0,'weak':1,'strong-x':2,'strong':3,'bridge':4};
+const pendingBadges=[];
+DATA.edges.slice().sort((p,q)=>order[p.k]-order[q.k]).forEach(e=>{
+  const a=byId[e.a],b=byId[e.b];
+  const bend = e.k==='bridge' ? (e.n%2?18:-18) : (e.k.endsWith('-x')?8:0);
+  const c=curve(a,b,bend);
+  let cls='edge '+e.k; if(e.k==='bridge') cls+=' '+bmap[e.n].v;
+  const p=el('path',{d:c.d,class:cls},gEdges);
+  p.dataset.a=e.a;p.dataset.b=e.b;if(e.n)p.dataset.n=e.n;
+  edgeEls.push(p);
+  if(e.k==='bridge') pendingBadges.push({e,a,b,c});
+});
+const boxes=[]; // occupied rectangles [x0,y0,x1,y1]
+function ov(r){let s=(r[2]>1076||r[0]<4)?5000:0;for(const q of boxes){const w=Math.min(r[2],q[2])-Math.max(r[0],q[0]),h=Math.min(r[3],q[3])-Math.max(r[1],q[1]);if(w>0&&h>0)s+=w*h}return s}
+const nodeR={};
+DATA.nodes.forEach(n=>{nodeR[n.id]=2.6+Math.sqrt(n.n)/9;const r=nodeR[n.id]+2;boxes.push([n.x-r,n.y-r,n.x+r,n.y+r])});
+DATA.nodes.slice().sort((p,q)=>q.n-p.n).forEach(n=>{
+  const g=el('g',{class:'node',tabindex:0,role:'button','aria-label':n.label},gNodes); g.dataset.id=n.id;
+  const r=nodeR[n.id];
+  el('circle',{cx:n.x,cy:n.y,r:r.toFixed(1)},g);
+  const t=el('text',{},g); t.appendChild(document.createTextNode(n.label));
+  const ct=el('tspan',{class:'cnt',dx:4},t); ct.textContent=`${n.s}s·${n.wt}w`;
+  const w=n.label.length*6.6+2+(`${n.s}s·${n.wt}w`.length*6+4), h=13;
+  const c=DATA.centers[n.g]; const outR = n.x>=c[0];
+  const cands=[
+    [n.x+r+4,n.y+4,'start',[n.x+r+3,n.y-9,n.x+r+5+w,n.y+5]],
+    [n.x-r-4,n.y+4,'end',[n.x-r-5-w,n.y-9,n.x-r-3,n.y+5]],
+    [n.x,n.y-r-5,'middle',[n.x-w/2,n.y-r-5-h,n.x+w/2,n.y-r-4]],
+    [n.x,n.y+r+14,'middle',[n.x-w/2,n.y+r+2,n.x+w/2,n.y+r+3+h]]];
+  if(!outR) cands.unshift(cands.splice(1,1)[0]);
+  let best=null;cands.forEach((cd,i)=>{const sc=ov(cd[3])+i*4;if(!best||sc<best.sc)best={cd,sc}});
+  const [x,y,anc,bx]=best.cd; t.setAttribute('x',x);t.setAttribute('y',y);t.setAttribute('text-anchor',anc);boxes.push(bx);
+  g.addEventListener('click',ev=>{ev.stopPropagation();selectNode(n.id)});
+  g.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();selectNode(n.id)}});
+});
+function qpt(a,c,b,t){const u=1-t;return [u*u*a.x+2*u*t*c.cx+t*t*b.x,u*u*a.y+2*u*t*c.cy+t*t*b.y]}
+pendingBadges.forEach(({e,a,b,c})=>{
+  let best=null;[.5,.42,.58,.34,.66,.27,.73,.2,.8].forEach((t,i)=>{const [x,y]=qpt(a,c,b,t);const r=[x-11,y-11,x+11,y+11];const sc=ov(r)+i*6;if(!best||sc<best.sc)best={x,y,r,sc}});
+  boxes.push(best.r);
+  const g=el('g',{class:'badge '+bmap[e.n].v,transform:`translate(${best.x.toFixed(1)},${best.y.toFixed(1)})`,tabindex:0,role:'button','aria-label':'Bridge '+e.n},gBadges);
+  g.dataset.n=e.n;
+  el('circle',{r:9.5},g); const t=el('text',{},g); t.textContent=e.n;
+  g.addEventListener('click',ev=>{ev.stopPropagation();selectBridge(e.n,true)});
+  g.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();selectBridge(e.n,true)}});
+});
+svg.appendChild(gLab);
+
+const tS=document.getElementById('tStrongX'), tW=document.getElementById('tWeakX');
+const tC=document.getElementById('tColor'), tN=document.getElementById('tCounts'), tI=document.getElementById('tWeakIn');
+tI.addEventListener('change',applyToggles);
+function applyToggles(){edgeEls.forEach(p=>{const k=p.classList;if(k.contains('strong-x'))p.style.display=tS.checked?'':'none';if(k.contains('weak-x'))p.style.display=tW.checked?'':'none';if(k.contains('weak'))p.style.display=tI.checked?'':'none'});svg.classList.toggle('plain',!tC.checked);svg.classList.toggle('nocount',!tN.checked)}
+tC.addEventListener('change',applyToggles);tN.addEventListener('change',applyToggles);
+tS.addEventListener('change',applyToggles);tW.addEventListener('change',applyToggles);applyToggles();
+const info=document.getElementById('info');
+function clearSel(){svg.classList.remove('focus');svg.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));document.querySelectorAll('ol.bridges li.hl').forEach(x=>x.classList.remove('hl'));info.textContent='Nothing selected.'}
+document.getElementById('reset').addEventListener('click',clearSel);
+svg.addEventListener('click',clearSel);
+function nodeEl(id){return svg.querySelector(`.node[data-id="${CSS.escape(id)}"]`)}
+function selectNode(id){
+  clearSel();svg.classList.add('focus');
+  const n=byId[id]; nodeEl(id).classList.add('on');
+  const ties=[];
+  edgeEls.forEach(p=>{if(p.style.display==='none')return; if(p.dataset.a===id||p.dataset.b===id){p.classList.add('on');const o=p.dataset.a===id?p.dataset.b:p.dataset.a;nodeEl(o).classList.add('on');if(p.dataset.n)svg.querySelector(`.badge[data-n="${p.dataset.n}"]`).classList.add('on')}});
+  DATA.edges.forEach(e=>{if(e.a===id||e.b===id)ties.push(e)});
+  ties.sort((p,q)=>q.w-p.w);
+  const strong=ties.filter(e=>e.k==='strong'||e.k==='strong-x').map(e=>byId[e.a===id?e.b:e.a].label);
+  const br=ties.filter(e=>e.k==='bridge').map(e=>'#'+e.n);
+  info.innerHTML=`<b>${n.label}</b> <span class="wkl">@${n.handle}</span> · ${gname(n.g)} · ${n.n.toLocaleString()} messages · <b>${n.s}</b> strong and <b>${n.wt}</b> weak ties<br>Strongest: ${strong.length?strong.join(', '):'none'}${br.length?' · Bridges: '+br.join(', '):''}`;
+}
+function selectBridge(num,scroll){
+  clearSel();svg.classList.add('focus');
+  const b=bmap[num];
+  svg.querySelectorAll(`.edge[data-n="${num}"]`).forEach(p=>p.classList.add('on'));
+  svg.querySelector(`.badge[data-n="${num}"]`).classList.add('on');
+  nodeEl(b.a).classList.add('on');nodeEl(b.b).classList.add('on');
+  info.innerHTML=`<b>#${num} ${byId[b.a].label} – ${byId[b.b].label}</b> · ${gname(byId[b.a].g)} ↔ ${gname(byId[b.b].g)} · <span class="tag ${b.v}">${b.v}</span>`;
+  const li=document.getElementById('b'+num); li.classList.add('hl');
+  if(scroll) li.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});
+}
+
+const roster=document.getElementById('roster');let sk='s';
+const maxS=Math.max(...DATA.nodes.map(n=>n.s)),maxW=Math.max(...DATA.nodes.map(n=>n.wt));
+function topTies(id){return DATA.edges.filter(e=>e.a===id||e.b===id).sort((p,q)=>q.w-p.w).slice(0,3).map(e=>{const o=byId[e.a===id?e.b:e.a];const s=(e.k==='strong'||e.k==='strong-x');return o.label+(s?' (s)':'')})}
+function renderRoster(){
+ const open=new Set([...roster.querySelectorAll('details[open]')].map(d=>d.dataset.id));
+ const rows=DATA.nodes.slice().sort((p,q)=>{if(sk==='label')return p.label.localeCompare(q.label,undefined,{sensitivity:'base'});if(sk==='g')return (GORD[p.g]-GORD[q.g])||(q.s-p.s)||(q.wt-p.wt);return (q[sk]-p[sk])||(q.s-p.s)||(q.wt-p.wt)||(q.n-p.n)});
+ const hd='<span></span><span>Chatter</span><span>Strong</span><span>Weak</span><span>Msgs</span><span></span>';
+ const row=(n,i)=>{const B=BRIEF[n.id]||['',''];return `<details data-id="${n.id}"${open.has(n.id)?' open':''}><summary><span class="rk">${i+1}</span><span class="nm"><b>${n.label}</b><span class="gp">${GSHORT[n.g]}</span></span><span class="v"><i style="width:${Math.round(n.s/maxS*30)}px"></i>${n.s}</span><span class="v w"><i style="width:${Math.round(n.wt/maxW*34)}px"></i>${n.wt}</span><span class="v m">${n.n.toLocaleString()}</span><span class="chev" aria-hidden="true"></span></summary><div class="brief">${tallyHTML(userTally(n.id),'labeled ties')}<p><span class="k">Interests</span>${B[0]}</p><p><span class="k">Personality</span>${B[1]}</p><div class="meta"><span>${gname(n.g)}</span><span>Closest: ${topTies(n.id).join(', ')}</span><button type="button" data-show="${n.id}">Show in figure</button></div></div></details>`};
+ const half=Math.ceil(rows.length/2);
+ roster.innerHTML=`<div class="rcol"><div class="rhead">${hd}</div>${rows.slice(0,half).map((n,i)=>row(n,i)).join('')}</div><div class="rcol"><div class="rhead h2" aria-hidden="true">${hd}</div>${rows.slice(half).map((n,i)=>row(n,i+half)).join('')}</div>`;
+}
+roster.addEventListener('click',ev=>{const b=ev.target.closest('button[data-show]');if(!b)return;selectNode(b.dataset.show);document.querySelector('figure').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'})});
+document.getElementById('sortSeg').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;sk=b.dataset.k;document.querySelectorAll('#sortSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b));renderRoster()});
+document.getElementById('collapseAll').addEventListener('click',()=>roster.querySelectorAll('details[open]').forEach(d=>d.open=false));
+
+const STIE={
+"aurasurfer|jere.mi.as":["catnip","The heaviest tie in the log, active on five of the six days. Mostly riffing: Gatorade flavors (“u cannot tell me cool blue is a meme flavor”), the Ethan Klein affair and whether cheating is about trust, paradise and its virgins, and a late run on hedonism and wireheading (aura: “life is a rhythm. you can’t remove tension without affecting relief”; Jere: “This has potential”). Fully two-way and almost never a fight."],
+"hughchungus|jere.mi.as":["mixed","Quiet for most of the week (a few jokes, hell in Christian and Jewish traditions, what AI will do to politics), then the biggest argument either had on Oct 26: does an LLM manipulate concepts or just words? Hugh kept asking “What is a concept here?” and called Jere's claim “just an assertion”; Jere offered a metaphor test and then conceded: “if the assumption that started this about them not manipulating concepts is wrong, then cool.” Most of the tie's weight comes from that one evening."],
+"aurasurfer|hughchungus":["catnip","Tech and tangents, mostly early in the week: LoRa radios and encrypted messages (“if anyone can do it, it's claude”), Palmer Luckey from Oculus to Anduril, a $5 subscription aura cancelled “with the swiftness,” new music from Hugh, and Dante's hell. Easy back-and-forth with no friction."],
+"jere.mi.as|stack.house":["catnip","Two people following the same gossip. They tracked the Ethan Klein cheating story together on Oct 23 (Jere on why the couple appealed to everyone, Stackhouse with screenshots and “keep your foid separate from your media empire”), plus soda as “the vice of a man of action,” an NBA trade, and Stackhouse's skynet report-card prompt. Faded after Oct 23."],
+"dionysus_dude|jere.mi.as":["catnip","Wide-ranging and friendly. Pragmatism and lying on Oct 22 (Jere backing SuperVillainy against Zone), then Oct 24: hell as “a very backwards idea,” whether Jews or Christians forgive more, Religion for Atheists as Rortian, and whether most people “know things.” They mostly agree and enjoy it."],
+"dionysus_dude|zone8383":["versus","The week's standing fight. Can you lie using only true information? Over Oct 22 SuperVillainy argued that correct information can still deceive and that we spot liars through “the discursive process”; Zone held that a lie needs false information or intent and that a lie of omission is a separate case. Polite, reciprocal and stuck. 71 exchanges, then none after Oct 24."],
+"citizenoftheair|myname1":["mixed","Lasagna puns (“Parallasagnagram”) and Brazil's election, then a mock-serious fight about tipping on Oct 25: My Name refusing to tip on principle (“Id rather die a lesson to point out that the enemy wasnt me”), Jack warning about the staff's leverage and calling him a communist. Small but steady across the week."],
+"aurasurfer|stack.house":["catnip","Banter and shared feeds: Palmer Luckey's exosuits, Ethan Klein, Stackhouse asking the Editors for a phishing test, and the Oct 24 afterlife thread, where Stackhouse pasted Claude's explanation of the houris and aura joked that “all his virgins leave him for the chad.” Roast-heavy, never hostile."],
+"jere.mi.as|sizzurp1":["mixed","Two real arguments that stayed civil. Oct 22: Angel on the dollar-a-day poverty line (“now they’re starving a little less aggressively”) against Jere's “the sober minded individual should count the progress from 1 to 5 dollars.” Oct 24: men, feminism and the Soviet record, with Jere adding jokes and a Gary Becker reference while Angel kept to material conditions."],
+"aurasurfer|thunderstud":["catnip","Builders talking shop. Running models at 0.003 tokens a second, each building a custom “giga app” to manage their projects, and a detailed exchange about CI and CD pipelines and whether Claude should merge everything without review. Almost perfectly reciprocal, and nearly all of it in the first two days."],
+"aurasurfer|bardiel1":["catnip","aura as tech tutor: what separates Arduino, esp32 and Raspberry Pi, jumper cables and breadboards, inference ASICs, and a Boston Dynamics university kit. bardiel1 admitted to a computer engineering degree with “basically 0 hardware work.” Later, jokes in the afterlife thread."],
+"woolierthanthou|youvious.com":["catnip","Teacher and student. Youvious brings quantum mechanics questions from his course and Woolier answers at length; on Oct 26 that became a long session on many-worlds, decoherence and when a system becomes entangled, with Youvious signing off: “thanks for all the responses!”"]
+};
+
+(function(){
+ const box=document.getElementById('stlist');
+ const strong=DATA.edges.filter(e=>e.k==='strong'||e.k==='strong-x');
+ const by={};strong.forEach(e=>{(by[e.a]=by[e.a]||[]).push(e);(by[e.b]=by[e.b]||[]).push(e)});
+ const maxw=Math.max(...strong.flatMap(e=>e.wk));
+ const people=Object.keys(by).sort((p,q)=>(by[q].length-by[p].length)||(byId[q].n-byId[p].n));
+ const tie=(id,e)=>{const o=byId[e.a===id?e.b:e.a];const key=[e.a,e.b].sort().join('|');const [v,t]=STIE[key]||['',''];
+  const bars=e.wk.map(x=>`<i style="height:${Math.max(1,Math.round(x/maxw*18))}px" title="${x}"></i>`).join('');
+  return `<details class="tie"><summary><span><b>${o.label}</b> <span class="wkl">${GSHORT[o.g]}</span></span><span class="meta"><span class="tag ${v}">${v}</span><span class="wkl">${Math.round(e.w)} exch.</span></span><span class="chev" aria-hidden="true"></span></summary><div class="body"><p>${t}</p><div class="bm"><span><span class="weeks" aria-hidden="true">${bars}</span><span class="wkl">${e.wk.map(x=>Math.round(x)).join(' / ')} by stretch</span></span><span class="wkl">${gname(byId[e.a].g)===gname(byId[e.b].g)?'within '+gname(o.g):gname(byId[id].g)+' ↔ '+gname(o.g)}</span></div></div></details>`};
+ const card=id=>{const n=byId[id];const L=by[id].slice().sort((p,q)=>q.w-p.w);
+  return `<details class="who"><summary><span class="nm"><b>${n.label}</b><span class="with">${L.map(e=>byId[e.a===id?e.b:e.a].label).join(', ')}</span></span><span class="cnt">${L.length} strong</span><span class="chev" aria-hidden="true"></span></summary><div class="ties">${L.map(e=>tie(id,e)).join('')}</div></details>`};
+ const half=Math.ceil(people.length/2);
+ box.innerHTML=`<div class="stcol">${people.slice(0,half).map(card).join('')}</div><div class="stcol">${people.slice(half).map(card).join('')}</div>`;
+})();
+const VKINDS=['catnip','versus','mixed'];
+function labeledTies(){const L=DATA.bridges.map(b=>({a:b.a,b:b.b,v:b.v}));Object.entries(STIE).forEach(([k,[v]])=>{const [a,b]=k.split('|');L.push({a,b,v})});return L}
+function userTally(id){const t={catnip:0,versus:0,mixed:0};labeledTies().forEach(x=>{if(x.a===id||x.b===id)t[x.v]++});return t}
+function groupTally(g){const t={catnip:0,versus:0,mixed:0};GROUPS[g].topics.forEach(([v])=>t[v]++);labeledTies().forEach(x=>{if(byId[x.a].g==g||byId[x.b].g==g)t[x.v]++});return t}
+function tallyHTML(t,what){const tot=t.catnip+t.versus+t.mixed;return `<div class="tally"><span class="tl">${what}</span>${tot?VKINDS.map(v=>`<span class="tag ${v}">${v} ${t[v]}</span>`).join(''):'<span class="none">none</span>'}</div>`}
+renderRoster();
+
+// groups
+const gWrap=document.getElementById('groups');
+["1","0","5","4","3","2"].forEach(g=>{
+  const G=GROUPS[g]; const mem=DATA.nodes.filter(n=>n.g==g).sort((p,q)=>q.n-p.n).map(n=>n.label);
+  const d=document.createElement('article');d.className='group';
+  d.innerHTML=`<h3>${G.name}</h3>${tallyHTML(groupTally(g),'topics and labeled ties')}<div class="members">${mem.join(' · ')}</div><ul>${G.topics.map(([v,t])=>`<li><span class="tag ${v}">${v}</span> ${t}</li>`).join('')}</ul><p class="note">${G.note}</p>`;
+  gWrap.appendChild(d);
+});
+// bridges
+const ol=document.getElementById('bridges');
+const maxw=Math.max(...DATA.bridges.flatMap(b=>b.wk));
+DATA.bridges.forEach(b=>{
+  const A=byId[b.a],B=byId[b.b];
+  const li=document.createElement('li');li.id='b'+b.n;
+  const bars=b.wk.map(v=>`<i style="height:${Math.max(1,Math.round(v/maxw*18))}px" title="${v}"></i>`).join('');
+  li.innerHTML=`<div class="bn" title="Show in figure">#${b.n}</div>
+  <div class="bbody"><div class="bhead"><span class="pair">${A.label} – ${B.label}</span><span class="route">${gname(A.g)} ↔ ${gname(B.g)}</span></div>
+  <p>${BTEXT[b.n]}</p>
+  <div class="bmeta"><span class="tag ${b.v}">${b.v}</span><span><span class="weeks" aria-hidden="true">${bars}</span><span class="wkl">${b.wk.map(v=>Math.round(v)).join(' / ')} by stretch</span></span>${b.t?`<span class="trend ${b.t}">${TRENDTXT[b.t]}</span>`:''}</div></div>`;
+  li.querySelector('.bn').addEventListener('click',()=>{selectBridge(b.n,false);document.querySelector('figure').scrollIntoView({behavior:'smooth',block:'start'})});
+  ol.appendChild(li);
+});
+</script>
+</body>
+</html>
