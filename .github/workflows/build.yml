@@ -5,7 +5,7 @@ on:
     branches: [main]
   workflow_dispatch:
   schedule:
-    - cron: "7 4 * * *"   # daily refresh of the Are.na image pool and tarot deck
+    - cron: "7 4 * * *"   # daily refresh of the Are.na images and the playlist and tarot deck
 
 permissions:
   contents: read
@@ -40,6 +40,7 @@ jobs:
           cp index.html _site/
           cp images.json _site/ 2>/dev/null || echo "[]" > _site/images.json
           cp tarot.json _site/ 2>/dev/null || echo "[]" > _site/tarot.json
+          cp songs.json _site/ 2>/dev/null || echo "[]" > _site/songs.json
           cp -r reports _site/
           touch _site/.nojekyll
 
