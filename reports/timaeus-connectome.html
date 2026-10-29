@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="requested by aura">
+<title>Timaeus Connectome</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: masthead, then a two-pane instrument — graph field left, reading panel right (stacks on phones). */
+:root{
+  --bg:#ECEEF1; --panel:#F7F8FA; --ink:#1A2130; --muted:#5B6576; --line:#C9CED8; --accent:#2B4C9B;
+  --g-frame:#A9741C; --g-ontology:#2B4C9B; --g-cosmos:#6B48A8; --g-soul:#1D7F7A; --g-matter:#B4532E; --g-body:#5F7A23; --g-ethics:#A63A6A;
+  --edge:#8F98A8; --tension:#B4532E;
+  --f-display:"Gloock", "Didot", Georgia, serif;
+  --f-body:"Literata", Georgia, "Times New Roman", serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F131B; --panel:#161B25; --ink:#DCE2EC; --muted:#8E98AA; --line:#2A3242; --accent:#8CA8F0;
+  --g-frame:#DDA54A; --g-ontology:#7F9DF0; --g-cosmos:#B596F0; --g-soul:#4FC3BB; --g-matter:#EC8A62; --g-body:#A8C460; --g-ethics:#EC80AE;
+  --edge:#566075; --tension:#EC8A62; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0F131B; --panel:#161B25; --ink:#DCE2EC; --muted:#8E98AA; --line:#2A3242; --accent:#8CA8F0;
+  --g-frame:#DDA54A; --g-ontology:#7F9DF0; --g-cosmos:#B596F0; --g-soul:#4FC3BB; --g-matter:#EC8A62; --g-body:#A8C460; --g-ethics:#EC80AE;
+  --edge:#566075; --tension:#EC8A62; color-scheme:dark }
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 28px}
+.wrap{max-width:1440px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 32px}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(30px,4.2vw,50px);line-height:1;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);max-width:62ch;margin:6px 0 0}
+.ratios{font-family:var(--f-mono);font-size:12px;color:var(--muted);letter-spacing:.06em;white-space:nowrap}
+.ratios b{color:var(--ink);font-weight:500}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-family:var(--f-mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none}
+.legend span.off{opacity:.35}
+.legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.legend .ek{display:inline-flex;align-items:center;gap:6px;cursor:default}
+.legend svg{display:block}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;min-height:640px}
+.field{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden;min-height:640px}
+.field svg{width:100%;height:100%;display:block;position:absolute;inset:0;touch-action:none}
+.hint{position:absolute;left:12px;bottom:10px;font-family:var(--f-mono);font-size:11px;color:var(--muted);pointer-events:none}
+.reset{position:absolute;right:10px;top:10px;font-family:var(--f-mono);font-size:11px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:5px 9px;cursor:pointer}
+.reset:focus-visible,.loop:focus-visible,.nb:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+aside{display:flex;flex-direction:column;gap:14px;min-width:0}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+.lab{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 8px}
+.loops{display:flex;flex-direction:column;gap:4px}
+.loop{all:unset;box-sizing:border-box;display:grid;grid-template-columns:22px 1fr;gap:8px;align-items:baseline;padding:6px 8px;border-radius:4px;cursor:pointer;width:100%}
+.loop:hover{background:var(--bg)}
+.loop.on{background:var(--bg);box-shadow:inset 2px 0 0 var(--accent)}
+.loop .n{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.loop .t{font-weight:600;font-size:14px}
+.loop .d{grid-column:2;font-size:13px;color:var(--muted);line-height:1.4}
+.loop:not(.on) .d{display:none}
+#detail h2{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.15;margin:0 0 4px;text-wrap:balance}
+#detail .grp{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em}
+#detail p{margin:8px 0}
+#detail blockquote{margin:10px 0;padding-left:12px;border-left:2px solid var(--line);font-style:italic;color:var(--muted);font-size:14px}
+.where{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.nbs{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+.nb{all:unset;cursor:pointer;font-size:13.5px;display:flex;gap:8px;align-items:baseline;padding:2px 0}
+.nb:hover .nm{text-decoration:underline}
+.nb .rel{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);min-width:64px;text-transform:uppercase;letter-spacing:.06em}
+/* graph */
+.edge{stroke:var(--edge);stroke-width:1.1;fill:none;opacity:.55}
+.edge.mirror{stroke-dasharray:4 4}
+.edge.tension{stroke:var(--tension);opacity:.6}
+.edge.dim{opacity:.07}
+.edge.hot{opacity:1;stroke-width:2.2;stroke:var(--accent)}
+.edge.loopedge{opacity:1;stroke-width:2.6;stroke:var(--accent);stroke-dasharray:7 6;animation:flow 1.2s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-26}}
+@media (prefers-reduced-motion:reduce){.edge.loopedge{animation:none}}
+.node circle{stroke:var(--panel);stroke-width:2;cursor:pointer}
+.node text{font-family:var(--f-body);font-size:11.5px;fill:var(--ink);paint-order:stroke;stroke:var(--panel);stroke-width:3.5px;stroke-linejoin:round;pointer-events:none}
+.node.dim{opacity:.15}
+.node.sel circle{stroke:var(--ink);stroke-width:2.5}
+.node.inloop text{font-weight:600}
+.arrow{fill:var(--edge)}
+.arrow-hot{fill:var(--accent)}
+/* coda: the reader's circuits */
+.you{margin-top:28px;padding-top:28px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:20px}
+.you h2{font-family:var(--f-display);font-weight:400;font-size:clamp(26px,3.4vw,40px);line-height:1.05;margin:0}
+.chains{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px;counter-reset:c}
+.chain{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px 12px;counter-increment:c;display:grid;grid-template-columns:28px minmax(0,1fr);column-gap:8px}
+.chain::before{content:counter(c,upper-roman);font-family:var(--f-mono);font-size:12px;color:var(--muted);padding-top:5px}
+.chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px 0;min-width:0}
+.chips span,.chips b{font-size:13.5px;padding:3px 9px;border:1px solid var(--line);border-radius:3px;background:var(--bg)}
+.chips span+span::before,.chips span+b::before{content:"—";color:var(--muted);margin:0 7px 0 -3px}
+.chips span+span,.chips span+b{margin-left:14px;position:relative}
+.chips span+span::before,.chips span+b::before{position:absolute;left:-14px;top:50%;transform:translateY(-52%)}
+.chips span:first-child{font-weight:600;border-color:var(--g-cosmos)}
+.chips b{font-weight:600;color:var(--panel);background:var(--accent);border-color:var(--accent)}
+.ev{grid-column:2;margin:10px 0 0;font-size:13.5px;color:var(--muted);max-width:90ch}
+.tag{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;padding:1px 6px;border-radius:3px;margin-right:8px;border:1px solid}
+.ev-t{color:var(--g-soul);border-color:var(--g-soul)}
+.mix-t{color:var(--g-frame);border-color:var(--g-frame)}
+.inf-t{color:var(--g-ethics);border-color:var(--g-ethics)}
+.diffgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.diff{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.diff h3{font-family:var(--f-display);font-weight:400;font-size:24px;margin:0}
+.diff dl{margin:0;display:grid;grid-template-columns:86px minmax(0,1fr);gap:6px 10px;font-size:14px}
+.diff dt{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-top:3px}
+.diff dd{margin:0}
+.blind{margin:auto 0 0;padding-top:10px;border-top:1px dashed var(--line);font-size:14px}
+.blind span{display:block;font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--tension);margin-bottom:3px}
+footer{font-size:12.5px;color:var(--muted);max-width:90ch}
+@media (max-width:900px){.main{grid-template-columns:1fr}.field{min-height:520px;height:72vh}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Timaeus Connectome</h1>
+      <p class="sub">Plato's cosmogony as a wiring diagram. Every node is an idea the dialogue introduces; edges show what grounds, mirrors, or strains against what. The loops on the right are the circuits the argument keeps running.</p>
+    </div>
+    <div class="ratios">world-soul series <b>1 · 2 · 3 · 4 · 9 · 8 · 27</b> — leimma <b>256:243</b></div>
+  </header>
+  <div class="legend" id="legend"></div>
+  <div class="main">
+    <div class="field" id="field">
+      <svg id="svg" aria-label="Network of ideas in Plato's Timaeus"></svg>
+      <button class="reset" id="reset" type="button">Reset view</button>
+      <div class="hint">Drag nodes · scroll or pinch to zoom · click to read</div>
+    </div>
+    <aside>
+      <div class="box">
+        <p class="lab">Loops — circuits in the argument</p>
+        <div class="loops" id="loops"></div>
+      </div>
+      <div class="box" id="detail"></div>
+    </aside>
+  </div>
+  <section class="you" id="circuits">
+    <div class="you-head">
+      <p class="lab">Coda — the dialogue's own circuits</p>
+      <h2>How the Timaeus thinks</h2>
+      <p class="sub">Read the dialogue as one brain. These are the concepts it keeps firing, traced through the links that repetition has worn in, to the feeling each one lands on. Each chain is tagged by how directly the text supports it.</p>
+    </div>
+
+    <ol class="chains">
+      <li class="chain">
+        <div class="chips"><span>circle</span><span>motion on the same spot</span><span>the Same</span><span>thinking the same thoughts about the same things</span><span>self-sufficiency</span><b>divine rest</b></div>
+        <p class="ev"><span class="tag ev-t">Text</span>The sphere turns in place because that motion is "most appropriate to mind and intelligence"; the fixed stars spin and "continue to think consistently the same thoughts"; the head is a sphere copying it. The circle fires in cosmology, astronomy, anatomy and ethics alike.</p>
+      </li>
+      <li class="chain">
+        <div class="chips"><span>disorder</span><span>necessity, the errant cause</span><span>the Receptacle swaying</span><span>winnowing</span><span>mind persuades</span><b>relief of measure</b></div>
+        <p class="ev"><span class="tag ev-t">Text</span>The maker found everything "moving in an irregular and disorderly fashion" and judged order "in every way better." Creation is measure imposed on chaos, and chaos is never fully gone.</p>
+      </li>
+      <li class="chain">
+        <div class="chips"><span>body</span><span>influx and efflux</span><span>sensation floods the soul</span><span>the circles bent</span><span>a man upside down, left taken for right</span><b>reason in danger</b></div>
+        <p class="ev"><span class="tag ev-t">Text</span>The embodiment passage: nutriment and sensation stop the Same and twist the Other, so that "they speak of the same or of the other in a manner the very opposite of the truth." Infancy, disease and vice all run back through this link.</p>
+      </li>
+      <li class="chain">
+        <div class="chips"><span>sight</span><span>the stars</span><span>day, night, months, years</span><span>number</span><span>time</span><span>philosophy</span><b>gratitude for the greatest gift</b></div>
+        <p class="ev"><span class="tag ev-t">Text</span>"From this source we have derived philosophy, than which no greater good ever was or will be given by the gods to mortal man." The eye's job is to copy heaven's courses into ours.</p>
+      </li>
+      <li class="chain">
+        <div class="chips"><span>proportion</span><span>the mean binds the extremes</span><span>friendship of the elements</span><span>soul matched to body</span><span>health and virtue</span><b>the fair</b></div>
+        <p class="ev"><span class="tag ev-t">Text</span>The same word does physics and ethics: proportion makes the world "indissoluble" and gives it "the spirit of friendship," and later "everything that is good is fair, and the fair is not without proportion."</p>
+      </li>
+      <li class="chain">
+        <div class="chips"><span>appetite</span><span>a wild beast chained at the manger</span><span>far from the council chamber</span><span>the liver's frightening images</span><b>containment</b></div>
+        <p class="ev"><span class="tag ev-t">Text</span>The gods house desire below the midriff so it makes "as little noise and disturbance as possible." Even the bowels' coils exist to stop gluttony from making us "an enemy to philosophy."</p>
+      </li>
+      <li class="chain">
+        <div class="chips"><span>Egyptian record</span><span>"you Hellenes are children"</span><span>floods erase memory</span><span>written in the temples</span><span>"the truth of the story is a great advantage"</span><b>authority from antiquity</b></div>
+        <p class="ev"><span class="tag mix-t">Text + Jowett</span>The chain is all in the frame story. Whether Plato means it straight or is winking is Jowett's reading: he calls the Solon provenance "a literary trick."</p>
+      </li>
+      <li class="chain">
+        <div class="chips"><span>failure to use reason</span><span>reborn as a woman</span><span>then a beast shaped like its vice</span><span>head pressed to the earth</span><b>the hierarchy of kinds as a moral ranking</b></div>
+        <p class="ev"><span class="tag ev-t">Text</span>Women from men "who were cowards or led unrighteous lives," birds from naive stargazers, quadrupeds from those who stopped using their heads, fish from the most ignorant. Biology is a punishment ledger.</p>
+      </li>
+    </ol>
+  </section>
+
+
+  <footer>Built from the Jowett translation (Project Gutenberg #1572). Quotes are Jowett's. Groupings follow the dialogue's own seams: the frame story, "the works of mind," "what comes about through necessity," and the closing account of body, disease, and soul-care.</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+const GROUPS = {
+  frame:{name:"Frame story"}, ontology:{name:"Being & cause"}, cosmos:{name:"Cosmos & time"},
+  soul:{name:"Soul & sense"}, matter:{name:"Elements"}, body:{name:"Body"}, ethics:{name:"Health & virtue"}
+};
+const N = [
+ // frame
+ ["republic","Republic recap","frame","Socrates summarizes yesterday's city: separate classes, guardians both spirited and philosophic, common property, common wives and children, secret marriage lots.","Opening exchange",""],
+ ["motion","City set in motion","frame","Socrates wants to see his painted animals move: the ideal city tested in a war. Poets imitate only what they know; sophists have no city. Only philosopher-statesmen can tell it.","Socrates' request","I might compare myself to a person who, on beholding beautiful animals… is seized with a desire of seeing them in motion."],
+ ["solon","Solon at Saïs","frame","An Egyptian priest tells Solon the Greeks are children: no hoary tradition, because floods keep wiping out their written memory.","Critias' tale","O Solon, Solon, you Hellenes are never anything but children."],
+ ["cataclysm","Fire and flood","frame","Periodic destructions. Phaethon is myth for a deviation of the heavenly bodies that scorches the earth. Egypt, watered from below, keeps the records.","Critias' tale",""],
+ ["atlantis","Atlantis vs. old Athens","frame","Nine thousand years ago, an island empire beyond the Pillars of Heracles attacked the Mediterranean. Athens, standing alone, beat it back. Then earthquake and flood swallowed both.","Critias' tale",""],
+ ["program","Order of the feast","frame","Timaeus will narrate from the cosmos down to man; Critias will receive those men, educated by Socrates, and enrol them as the lost Athenians.","Critias' plan","The city and citizens, which you yesterday described to us in fiction, we will now transfer to the world of reality."],
+ // ontology
+ ["being","Being","ontology","That which always is and never becomes. Grasped by intelligence with reason. Unchanging.","Timaeus' first distinction","What is that which always is and has no becoming?"],
+ ["becoming","Becoming","ontology","That which is always becoming and never is. Grasped by opinion with sensation. The visible, tangible world belongs here, so it must have been made.","Timaeus' first distinction",""],
+ ["likely","The likely account","ontology","Words take the character of their objects. About the eternal: firm, irrefutable. About its image: only probable. Timaeus asks to be judged by that standard.","Prelude","As being is to becoming, so is truth to belief."],
+ ["demiurge","The Craftsman","ontology","The maker and father of the universe, hard to find and impossible to declare to all. He looks to the eternal model, never a generated one.","Prelude","The father and maker of all this universe is past finding out."],
+ ["goodness","Goodness without envy","ontology","Why there is a world at all: the maker was good, the good has no jealousy, so he wanted everything as like himself as possible. Order is better than disorder.","Why the world was made","He was good, and the good can never have any jealousy of anything."],
+ ["pattern","The Living Creature","ontology","The intelligible model: a complete animal containing all intelligible kinds. The cosmos copies it, so there is one world, since a second would require a third containing both.","The model",""],
+ ["opinion_mind","Mind ≠ true opinion","ontology","The proof that Forms exist. If intelligence and true opinion differ (taught vs. persuaded, with reason vs. without), then their objects differ too.","Second beginning","If mind and true opinion are two distinct classes, then I say that there certainly are these self-existent ideas."],
+ ["receptacle","The Receptacle","ontology","A third kind beyond model and copy: the nurse of becoming, formless so it can take every form, like odourless oil for perfume. Grasped by a bastard reasoning, as in a dream.","Second beginning","…the receptacle, and in a manner the nurse, of all generation."],
+ ["necessity","Necessity, the errant cause","ontology","What the maker found already moving without measure: traces of fire, water, earth, air, swaying in the Receptacle. Reason must work with it, not around it.","Second beginning",""],
+ ["mind","Mind persuades Necessity","ontology","The world is a mixture: mind ruling necessity by persuasion, bringing most things to the best. Creation is the imposition of measure, not creation from nothing.","Turn to necessity","Mind, the ruling power, persuaded necessity to bring the greater part of created things to perfection."],
+ ["causes","Two kinds of cause","ontology","Divine causes, which have mind and aim at the good; co-operative causes, the mechanical servants (heating, cooling, contracting). Most people mistake the servants for masters.","On sight; on colours",""],
+ // cosmos
+ ["worldbody","Body of the world","cosmos","Visible requires fire; tangible requires earth. Two terms need a bond, and solids need two means: air and water placed between them.","Body of the world",""],
+ ["proportion","Continuous proportion","cosmos","fire : air :: air : water :: water : earth. Proportion is the fairest bond, making the terms one; the body so bound is indissoluble except by its maker.","Body of the world",""],
+ ["sphere","Self-sufficient sphere","cosmos","All the matter used up, nothing outside, so no eyes, ears, hands, or feet. It feeds on its own waste and turns in place: the motion most akin to mind.","Shape of the world","…round as from a lathe, having its extremes in every direction equidistant from the centre."],
+ ["worldsoul","World Soul","cosmos","Older than the body and its ruler. Mixed from Same, Other, and an intermediate Being, diffused from centre to circumference and wrapped around the outside.","Making of the soul",""],
+ ["ratios","Harmonic divisions","cosmos","The soul-stuff is cut in the series 1, 2, 3, 4, 9, 8, 27, then filled with harmonic and arithmetic means: 3:2, 4:3, 9:8, with a remainder of 256:243. A musical scale.","Making of the soul",""],
+ ["circles","Circles of Same & Other","cosmos","The strip is split like the letter X and bent into two rings. Same (outer, undivided, equator) rules; Other (inner, split into seven, the ecliptic) carries the planets. Same yields knowledge; Other, true opinion.","Making of the soul","…when reason is concerned with the rational, and the circle of the same moving smoothly declares it, then intelligence and knowledge are necessarily perfected."],
+ ["time","Time, moving image","cosmos","Eternity can't be given to a generated thing, so the maker made a moving image of it, proceeding by number. Was and will be belong to time; only is belongs to the eternal.","Time","…a moving image of eternity… and this image we call time."],
+ ["planets","Seven planets","cosmos","Moon, Sun, Venus, Mercury, Mars, Jupiter, Saturn, set in the seven rings of the Other to mark and preserve the numbers of time.","Time",""],
+ ["perfectyear","The perfect year","cosmos","When all eight revolutions complete together, measured by the Same, time completes its perfect number.","Time",""],
+ ["stargods","Star-gods & Earth","cosmos","Fixed stars: divine animals of fire, spinning in place and thinking the same thoughts. Earth, wound on the axis, is guardian of night and day, eldest god within heaven.","Fourfold animals",""],
+ ["younger","The younger gods' task","cosmos","The maker sows only the immortal seed; created gods must weave mortal bodies around it, or humans would equal gods.","Speech to the gods","…do ye then interweave the mortal with the immortal."],
+ // soul
+ ["humansoul","Human souls","soul","Mixed in the same bowl from the leftovers, less pure. One soul per star. Each is shown the universe and the laws of destiny before being sown into the instruments of time.","Sowing of souls",""],
+ ["transmigration","Transmigration","soul","Live well, return to your native star. Live badly: born next as a woman, then as a beast resembling your vice, until reason masters the elemental mob.","Laws of destiny",""],
+ ["disorder","Turmoil of the newborn","soul","The soul's circles, bound into a body of influx and efflux, get bent and broken by nutriment and sensation: the Same halted, the Other twisted. So infants lack intelligence.","Embodiment","…as you might imagine a person who is upside down."],
+ ["head","Head as microcosm","soul","The two divine circles were placed in a sphere copying the universe. The body is its vehicle; limbs keep it from rolling around.","Making of the body",""],
+ ["sight","Sight & hearing","soul","Mechanically, inner fire meets daylight. Purposively, sight was given so we could watch the heavens' revolutions and straighten our own. Hearing and harmony serve the same end.","Higher purpose of sight","God invented and gave us sight to the end that we might behold the courses of intelligence in the heaven."],
+ ["number","Number & philosophy","soul","Day and night, months and years gave us number, then the idea of time, then inquiry into the whole, which is philosophy: the greatest good the gods have given.","Higher purpose of sight",""],
+ ["harmony","Harmony & rhythm","soul","Music is not for irrational pleasure. Its motions are akin to the soul's revolutions, given to correct discord within.","Higher purpose of sight",""],
+ ["tripartite","Three souls in the body","soul","Immortal reason in the head; spirited soul in the chest, under reason's orders, cooled by the lungs; appetite in the belly, tethered like a beast at a manger.","Placement of the mortal soul",""],
+ ["liver","Liver & divination","soul","Reason casts images on the liver's mirror to frighten or soothe appetite. Prophecy comes to the irrational part, so it needs sane interpreters. The spleen wipes the mirror clean.","Liver","God has given the art of divination not to the wisdom, but to the foolishness of man."],
+ ["sensibles","Sensible qualities","soul","Hot is cutting pyramids; cold is compression. Tastes, smells (half-formed, between water and air), sounds, and colours as flames of particles meeting the visual ray.","Affections of sense",""],
+ // matter
+ ["triangles","Two right triangles","matter","The real elements below the 'elements': the half-square isosceles and the half-equilateral scalene. What lies beyond them only God knows.","Construction of bodies",""],
+ ["solids","Regular solids","matter","Tetrahedron → fire, octahedron → air, icosahedron → water, all from the scalene. Cube → earth, from the isosceles. The fifth figure God used for the whole.","Construction of bodies",""],
+ ["transform","Elements transforming","matter","Water breaks into 1 fire + 2 air; air into 2 fire; and back. Earth's square faces can't recombine with the others, so earth only scatters and regathers.","Interchange","…and thus generation appears to be transmitted from one to the other in a circle."],
+ ["winnowing","Winnowing","matter","The shaking Receptacle sorts like a sieve: like collects with like, unlike is driven apart. This gives the elements regions before the cosmos is ordered.","Pre-cosmic chaos",""],
+ ["novoid","No void; circular thrust","matter","The revolution of the whole compresses everything; small particles are forced into the gaps of large ones. Unevenness keeps motion going forever.","Rest and motion",""],
+ ["liketolike","Like moves to like","matter","Heavy and light are not about up and down, since a sphere has neither. Heavy is what resists being torn from its own kind.","Heavy and light",""],
+ // body
+ ["marrow","Marrow","body","Built from the finest triangles. The anchor of the soul's bonds and the seed of the race. Brain is the round part, for the immortal soul.","Bones and flesh",""],
+ ["fleshbone","Bone, sinew, flesh","body","Bone fired and quenched; flesh as felt-like padding. A trade-off: thick flesh would mean long life but dull perception, so the head got thin bone.","Bones and flesh","…a shorter span of life, which was better, to a longer one, which was worse."],
+ ["respiration","Respiration","body","A creel of fire and air. Breath out pushes air around in a circle through the skin; inner fire draws it back. No void, so a wheel.","Respiration","…this goes on like the rotation of a wheel, because there can be no such thing as a vacuum."],
+ ["blood","Blood & nutrition","body","The inner fire cuts food and pumps it into the veins; red dominates. Replenishment follows the universal law of like drawn to like.","Nutrition",""],
+ ["aging","Aging & death","body","Young triangles are sharp and cut food easily. Worn ones fail, the marrow's bonds loosen, and the soul flies off with pleasure in a natural death.","Old age",""],
+ ["disease","Disease","body","Elements in excess or misplaced; tissues generated in reverse order; wind, phlegm, bile. Fevers are timed by the element: fire continuous, earth quartan.","Diseases of the body",""],
+ // ethics
+ ["involuntary","No one is bad willingly","ethics","Vice is disease of the soul: too much pleasure, bad humours, bad cities, bad teaching. Blame the planters, not the plants. Still, we must strive.","Diseases of the soul","For no man is voluntarily bad."],
+ ["proportionsb","Soul–body proportion","ethics","The greatest symmetry is between soul and body. Thinkers must take gymnastics; athletes, music and philosophy. Move neither without the other.","Care of the whole",""],
+ ["regimen","Regimen over medicine","ethics","Best motion is self-motion (exercise), then being carried (sailing), last purging drugs. Diseases have lifespans; irritating them multiplies them.","Care of the whole",""],
+ ["assimilation","Becoming like the cosmos","ethics","Feed each part its own motion. The divine part's food is the revolutions of the universe: learn them, correct the courses bent at birth, and become as immortal as a human can.","Conclusion","…we are a plant not of an earthly but of a heavenly growth."],
+ ["animals","Descent of animals","ethics","Women from cowardly men; birds from naive stargazers who trusted their eyes; beasts from those who stopped using their heads; fish from the most ignorant.","Coda","These are the laws by which animals pass into one another."],
+ ["visiblegod","The visible god","cosmos","The finished world: a living creature containing all others, the sensible image of the intelligible, the one only-begotten heaven.","Last sentence","…the sensible God who is the image of the intellectual."],
+];
+const nodes = N.map(([id,label,group,gloss,where,quote])=>({id,label,group,gloss,where,quote}));
+const byId = Object.fromEntries(nodes.map(n=>[n.id,n]));
+
+// [source, target, kind, relation]  kind: d = derives/grounds, m = mirrors, t = tension
+const E = [
+ ["republic","motion","d","prompts"],["motion","solon","d","answered by"],["solon","cataclysm","d","explains loss by"],
+ ["cataclysm","stargods","m","celestial cause"],["solon","atlantis","d","transmits"],["atlantis","republic","m","realizes"],
+ ["atlantis","program","d","sets up"],["program","being","d","hands to Timaeus"],["program","republic","d","returns citizens to"],
+ ["being","becoming","t","opposed to"],["becoming","likely","d","only admits"],["being","likely","d","only firm about"],
+ ["becoming","demiurge","d","needs a cause"],["demiurge","pattern","d","looks to"],["pattern","being","d","belongs to"],
+ ["goodness","demiurge","d","motivates"],["demiurge","mind","d","acts as"],["mind","necessity","t","persuades"],
+ ["necessity","receptacle","d","moves in"],["receptacle","winnowing","d","shakes into"],["opinion_mind","being","d","proves"],
+ ["opinion_mind","receptacle","d","adds a third kind"],["receptacle","becoming","d","houses"],
+ ["causes","mind","d","primary"],["causes","necessity","d","co-operative"],["triangles","causes","d","instruments of"],
+ ["pattern","worldbody","d","copied in"],["worldbody","proportion","d","bound by"],["proportion","sphere","d","closed into"],
+ ["goodness","sphere","d","self-sufficient"],["worldsoul","worldbody","d","rules"],["demiurge","worldsoul","d","mixes"],
+ ["worldsoul","ratios","d","divided by"],["ratios","circles","d","bent into"],["circles","planets","d","Other carries"],
+ ["pattern","time","d","eternity imaged as"],["time","planets","d","measured by"],["planets","perfectyear","d","complete in"],
+ ["perfectyear","pattern","m","imitates"],["circles","stargods","d","Same carries"],["stargods","younger","d","become"],
+ ["younger","humansoul","d","embody"],["demiurge","humansoul","d","sows"],["humansoul","circles","m","copy of"],
+ ["humansoul","transmigration","d","subject to"],["humansoul","disorder","d","on embodiment"],["disorder","circles","t","bends"],
+ ["circles","head","m","housed in"],["head","sphere","m","copies"],["head","sight","d","face carries"],
+ ["sight","number","d","yields"],["number","assimilation","d","enables"],["sight","harmony","d","with hearing"],
+ ["harmony","circles","d","corrects"],["sight","causes","d","example of"],["younger","tripartite","d","build"],
+ ["tripartite","liver","d","appetite governed by"],["tripartite","head","d","reason seated in"],
+ ["necessity","triangles","d","shaped into"],["triangles","solids","d","build"],["solids","transform","d","allow"],
+ ["transform","liketolike","d","driven by"],["liketolike","winnowing","m","same law as"],["winnowing","novoid","d","resisted by"],
+ ["novoid","transform","d","keeps going"],["solids","sensibles","d","explain"],["sensibles","disorder","d","flood"],
+ ["sensibles","sight","d","colour as fire"],
+ ["triangles","marrow","d","finest form"],["marrow","tripartite","d","anchors"],["marrow","fleshbone","d","encased by"],
+ ["fleshbone","head","t","trades life for wit"],["respiration","novoid","d","works by"],["respiration","blood","d","pumps"],
+ ["blood","liketolike","d","replenished by"],["blood","aging","d","fails in"],["aging","triangles","d","worn"],
+ ["aging","transmigration","d","releases soul to"],["disease","solids","d","elements misplaced"],["disease","involuntary","d","extends to soul"],
+ ["involuntary","republic","m","cure is the city"],["involuntary","proportionsb","d","remedied by"],["proportionsb","regimen","d","practised as"],
+ ["regimen","sphere","m","imitates self-motion"],["proportionsb","harmony","d","music + gymnastic"],["harmony","assimilation","d","tunes"],
+ ["assimilation","tripartite","d","trains all three"],["tripartite","disease","d","neglect breeds"],["assimilation","circles","d","restores"],
+ ["assimilation","stargods","d","return to star"],["stargods","humansoul","d","home of"],["transmigration","animals","d","produces"],
+ ["animals","assimilation","t","failure of"],["sphere","visiblegod","d","completed as"],["animals","visiblegod","d","fill out"],
+ ["visiblegod","pattern","m","image of"],["likely","assimilation","t","limits"],
+];
+const links = E.map(([s,t,k,r])=>({source:s,target:t,kind:k,rel:r}));
+
+const LOOPS = [
+ {t:"Macrocosm ⇄ microcosm",d:"The cosmic circles are copied into each human head, wrecked by birth, then retuned by watching the sky and learning number. The dialogue's ethical engine.",seq:["circles","humansoul","disorder","sight","number","assimilation","circles"]},
+ {t:"Eternity → time → back",d:"The eternal model is imaged as time; planets keep time; seeing them gives number and philosophy; philosophy proves and contemplates what never changes.",seq:["pattern","time","planets","sight","number","assimilation","circles","stargods","younger","humansoul","circles"]},
+ {t:"Mind persuading Necessity",d:"The craftsman's goodness acts as mind, which can only persuade a necessity already sloshing in the Receptacle; it shapes it into triangles, which then serve as mind's instruments.",seq:["demiurge","mind","necessity","receptacle","winnowing","novoid","transform","liketolike","winnowing"]},
+ {t:"Circle of generation",d:"Water condenses to earth, melts to air, burns to fire, and back. Driven by like-to-like sorting, kept from settling by the compressing revolution of the whole.",seq:["solids","transform","liketolike","winnowing","novoid","transform"]},
+ {t:"Wheel of souls",d:"Sown from a star, embodied by younger gods, judged by how well reason rules: back to the star, or down through woman and beast until reason recovers.",seq:["stargods","younger","humansoul","transmigration","animals","assimilation","stargods"]},
+ {t:"The breathing wheel",d:"No void means every exhale shoves air around the body and back in through the skin. Same law as the cosmos, applied to a lung.",seq:["respiration","novoid","transform","liketolike","blood","respiration"]},
+ {t:"Health ↔ virtue",d:"Disease of body becomes vice of soul, which is involuntary, so the cure is proportion: gymnastic and music, regimen, and the cosmic motions that retrain all three souls.",seq:["tripartite","disease","involuntary","proportionsb","harmony","assimilation","tripartite"]},
+ {t:"The frame: city in motion",d:"Socrates' static city asks to move; Critias answers with Atlantis; Timaeus must first make the men; Critias returns them as citizens of the very city that began it.",seq:["republic","motion","solon","atlantis","program","republic"]},
+];
+// ensure loop edges exist
+const key = (a,b)=>a<b?a+"|"+b:b+"|"+a;
+const edgeKeys = new Set(links.map(l=>key(l.source,l.target)));
+LOOPS.forEach(L=>L.seq.forEach((id,i)=>{ if(i===0) return; const a=L.seq[i-1]; if(!edgeKeys.has(key(a,id))){edgeKeys.add(key(a,id)); links.push({source:a,target:id,kind:"d",rel:"loops to"});}}));
+
+// degree for sizing
+const deg = {}; links.forEach(l=>{deg[l.source]=(deg[l.source]||0)+1; deg[l.target]=(deg[l.target]||0)+1;});
+nodes.forEach(n=>n.r = 5 + Math.sqrt(deg[n.id]||1)*2.6);
+
+const css = getComputedStyle(document.documentElement);
+const gcol = g => `var(--g-${g})`;
+
+// legend
+const hidden = new Set();
+const legend = document.getElementById("legend");
+Object.entries(GROUPS).forEach(([k,v])=>{
+  const s=document.createElement("span"); s.innerHTML=`<i style="background:${gcol(k)}"></i>${v.name}`; s.tabIndex=0; s.setAttribute("role","button");
+  const tog=()=>{hidden.has(k)?hidden.delete(k):hidden.add(k); s.classList.toggle("off"); applyVis();};
+  s.onclick=tog; s.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tog();}};
+  legend.appendChild(s);
+});
+legend.insertAdjacentHTML("beforeend",`
+ <span class="ek"><svg width="26" height="8"><line x1="0" y1="4" x2="26" y2="4" stroke="var(--edge)" stroke-width="1.5"/></svg>grounds</span>
+ <span class="ek"><svg width="26" height="8"><line x1="0" y1="4" x2="26" y2="4" stroke="var(--edge)" stroke-width="1.5" stroke-dasharray="4 4"/></svg>mirrors</span>
+ <span class="ek"><svg width="26" height="8"><line x1="0" y1="4" x2="26" y2="4" stroke="var(--tension)" stroke-width="1.5"/></svg>strains against</span>`);
+
+// graph
+const svg = d3.select("#svg");
+const field = document.getElementById("field");
+let W = field.clientWidth, H = field.clientHeight;
+const defs = svg.append("defs");
+[["arr","arrow"],["arrh","arrow-hot"]].forEach(([id,cls])=>defs.append("marker").attr("id",id).attr("viewBox","0 -4 8 8").attr("refX",8).attr("refY",0)
+  .attr("markerWidth",6).attr("markerHeight",6).attr("orient","auto").append("path").attr("d","M0,-4L8,0L0,4").attr("class",cls));
+const g = svg.append("g");
+const zoom = d3.zoom().scaleExtent([0.3,3]).on("zoom",e=>g.attr("transform",e.transform));
+svg.call(zoom).on("dblclick.zoom",null);
+
+// cluster anchors (by group) arranged on a ring
+const gkeys = Object.keys(GROUPS);
+function anchors(){ const R=Math.min(W,H)*0.3; const o={}; gkeys.forEach((k,i)=>{const a=-Math.PI/2+i*2*Math.PI/gkeys.length; o[k]={x:W/2+R*Math.cos(a)*1.15,y:H/2+R*Math.sin(a)};}); return o;}
+let A = anchors();
+
+const sim = d3.forceSimulation(nodes)
+ .force("link",d3.forceLink(links).id(d=>d.id).distance(l=>l.source.group===l.target.group?55:110).strength(0.35))
+ .force("charge",d3.forceManyBody().strength(-260))
+ .force("collide",d3.forceCollide(d=>d.r+16))
+ .force("x",d3.forceX(d=>A[d.group].x).strength(0.09))
+ .force("y",d3.forceY(d=>A[d.group].y).strength(0.09));
+
+const edge = g.append("g").selectAll("path").data(links).join("path")
+  .attr("class",d=>"edge "+(d.kind==="m"?"mirror":d.kind==="t"?"tension":"")).attr("marker-end","url(#arr)");
+const node = g.append("g").selectAll("g").data(nodes).join("g").attr("class","node")
+  .call(d3.drag().on("start",(e,d)=>{if(!e.active)sim.alphaTarget(.2).restart();d.fx=d.x;d.fy=d.y;})
+    .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y;}).on("end",(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}))
+  .on("click",(e,d)=>{e.stopPropagation(); select(d.id);});
+node.append("circle").attr("r",d=>d.r).attr("fill",d=>gcol(d.group));
+node.append("text").text(d=>d.label).attr("x",d=>d.r+4).attr("y",4);
+node.append("title").text(d=>d.label);
+
+sim.on("tick",()=>{
+  edge.attr("d",d=>{const dx=d.target.x-d.source.x, dy=d.target.y-d.source.y, L=Math.hypot(dx,dy)||1;
+    const tx=d.target.x-dx/L*(d.target.r+3), ty=d.target.y-dy/L*(d.target.r+3);
+    const mx=(d.source.x+tx)/2 - dy*0.08, my=(d.source.y+ty)/2 + dx*0.08;
+    return `M${d.source.x},${d.source.y}Q${mx},${my} ${tx},${ty}`;});
+  node.attr("transform",d=>`translate(${d.x},${d.y})`);
+});
+
+svg.on("click",()=>clearAll());
+document.getElementById("reset").onclick=()=>{svg.transition().duration(500).call(zoom.transform,d3.zoomIdentity); clearAll();};
+new ResizeObserver(()=>{W=field.clientWidth;H=field.clientHeight;A=anchors();sim.force("x").x(d=>A[d.group].x);sim.force("y").y(d=>A[d.group].y);sim.alpha(.3).restart();}).observe(field);
+
+let selected=null, loopIdx=null;
+function applyVis(){
+  node.attr("display",d=>hidden.has(d.group)?"none":null);
+  edge.attr("display",d=>hidden.has(d.source.group)||hidden.has(d.target.group)?"none":null);
+}
+function clearAll(){ selected=null; loopIdx=null; render(); showIntro(); }
+function render(){
+  document.querySelectorAll(".loop").forEach((b,i)=>{b.classList.toggle("on",i===loopIdx); b.setAttribute("aria-pressed",i===loopIdx);});
+  if(loopIdx!==null){
+    const seq=LOOPS[loopIdx].seq, ids=new Set(seq), pairs=new Set(seq.slice(1).map((id,i)=>key(seq[i],id)));
+    node.classed("dim",d=>!ids.has(d.id)).classed("inloop",d=>ids.has(d.id)).classed("sel",d=>d.id===selected);
+    edge.classed("dim",d=>!pairs.has(key(d.source.id,d.target.id))).classed("loopedge",d=>pairs.has(key(d.source.id,d.target.id))).classed("hot",false)
+      .attr("marker-end",d=>pairs.has(key(d.source.id,d.target.id))?"url(#arrh)":"url(#arr)");
+    return;
+  }
+  node.classed("inloop",false);
+  edge.classed("loopedge",false);
+  if(selected){
+    const nb=new Set([selected]); links.forEach(l=>{if(l.source.id===selected)nb.add(l.target.id); if(l.target.id===selected)nb.add(l.source.id);});
+    node.classed("dim",d=>!nb.has(d.id)).classed("sel",d=>d.id===selected);
+    const hot=d=>d.source.id===selected||d.target.id===selected;
+    edge.classed("dim",d=>!hot(d)).classed("hot",hot).attr("marker-end",d=>hot(d)?"url(#arrh)":"url(#arr)");
+  } else {
+    node.classed("dim",false).classed("sel",false);
+    edge.classed("dim",false).classed("hot",false).attr("marker-end","url(#arr)");
+  }
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+function select(id){
+  selected=id; render(); const n=byId[id];
+  const out=links.filter(l=>l.source.id===id).map(l=>({o:l.target,rel:l.rel,dir:"→"}));
+  const inc=links.filter(l=>l.target.id===id).map(l=>({o:l.source,rel:l.rel,dir:"←"}));
+  const inLoops=LOOPS.map((L,i)=>L.seq.includes(id)?i:-1).filter(i=>i>=0);
+  document.getElementById("detail").innerHTML=`
+   <div class="grp" style="color:${gcol(n.group)}">${GROUPS[n.group].name}</div>
+   <h2>${esc(n.label)}</h2>
+   <div class="where">${esc(n.where)}</div>
+   <p>${esc(n.gloss)}</p>
+   ${n.quote?`<blockquote>“${esc(n.quote)}”</blockquote>`:""}
+   ${out.length?`<p class="lab" style="margin-top:12px">Feeds into</p><div class="nbs">${out.map(x=>`<button class="nb" data-id="${x.o.id}" type="button"><span class="rel">${esc(x.rel)}</span><span class="nm">${esc(x.o.label)}</span></button>`).join("")}</div>`:""}
+   ${inc.length?`<p class="lab" style="margin-top:12px">Fed by</p><div class="nbs">${inc.map(x=>`<button class="nb" data-id="${x.o.id}" type="button"><span class="rel">${esc(x.rel)}</span><span class="nm">${esc(x.o.label)}</span></button>`).join("")}</div>`:""}
+   ${inLoops.length?`<p class="lab" style="margin-top:12px">Part of loops</p><div class="nbs">${inLoops.map(i=>`<button class="nb" data-loop="${i}" type="button"><span class="rel">loop ${i+1}</span><span class="nm">${esc(LOOPS[i].t)}</span></button>`).join("")}</div>`:""}`;
+  document.querySelectorAll("#detail .nb").forEach(b=>b.onclick=()=>{ if(b.dataset.loop){loopIdx=+b.dataset.loop; render();} else {loopIdx=null; select(b.dataset.id);} });
+}
+function showIntro(){
+  document.getElementById("detail").innerHTML=`
+   <p class="lab">How to read it</p>
+   <h2>Two beginnings, one circle</h2>
+   <p>Timaeus starts twice. First with the works of mind: the model, the world soul, time. Then again with necessity: the Receptacle, triangles, elements. The second half rebuilds the body and the cure, and the ending sends you back to the first half's circles. That return is the dialogue's main loop.</p>
+   <p>Hubs to start with: <button class="nb" data-id="circles" type="button"><span class="nm">Circles of Same &amp; Other</span></button> <button class="nb" data-id="assimilation" type="button"><span class="nm">Becoming like the cosmos</span></button> <button class="nb" data-id="receptacle" type="button"><span class="nm">The Receptacle</span></button></p>`;
+  document.querySelectorAll("#detail .nb").forEach(b=>b.onclick=()=>select(b.dataset.id));
+}
+// loops list
+const loopsEl=document.getElementById("loops");
+LOOPS.forEach((L,i)=>{
+  const b=document.createElement("button"); b.className="loop"; b.type="button"; b.setAttribute("aria-pressed","false");
+  b.innerHTML=`<span class="n">${String(i+1).padStart(2,"0")}</span><span class="t">${esc(L.t)}</span><span class="d">${esc(L.d)}<br><span class="where">${L.seq.map(id=>esc(byId[id].label)).join(" → ")}</span></span>`;
+  b.onclick=()=>{ loopIdx = loopIdx===i?null:i; render(); };
+  loopsEl.appendChild(b);
+});
+showIntro();
+</script>
+
+</body>
+</html>
