@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Ludwig Wittgenstein">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Book Connectome · Philosophical Investigations</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: masthead, then a two-pane instrument — graph field left, reading panel right (stacks on phones). */
+:root{
+  --bg:#ECEEF1; --panel:#F7F8FA; --ink:#1A2130; --muted:#5B6576; --line:#C9CED8; --accent:#2B4C9B;
+  --g-picture:#A9741C; --g-games:#2B4C9B; --g-family:#6B48A8; --g-method:#1D7F7A; --g-rules:#C2661D; --g-private:#5F7A23; --g-inner:#A1418F; --g-aspect:#A83232;
+  --edge:#8F98A8; --tension:#C2661D;
+  --f-display:"Gloock", "Didot", Georgia, serif;
+  --f-body:"Literata", Georgia, "Times New Roman", serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F131B; --panel:#161B25; --ink:#DCE2EC; --muted:#8E98AA; --line:#2A3242; --accent:#8CA8F0;
+  --g-picture:#DDA54A; --g-games:#7F9DF0; --g-family:#B596F0; --g-method:#4FC3BB; --g-rules:#F09A4F; --g-private:#A8C460; --g-inner:#E07FCF; --g-aspect:#EE6F6F;
+  --edge:#566075; --tension:#F09A4F; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0F131B; --panel:#161B25; --ink:#DCE2EC; --muted:#8E98AA; --line:#2A3242; --accent:#8CA8F0;
+  --g-picture:#DDA54A; --g-games:#7F9DF0; --g-family:#B596F0; --g-method:#4FC3BB; --g-rules:#F09A4F; --g-private:#A8C460; --g-inner:#E07FCF; --g-aspect:#EE6F6F;
+  --edge:#566075; --tension:#F09A4F; color-scheme:dark }
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 28px}
+.wrap{max-width:1440px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 32px}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(30px,4.2vw,50px);line-height:1;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);max-width:62ch;margin:6px 0 0}
+.ratios{font-family:var(--f-mono);font-size:12px;color:var(--muted);letter-spacing:.06em;white-space:nowrap}
+.ratios b{color:var(--ink);font-weight:500}
+.legend{display:flex;flex-direction:column;gap:8px}
+.lrow{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-family:var(--f-mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none}
+.legend span.off{opacity:.35}
+.legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.legend .ek{display:inline-flex;align-items:center;gap:6px;cursor:default}
+.legend svg{display:block}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;min-height:760px}
+.field{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden;min-height:760px}
+.field svg{width:100%;height:100%;display:block;position:absolute;inset:0;touch-action:none}
+.hint{position:absolute;left:12px;bottom:10px;font-family:var(--f-mono);font-size:11px;color:var(--muted);pointer-events:none}
+.reset{position:absolute;right:10px;top:10px;font-family:var(--f-mono);font-size:11px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:5px 9px;cursor:pointer}
+.reset:focus-visible,.loop:focus-visible,.nb:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+aside{display:flex;flex-direction:column;gap:14px;min-width:0}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+.lab{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 8px}
+.loops{display:flex;flex-direction:column;gap:4px;max-height:560px;overflow-y:auto}
+.loop{all:unset;box-sizing:border-box;display:grid;grid-template-columns:22px 1fr;gap:8px;align-items:baseline;padding:6px 8px;border-radius:4px;cursor:pointer;width:100%}
+.loop:hover{background:var(--bg)}
+.loop.on{background:var(--bg);box-shadow:inset 2px 0 0 var(--accent)}
+.loop .n{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.loop .t{font-weight:600;font-size:14px}
+.loop .d{grid-column:2;font-size:13px;color:var(--muted);line-height:1.4}
+.loop:not(.on) .d{display:none}
+#detail h2{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.15;margin:0 0 4px;text-wrap:balance}
+#detail .grp{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em}
+#detail p{margin:8px 0}
+#detail blockquote{margin:10px 0;padding-left:12px;border-left:2px solid var(--line);font-style:italic;color:var(--muted);font-size:14px}
+.where{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.nbs{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+.nb{all:unset;cursor:pointer;font-size:13.5px;display:flex;gap:8px;align-items:baseline;padding:2px 0}
+.nb:hover .nm{text-decoration:underline}
+.nb .rel{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);min-width:64px;text-transform:uppercase;letter-spacing:.06em}
+/* graph */
+.edge{stroke:var(--edge);stroke-width:1.1;fill:none;opacity:.55}
+.edge.mirror{stroke-dasharray:4 4}
+.edge.tension{stroke:var(--tension);opacity:.6}
+.edge.dim{opacity:.07}
+.edge.hot{opacity:1;stroke-width:2.2;stroke:var(--accent)}
+.edge.loopedge{opacity:1;stroke-width:2.6;stroke:var(--accent);stroke-dasharray:7 6;animation:flow 1.2s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-26}}
+@media (prefers-reduced-motion:reduce){.edge.loopedge{animation:none}}
+.node .mark{stroke:var(--panel);stroke-width:2;cursor:pointer}
+.dl{font-family:var(--f-mono);font-size:10px;color:var(--muted);letter-spacing:.06em;font-weight:400}
+.edge.cross:not(.dim){opacity:.75}
+.node text{font-family:var(--f-body);font-size:11.5px;fill:var(--ink);paint-order:stroke;stroke:var(--panel);stroke-width:3.5px;stroke-linejoin:round;pointer-events:none}
+.node.dim{opacity:.15}
+.node.sel .mark{stroke:var(--ink);stroke-width:2.5}
+.node.inloop text{font-weight:600}
+.arrow{fill:var(--edge)}
+.arrow-hot{fill:var(--accent)}
+/* coda: the reader's circuits */
+.you{margin-top:28px;padding-top:28px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:20px}
+.you h2{font-family:var(--f-display);font-weight:400;font-size:clamp(26px,3.4vw,40px);line-height:1.05;margin:0}
+.chains{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px;counter-reset:c}
+.chain{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px 12px;counter-increment:c;display:grid;grid-template-columns:28px minmax(0,1fr);column-gap:8px}
+.chain::before{content:counter(c,upper-roman);font-family:var(--f-mono);font-size:12px;color:var(--muted);padding-top:5px}
+.chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px 0;min-width:0}
+.chips span,.chips b{font-size:13.5px;padding:3px 9px;border:1px solid var(--line);border-radius:3px;background:var(--bg)}
+.chips span+span::before,.chips span+b::before{content:"—";color:var(--muted);margin:0 7px 0 -3px}
+.chips span+span,.chips span+b{margin-left:14px;position:relative}
+.chips span+span::before,.chips span+b::before{position:absolute;left:-14px;top:50%;transform:translateY(-52%)}
+.chips span:first-child{font-weight:600;border-color:var(--g-family)}
+.chips b{font-weight:600;color:var(--panel);background:var(--accent);border-color:var(--accent)}
+.ev{grid-column:2;margin:10px 0 0;font-size:13.5px;color:var(--muted);max-width:90ch}
+.tag{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;padding:1px 6px;border-radius:3px;margin-right:8px;border:1px solid}
+.ev-t{color:var(--g-soul);border-color:var(--g-soul)}
+.mix-t{color:var(--g-picture);border-color:var(--g-picture)}
+.inf-t{color:var(--g-inner);border-color:var(--g-inner)}
+.diffgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.diff{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.diff h3{font-family:var(--f-display);font-weight:400;font-size:24px;margin:0}
+.diff dl{margin:0;display:grid;grid-template-columns:86px minmax(0,1fr);gap:6px 10px;font-size:14px}
+.diff dt{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-top:3px}
+.diff dd{margin:0}
+.blind{margin:auto 0 0;padding-top:10px;border-top:1px dashed var(--line);font-size:14px}
+.blind span{display:block;font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--tension);margin-bottom:3px}
+.cbody{display:flex;flex-direction:column;gap:8px;min-width:0}
+.ct{font-family:var(--f-display);font-weight:400;font-size:21px;margin:0;line-height:1.1}
+.chips .ret{border-style:dashed;color:var(--muted);background:transparent}
+.cbody .ev{margin:2px 0 0;color:var(--ink)}
+.settle{margin:0;font-size:13.5px;color:var(--muted)}
+.settle span{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;margin-right:8px;color:var(--accent)}
+footer{font-size:12.5px;color:var(--muted);max-width:90ch}
+@media (max-width:900px){.main{grid-template-columns:1fr}.field{min-height:520px;height:72vh}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Philosophical Investigations</h1>
+      <p class="sub">Ludwig Wittgenstein's remarks on meaning, rules, minds and seeing, laid out as a wiring diagram. Nodes are ideas tagged by section number; edges show what grounds, mirrors, or strains against what. The loops on the right are the circuits the remarks keep running.</p>
+    </div>
+    <div class="ratios">§1 → §693 · Part II i–xiv — 1953, tr. G. E. M. Anscombe</div>
+  </header>
+  <div class="legend" id="legend"></div>
+  <div class="main">
+    <div class="field" id="field">
+      <svg id="svg" aria-label="Network of ideas in Philosophical Investigations"></svg>
+      <button class="reset" id="reset" type="button">Reset view</button>
+      <div class="hint">Drag nodes · scroll or pinch to zoom · click to read</div>
+    </div>
+    <aside>
+      <div class="box">
+        <p class="lab">Loops — circuits in the argument</p>
+        <div class="loops" id="loops"></div>
+      </div>
+      <div class="box" id="detail"></div>
+    </aside>
+  </div>
+  <section class="you" id="circuits">
+    <div class="you-head">
+      <p class="lab">Coda — thought loops</p>
+      <h2>How the book thinks</h2>
+      <p class="sub">The big ideas the remarks keep cycling through, each followed from one concept to the next until it comes back around.</p>
+    </div>
+
+    <ol class="chains">
+      <li class="chain"><div class="cbody">
+        <h3 class="ct">Meaning</h3>
+        <div class="chips"><span>a word</span><span>the object it names</span><span>a picture of meaning</span><span>a word in use</span><span>a language-game</span><span class="ret">↺ a word</span></div>
+        <p class="ev">A word seems to stand for a thing. The picture fits a few cases, but watching words at work shows them doing many jobs, and each new puzzle tempts us back to the naming picture.</p>
+        <p class="settle"><span>Where it settles</span>Meaning as the role a word plays in a shared activity.</p>
+      </div></li>
+      <li class="chain"><div class="cbody">
+        <h3 class="ct">Rule</h3>
+        <div class="chips"><span>a rule</span><span>an interpretation</span><span>another interpretation</span><span>a practice</span><span>what we do</span><span class="ret">↺ a rule</span></div>
+        <p class="ev">Any rule can be read many ways, and every reading needs another reading. The chain stops in practice, in how people actually go on, which is what gave the rule its sense.</p>
+        <p class="settle"><span>Where it settles</span>Bedrock: following a rule is something we do together.</p>
+      </div></li>
+      <li class="chain"><div class="cbody">
+        <h3 class="ct">Sensation</h3>
+        <div class="chips"><span>a sensation</span><span>a private name</span><span>no way to check it</span><span>pain-behaviour</span><span>a shared word</span><span class="ret">↺ a sensation</span></div>
+        <p class="ev">A name for something only I can feel has nothing to hold it steady. The words we have for sensations hook onto cries, winces and circumstances, and through them back onto the feeling.</p>
+        <p class="settle"><span>Where it settles</span>The beetle drops out; the word stays usable.</p>
+      </div></li>
+      <li class="chain"><div class="cbody">
+        <h3 class="ct">Concept</h3>
+        <div class="chips"><span>a concept</span><span>its essence</span><span>games</span><span>overlapping likenesses</span><span>looking at cases</span><span class="ret">↺ a concept</span></div>
+        <p class="ev">Wanting a definition sends us looking for a common core. Games have none, only criss-crossing resemblances, and the concept holds together through the cases themselves.</p>
+        <p class="settle"><span>Where it settles</span>Family resemblance, with blurred edges that still work.</p>
+      </div></li>
+      <li class="chain"><div class="cbody">
+        <h3 class="ct">Puzzle</h3>
+        <div class="chips"><span>a puzzle</span><span>language idling</span><span>a captive picture</span><span>words brought home</span><span>clarity</span><span class="ret">↺ a puzzle</span></div>
+        <p class="ev">Problems appear when words leave the work they normally do. A picture grips us, we trace the words back to everyday use, the problem vanishes, and a new one forms elsewhere.</p>
+        <p class="settle"><span>Where it settles</span>The fly finds the way out of the fly-bottle, for now.</p>
+      </div></li>
+      <li class="chain"><div class="cbody">
+        <h3 class="ct">Understanding</h3>
+        <div class="chips"><span>understanding</span><span>an inner process?</span><span>outward circumstances</span><span>living human beings</span><span class="ret">↺ understanding</span></div>
+        <p class="ev">Understanding looks like something happening inside. What shows it is going on correctly, in the right circumstances, and that is something we see in people, not in their heads.</p>
+        <p class="settle"><span>Where it settles</span>An attitude toward a person rather than a theory about a mind.</p>
+      </div></li>
+      <li class="chain"><div class="cbody">
+        <h3 class="ct">Seeing</h3>
+        <div class="chips"><span>seeing</span><span>one aspect</span><span>another aspect</span><span>seeing-as</span><span>a shared form of life</span><span class="ret">↺ seeing</span></div>
+        <p class="ev">A drawing flips from duck to rabbit while nothing on the page changes. Noticing aspects depends on what we can share with others, and a lion that talked would share too little.</p>
+        <p class="settle"><span>Where it settles</span>Seeing is shaped by the life we see it from.</p>
+      </div></li>
+    </ol>
+  </section>
+
+
+  <footer>Built from Ludwig Wittgenstein, <i>Philosophical Investigations</i>, tr. G. E. M. Anscombe (2nd ed., Blackwell, 1958). Section numbers refer to Part I; Part II by section. The one quotation is §309; everything else is paraphrase.</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+const PARTS = {I:{name:"Part I (§§1–693)",short:"I",shape:d3.symbolCircle}, II:{name:"Part II (i–xiv)",short:"II",shape:d3.symbolDiamond}};
+const GROUPS = {
+  picture:{name:"The naming picture"}, games:{name:"Language-games & use"}, family:{name:"Concepts & exactness"},
+  method:{name:"Philosophy as therapy"}, rules:{name:"Following a rule"}, private:{name:"Private language"},
+  inner:{name:"Understanding & the inner"}, aspect:{name:"Seeing-as & others"}
+};
+// [id, label, group, part, where, gloss, quote]
+const N = [
+ ["augustine","Augustine's picture","picture","I","§1","The book opens with Augustine on learning to speak: each word names an object, a sentence combines names, and the meaning of a word is the object it stands for.",""],
+ ["slab","The builders: 'Slab!'","picture","I","§2","A language of four words for a builder and his assistant. It's a language for which Augustine's picture is correct, which shows how narrow the picture is.",""],
+ ["fivered","Five red apples","picture","I","§1","A shopkeeper handed a slip reading 'five red apples' looks up a colour chart and counts aloud. Nobody asks what 'five' means; he just acts.",""],
+ ["tools","Words as tools","picture","I","§§11–14","Hammer, pliers, glue, nails. Words look alike on the page, the way the handles in a locomotive cab do, but their functions differ completely.",""],
+ ["ostension","Ostensive teaching","picture","I","§§6, 28–36","Pointing can't fix meaning on its own. The learner must already know what kind of thing is being named, a colour, a number, a shape.",""],
+ ["naming","Naming is a preparation","picture","I","§§26–27, 49","Naming something isn't yet a move in the language-game, any more than setting a piece on the board is a move in chess.",""],
+ ["simples","Simples","picture","I","§§39–64","Wittgenstein turns on his own earlier view that names must refer to simple objects. 'Simple' and 'composite' mean different things in different games.",""],
+
+ ["langgame","Language-games","games","I","§§7, 23","Language and the activities it's woven into, taken as a whole: giving orders, describing, reporting, making up a story, guessing riddles, thanking, cursing, praying.",""],
+ ["use","Meaning is use","games","I","§43","For a large class of cases, the meaning of a word is its use in the language. Asking for the meaning is asking how the word is used.",""],
+ ["formoflife","Form of life","games","I","§§19, 23, 241","Speaking belongs to an activity, a way of living. What people share isn't a set of opinions but the life in which their words make sense.",""],
+ ["multiplicity","Countless kinds of sentence","games","I","§23","No fixed list of sentence types exists. New language-games appear, others get forgotten.",""],
+ ["explend","Explanations come to an end","games","I","§§1, 87, 217","Every explanation leaves room for a further question, but explanations stop somewhere, and that's not a failure.",""],
+
+ ["games","What is common to all games?","family","I","§66","Board games, ball games, card games, ring-a-ring-a-roses. Don't say there must be something common. Look and see.",""],
+ ["familyres","Family resemblances","family","I","§§67–71","Overlapping, criss-crossing similarities like those among relatives. A concept holds together like a thread twisted from many fibres, none of which runs the whole length.",""],
+ ["blurred","Blurred concepts","family","I","§§71, 88","A blurred photograph is sometimes exactly what's needed. Exactness is relative to a purpose; 'stand roughly here' can be perfectly clear.",""],
+ ["ideal","The crystalline purity of logic","family","I","§§97–107","The demand that logic be perfectly pure was a requirement we brought, not a result we found. It puts us on slippery ice with no friction.",""],
+ ["rough","Back to the rough ground","family","I","§107","To walk you need friction. Return to how language is actually used, with all its irregularities.",""],
+
+ ["holiday","Idling language","method","I","§38","Philosophical problems arise when language goes on holiday: words idling, cut off from the work they normally do.",""],
+ ["bewitch","Bewitchment by language","method","I","§109","Philosophy fights against our thinking being bewitched by the forms of our own language.",""],
+ ["captive","The captive picture","method","I","§115","We were stuck inside a picture we couldn't step out of, since our own language kept presenting it to us.",""],
+ ["everyday","Back to everyday use","method","I","§116","Bring words back from their metaphysical to their everyday use. Ask whether a word is ever actually used this way in its home.",""],
+ ["describe","Describe, don't explain","method","I","§§109, 124, 126","Philosophy doesn't reform how we speak or ground it in something deeper. It describes, and changes nothing.",""],
+ ["perspicuous","Perspicuous representation","method","I","§122","Our grammar lacks surveyability. A clear overview that shows the connections is what produces understanding.",""],
+ ["peace","Problems disappear","method","I","§133","Clarity sought is complete clarity, which means the problems vanish. There isn't one method, but methods, like different therapies.",""],
+ ["grammar","Essence in grammar","method","I","§§90, 371–373","What kind of thing something is gets expressed by grammar. Theology as grammar.",""],
+ ["flybottle","The fly-bottle","method","I","§309","Philosophy's aim stated as an image of a trapped fly.","To shew the fly the way out of the fly-bottle."],
+
+ ["series","Continue the series","rules","I","§§143–155, 185","A pupil follows 'add 2' up to 1000, then writes 1004, 1008, and insists he's going on the same way.",""],
+ ["signpost","A rule as a signpost","rules","I","§§85, 198","A rule stands there like a signpost. A signpost can be doubted, but that doesn't mean we doubt it.",""],
+ ["paradox","The rule-following paradox","rules","I","§201","No course of action could be fixed by a rule, because any action can be made to accord with it on some interpretation. The way out: obeying isn't interpreting.",""],
+ ["practice","Obeying a rule is a practice","rules","I","§§199, 202","Following a rule is a custom, an institution. It can't be done just once, by one person, privately.",""],
+ ["blindly","Following without choosing","rules","I","§219","When I follow a rule I don't pick among options. I just go on, without a reason I could give.",""],
+ ["bedrock","Bedrock","rules","I","§217","Justifications run out at some point. Then all that's left is to point to what one does.",""],
+ ["agreement","Agreement in judgments","rules","I","§§240–242","Communication needs agreement not only in definitions but in judgments, and that agreement is in form of life, not in opinions.",""],
+
+ ["privlang","A private language","private","I","§243","A language whose words refer to what only the speaker can know, his immediate private sensations, so no one else could understand it.",""],
+ ["painexp","Pain-behaviour","private","I","§244","How does a child learn 'pain'? Words are attached to the natural expression of pain and replace the cry.",""],
+ ["diary","The diary 'S'","private","I","§258","Write 'S' whenever a certain sensation recurs. With no criterion of correctness, whatever seems right is right, so 'right' means nothing.",""],
+ ["newspaper","Checking a newspaper with itself","private","I","§265","Confirming a private memory by another private memory is like buying several copies of the morning paper to make sure it's true.",""],
+ ["beetle","Beetle in a box","private","I","§293","Everyone has a box only they can see into and calls what's inside a beetle. The thing in the box drops out as irrelevant to the word's use.",""],
+ ["nothing","The grammar of sensation","private","I","§304","The sensation isn't denied. The point is that a nothing serves as well as a something about which nothing can be said.",""],
+ ["livinghuman","Living human beings","private","I","§281","Seeing, hearing and feeling pain get attributed to living people and to what behaves like them, not to stones or machines.",""],
+ ["criteria","Outward criteria","private","I","§580","Whatever goes on inside, our concepts for it get their sense from outward criteria: behaviour and circumstances.",""],
+
+ ["understanding","'Now I can go on!'","inner","I","§§151–155","Understanding isn't a mental process accompanying words. What justifies 'now I understand' is the circumstances.",""],
+ ["reading","Reading machines","inner","I","§§156–171","Is reading a special inner experience? Compare the beginner, the fluent reader and the faker; no inner mark settles it.",""],
+ ["meaningsth","Meaning something","inner","I","§§661–693","Meaning him, meaning that, isn't an act of mind that travels alongside the words and hooks onto the object.",""],
+ ["thinking","Thinking isn't an accompaniment","inner","I","§§327–342","Thinking isn't an inner process running parallel to speech that could be peeled off from it.",""],
+ ["expect","Expectation and its fulfilment","inner","I","§§437–465","Expectation and the event that fulfils it make contact in language, not through a mental shadow of the event.",""],
+ ["soul","The body as picture of the soul","inner","II","II iv","Our relation to other people isn't a theory that they have minds. It's a stance we take toward a living human being.",""],
+
+ ["duckrabbit","The duck-rabbit","aspect","II","II xi","A drawing from Jastrow that can be seen as a duck or a rabbit. Nothing in the drawing changes when the aspect does.",""],
+ ["seeingas","Seeing-as","aspect","II","II xi","The dawning of an aspect versus continuous seeing. Seeing something as something is half visual experience, half thought.",""],
+ ["aspectblind","Aspect-blindness","aspect","II","II xi","Imagine someone who can't see something as something. What would he lack? The experience of a word's meaning, perhaps.",""],
+ ["lion","The talking lion","aspect","II","II xi","Even if a lion spoke, we couldn't understand it. Understanding needs a shared form of life, not a shared vocabulary.",""],
+ ["imponderable","Imponderable evidence","aspect","II","II xi","Subtleties of glance, gesture and tone give real evidence about other people, though they can't be codified.",""],
+ ["moore","Moore's paradox","aspect","II","II x","'I believe it's raining and it isn't' is absurd to say, though it could be true of me. First person belief isn't a report.",""],
+ ["psychology","Confusion in psychology","aspect","II","II xiv","Psychology pairs experimental methods with confused concepts, and having the methods hides the confusion.",""],
+];
+const nodes = N.map(([id,label,group,d,where,gloss,quote])=>({id,label,group,d,where,gloss,quote}));
+const byId = Object.fromEntries(nodes.map(n=>[n.id,n]));
+const E = [
+ ["augustine","slab","d","fits only"],["augustine","fivered","t","undercut by"],["fivered","explend","d","shows"],
+ ["slab","langgame","d","first"],["augustine","ostension","d","relies on"],["ostension","naming","d","is only"],
+ ["naming","langgame","d","prepares a move in"],["augustine","simples","d","Tractatus version"],["simples","familyres","t","dissolved by"],
+ ["tools","use","d","points to"],["slab","tools","d","then"],["langgame","multiplicity","d","comes in"],
+ ["langgame","use","d","gives"],["use","formoflife","d","embedded in"],["langgame","formoflife","d","part of"],
+ ["explend","bedrock","m","same stopping"],["use","augustine","t","replaces"],
+ ["games","familyres","d","answered by"],["familyres","blurred","d","so"],["blurred","ideal","t","against"],
+ ["ideal","rough","d","cured by"],["rough","games","d","look at"],["familyres","use","m","no essence"],
+ ["holiday","bewitch","d","source of"],["bewitch","captive","d","by"],["captive","everyday","d","undone by"],
+ ["everyday","describe","d","so"],["describe","perspicuous","d","aims at"],["perspicuous","peace","d","yields"],
+ ["peace","flybottle","d","image"],["flybottle","holiday","d","new trap"],["grammar","describe","d","work of"],
+ ["ideal","captive","m","another picture"],["augustine","captive","m","the first picture"],["everyday","use","d","restores"],
+ ["series","paradox","d","generalizes into"],["signpost","paradox","d","doubt about"],["paradox","practice","d","resolved by"],
+ ["practice","blindly","d","shows"],["blindly","bedrock","d","ends at"],["bedrock","agreement","d","rests on"],
+ ["agreement","series","d","makes 'same' possible"],["agreement","formoflife","d","is in"],["practice","privlang","d","rules out"],
+ ["privlang","diary","d","tested by"],["diary","newspaper","d","like"],["newspaper","criteria","d","needs"],
+ ["criteria","painexp","d","found in"],["painexp","beetle","d","so"],["beetle","privlang","t","empties"],
+ ["beetle","nothing","d","clarified by"],["painexp","livinghuman","d","only of"],["livinghuman","soul","m","attitude"],
+ ["privlang","augustine","m","naming inner objects"],["beetle","use","m","use, not object"],
+ ["understanding","series","d","tested in"],["understanding","reading","d","compared with"],["reading","criteria","d","needs"],
+ ["meaningsth","criteria","d","needs"],["thinking","meaningsth","m","same mistake"],["expect","grammar","d","in"],
+ ["understanding","soul","d","toward"],["soul","understanding","d","grounds"],["meaningsth","understanding","m","not a process"],
+ ["duckrabbit","seeingas","d","shows"],["seeingas","aspectblind","d","its absence"],["aspectblind","meaningsth","m","experience of meaning"],
+ ["seeingas","lion","d","limits of"],["lion","formoflife","d","needs"],["imponderable","seeingas","d","fine shades"],
+ ["agreement","imponderable","d","beyond rules"],["moore","criteria","m","first person"],["psychology","bewitch","m","conceptual confusion"],
+ ["lion","agreement","d","presupposes"],["criteria","understanding","d","circumstances"],["criteria","livinghuman","d","anchored in"],
+];
+const LOOPS = [
+ {t:"The picture and the cure",d:"A picture of meaning as naming lies in our language and keeps reasserting itself; looking at use dissolves it, until a new question pulls us back toward naming.",seq:["augustine","captive","everyday","use","langgame","slab","augustine"]},
+ {t:"Rule regress",d:"'Add 2' fails to fix what comes after 1000; any interpretation needs another; the regress stops only in practice, in what we do, and in our agreement, which is what made 'the same' meaningful.",seq:["series","paradox","practice","blindly","bedrock","agreement","series"]},
+ {t:"Beetle in a box",d:"A private language needs a criterion, but checking memory with memory is buying a second newspaper; criteria are outward, found in pain-behaviour, and the private object drops out.",seq:["privlang","diary","newspaper","criteria","painexp","beetle","privlang"]},
+ {t:"Don't think, look",d:"Games share no essence, only family resemblances; blurred concepts are usable; the demand for crystalline purity sends us onto ice, and the cure is to go back and look at games.",seq:["games","familyres","blurred","ideal","rough","games"]},
+ {t:"Philosophy's own circuit",d:"Language idles, bewitches, holds us captive; we bring words home, describe, and get an overview that makes the problem vanish. The fly gets out, until the next bottle.",seq:["holiday","bewitch","captive","everyday","describe","perspicuous","peace","flybottle","holiday"]},
+ {t:"Inner and outer",d:"Understanding, reading and meaning all look like inner processes; each turns out to need outward criteria, which lead to an attitude toward a living person, which is what understanding rested on.",seq:["understanding","reading","criteria","livinghuman","soul","understanding"]},
+ {t:"Where explanations end",d:"The shopkeeper just acts; explanations stop at bedrock, bedrock is agreement in form of life, and forms of life are where language-games live.",seq:["fivered","explend","bedrock","agreement","formoflife","langgame","use","augustine","fivered"]},
+ {t:"Seeing and agreeing",d:"The duck-rabbit shows seeing-as; aspect-blindness shows what it would be to lack it; a talking lion shows that understanding needs a shared life, which shows up as imponderable evidence in glances and tones.",seq:["duckrabbit","seeingas","lion","agreement","imponderable","seeingas"]},
+];
+const INTRO = `
+   <p class="lab">How to read it</p>
+   <h2>An album of remarks</h2>
+   <p>Wittgenstein called the book an album: remarks that criss-cross the same ground from different directions. The graph follows those crossings, from Augustine's picture of naming to language-games, rules, private sensations and seeing-as.</p>
+   <p>Circles are from Part I, numbered remarks finished by 1945. Diamonds are from Part II, written 1946–49.</p>
+   <p>Good places to start: <button class="nb" data-id="augustine" type="button"><span class="nm">Augustine's picture</span></button> <button class="nb" data-id="paradox" type="button"><span class="nm">The rule-following paradox</span></button> <button class="nb" data-id="beetle" type="button"><span class="nm">Beetle in a box</span></button> <button class="nb" data-id="duckrabbit" type="button"><span class="nm">The duck-rabbit</span></button></p>`;
+
+const links = E.map(([s,t,k,r])=>({source:s,target:t,kind:k,rel:r}));
+const key = (a,b)=>a<b?a+"|"+b:b+"|"+a;
+const edgeKeys = new Set(links.map(l=>key(l.source,l.target)));
+LOOPS.forEach(L=>L.seq.forEach((id,i)=>{ if(!byId[id]) console.error("missing",id); if(i===0) return; const a=L.seq[i-1]; if(!edgeKeys.has(key(a,id))){edgeKeys.add(key(a,id)); links.push({source:a,target:id,kind:"d",rel:"loops to"});}}));
+links.forEach(l=>{ if(!byId[l.source]||!byId[l.target]) console.error("bad edge",l.source,l.target); });
+
+const deg = {}; links.forEach(l=>{deg[l.source]=(deg[l.source]||0)+1; deg[l.target]=(deg[l.target]||0)+1;});
+nodes.forEach(n=>n.r = 4.5 + Math.sqrt(deg[n.id]||1)*2.4);
+
+const gcol = g => `var(--g-${g})`;
+const SHAPE = Object.fromEntries(Object.entries(PARTS).map(([k,v])=>[k,v.shape]));
+const symPath = (d,scale=1)=> d3.symbol().type(SHAPE[d.d]).size(Math.PI*(d.r*scale)**2*(SHAPE[d.d]===d3.symbolCircle?1:0.95))();
+const shapeIcon = k => `<svg width="12" height="12" viewBox="-6 -6 12 12"><path d="${d3.symbol().type(SHAPE[k]).size(60)()}" fill="var(--muted)"/></svg>`;
+
+// legend
+const hidden = new Set(), hiddenD = new Set();
+const legend = document.getElementById("legend");
+function chip(html, onT){ const s=document.createElement("span"); s.innerHTML=html; s.tabIndex=0; s.setAttribute("role","button");
+  const tog=()=>{onT(); s.classList.toggle("off"); applyVis();}; s.onclick=tog; s.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tog();}}; return s; }
+const row1=document.createElement("div"); row1.className="lrow";
+Object.entries(PARTS).forEach(([k,v])=>row1.appendChild(chip(`${shapeIcon(k)}${v.name}`,()=>hiddenD.has(k)?hiddenD.delete(k):hiddenD.add(k))));
+row1.insertAdjacentHTML("beforeend",`
+ <span class="ek"><svg width="26" height="8"><line x1="0" y1="4" x2="26" y2="4" stroke="var(--edge)" stroke-width="1.5"/></svg>grounds</span>
+ <span class="ek"><svg width="26" height="8"><line x1="0" y1="4" x2="26" y2="4" stroke="var(--edge)" stroke-width="1.5" stroke-dasharray="4 4"/></svg>mirrors</span>
+ <span class="ek"><svg width="26" height="8"><line x1="0" y1="4" x2="26" y2="4" stroke="var(--tension)" stroke-width="1.5"/></svg>strains against</span>`);
+const row2=document.createElement("div"); row2.className="lrow";
+Object.entries(GROUPS).forEach(([k,v])=>row2.appendChild(chip(`<i style="background:${gcol(k)}"></i>${v.name}`,()=>hidden.has(k)?hidden.delete(k):hidden.add(k))));
+legend.append(row1,row2);
+
+// graph
+const svg = d3.select("#svg");
+const field = document.getElementById("field");
+let W = field.clientWidth, H = field.clientHeight;
+const defs = svg.append("defs");
+[["arr","arrow"],["arrh","arrow-hot"]].forEach(([id,cls])=>defs.append("marker").attr("id",id).attr("viewBox","0 -4 8 8").attr("refX",8).attr("refY",0)
+  .attr("markerWidth",6).attr("markerHeight",6).attr("orient","auto").append("path").attr("d","M0,-4L8,0L0,4").attr("class",cls));
+const g = svg.append("g");
+const zoom = d3.zoom().scaleExtent([0.25,3]).on("zoom",e=>g.attr("transform",e.transform));
+svg.call(zoom).on("dblclick.zoom",null);
+
+const gkeys = Object.keys(GROUPS);
+function anchors(){ const R=Math.min(W,H)*0.33; const o={}; gkeys.forEach((k,i)=>{const a=-Math.PI/2+i*2*Math.PI/gkeys.length; o[k]={x:W/2+R*Math.cos(a)*1.2,y:H/2+R*Math.sin(a)};}); return o;}
+let A = anchors();
+
+const sim = d3.forceSimulation(nodes)
+ .force("link",d3.forceLink(links).id(d=>d.id).distance(l=>l.source.group===l.target.group?50:105).strength(0.3))
+ .force("charge",d3.forceManyBody().strength(-210))
+ .force("collide",d3.forceCollide(d=>d.r+14))
+ .force("x",d3.forceX(d=>A[d.group].x).strength(0.1))
+ .force("y",d3.forceY(d=>A[d.group].y).strength(0.1));
+
+const edge = g.append("g").selectAll("path").data(links).join("path")
+  .attr("class",d=>"edge "+(d.kind==="m"?"mirror":d.kind==="t"?"tension":"")+(d.source.d!==d.target.d?" cross":"")).attr("marker-end","url(#arr)");
+const node = g.append("g").selectAll("g").data(nodes).join("g").attr("class","node")
+  .call(d3.drag().on("start",(e,d)=>{if(!e.active)sim.alphaTarget(.2).restart();d.fx=d.x;d.fy=d.y;})
+    .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y;}).on("end",(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}))
+  .on("click",(e,d)=>{e.stopPropagation(); select(d.id);});
+node.append("path").attr("class","mark").attr("d",d=>symPath(d)).attr("fill",d=>gcol(d.group));
+node.append("text").text(d=>d.label).attr("x",d=>d.r+4).attr("y",4);
+node.append("title").text(d=>`${d.label} · ${PARTS[d.d].name}`);
+
+sim.on("tick",()=>{
+  edge.attr("d",d=>{const dx=d.target.x-d.source.x, dy=d.target.y-d.source.y, L=Math.hypot(dx,dy)||1;
+    const tx=d.target.x-dx/L*(d.target.r+3), ty=d.target.y-dy/L*(d.target.r+3);
+    const mx=(d.source.x+tx)/2 - dy*0.08, my=(d.source.y+ty)/2 + dx*0.08;
+    return `M${d.source.x},${d.source.y}Q${mx},${my} ${tx},${ty}`;});
+  node.attr("transform",d=>`translate(${d.x},${d.y})`);
+});
+
+svg.on("click",()=>clearAll());
+document.getElementById("reset").onclick=()=>{svg.transition().duration(500).call(zoom.transform,d3.zoomIdentity); clearAll();};
+new ResizeObserver(()=>{W=field.clientWidth;H=field.clientHeight;A=anchors();sim.force("x").x(d=>A[d.group].x);sim.force("y").y(d=>A[d.group].y);sim.alpha(.3).restart();}).observe(field);
+
+let selected=null, loopIdx=null;
+const isHidden = d => hidden.has(d.group)||hiddenD.has(d.d);
+function applyVis(){
+  node.attr("display",d=>isHidden(d)?"none":null);
+  edge.attr("display",d=>isHidden(d.source)||isHidden(d.target)?"none":null);
+}
+function clearAll(){ selected=null; loopIdx=null; render(); showIntro(); }
+function render(){
+  document.querySelectorAll(".loop").forEach((b,i)=>{b.classList.toggle("on",i===loopIdx); b.setAttribute("aria-pressed",i===loopIdx);});
+  if(loopIdx!==null){
+    const seq=LOOPS[loopIdx].seq, ids=new Set(seq), pairs=new Set(seq.slice(1).map((id,i)=>key(seq[i],id)));
+    node.classed("dim",d=>!ids.has(d.id)).classed("inloop",d=>ids.has(d.id)).classed("sel",d=>d.id===selected);
+    edge.classed("dim",d=>!pairs.has(key(d.source.id,d.target.id))).classed("loopedge",d=>pairs.has(key(d.source.id,d.target.id))).classed("hot",false)
+      .attr("marker-end",d=>pairs.has(key(d.source.id,d.target.id))?"url(#arrh)":"url(#arr)");
+    return;
+  }
+  node.classed("inloop",false);
+  edge.classed("loopedge",false);
+  if(selected){
+    const nb=new Set([selected]); links.forEach(l=>{if(l.source.id===selected)nb.add(l.target.id); if(l.target.id===selected)nb.add(l.source.id);});
+    node.classed("dim",d=>!nb.has(d.id)).classed("sel",d=>d.id===selected);
+    const hot=d=>d.source.id===selected||d.target.id===selected;
+    edge.classed("dim",d=>!hot(d)).classed("hot",hot).attr("marker-end",d=>hot(d)?"url(#arrh)":"url(#arr)");
+  } else {
+    node.classed("dim",false).classed("sel",false);
+    edge.classed("dim",false).classed("hot",false).attr("marker-end","url(#arr)");
+  }
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+const nbBtn = (o,rel)=>`<button class="nb" data-id="${o.id}" type="button"><span class="rel">${esc(rel)}</span><span class="nm">${esc(o.label)}</span><span class="dl">${PARTS[o.d].short}</span></button>`;
+function select(id){
+  selected=id; render(); const n=byId[id];
+  const out=links.filter(l=>l.source.id===id).map(l=>({o:l.target,rel:l.rel}));
+  const inc=links.filter(l=>l.target.id===id).map(l=>({o:l.source,rel:l.rel}));
+  const inLoops=LOOPS.map((L,i)=>L.seq.includes(id)?i:-1).filter(i=>i>=0);
+  document.getElementById("detail").innerHTML=`
+   <div class="grp" style="color:${gcol(n.group)}">${GROUPS[n.group].name}</div>
+   <h2>${esc(n.label)}</h2>
+   <div class="where">${esc(n.where)} · ${PARTS[n.d].name}</div>
+   <p>${esc(n.gloss)}</p>
+   ${n.quote?`<blockquote>“${esc(n.quote)}”</blockquote>`:""}
+   ${out.length?`<p class="lab" style="margin-top:12px">Feeds into</p><div class="nbs">${out.map(x=>nbBtn(x.o,x.rel)).join("")}</div>`:""}
+   ${inc.length?`<p class="lab" style="margin-top:12px">Fed by</p><div class="nbs">${inc.map(x=>nbBtn(x.o,x.rel)).join("")}</div>`:""}
+   ${inLoops.length?`<p class="lab" style="margin-top:12px">Part of loops</p><div class="nbs">${inLoops.map(i=>`<button class="nb" data-loop="${i}" type="button"><span class="rel">loop ${i+1}</span><span class="nm">${esc(LOOPS[i].t)}</span></button>`).join("")}</div>`:""}`;
+  document.querySelectorAll("#detail .nb").forEach(b=>b.onclick=()=>{ if(b.dataset.loop){loopIdx=+b.dataset.loop; render();} else {loopIdx=null; select(b.dataset.id);} });
+}
+function showIntro(){
+  document.getElementById("detail").innerHTML=INTRO;
+  document.querySelectorAll("#detail .nb").forEach(b=>b.onclick=()=>select(b.dataset.id));
+}
+const loopsEl=document.getElementById("loops");
+LOOPS.forEach((L,i)=>{
+  const ds=[...new Set(L.seq.map(id=>byId[id].d))].map(k=>PARTS[k].short).join("+");
+  const b=document.createElement("button"); b.className="loop"; b.type="button"; b.setAttribute("aria-pressed","false");
+  b.innerHTML=`<span class="n">${String(i+1).padStart(2,"0")}</span><span class="t">${esc(L.t)} <span class="dl">${ds}</span></span><span class="d">${esc(L.d)}<br><span class="where">${L.seq.map(id=>esc(byId[id].label)).join(" → ")}</span></span>`;
+  b.onclick=()=>{ loopIdx = loopIdx===i?null:i; render(); };
+  loopsEl.appendChild(b);
+});
+showIntro();
+</script>
+
+</body>
+</html>

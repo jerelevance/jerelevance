@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="George Lakoff &amp; Mark Johnson">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Book Connectome · Metaphors We Live By</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: masthead, then a two-pane instrument — graph field left, reading panel right (stacks on phones). */
+:root{
+  --bg:#ECEEF1; --panel:#F7F8FA; --ink:#1A2130; --muted:#5B6576; --line:#C9CED8; --accent:#2B4C9B;
+  --g-concept:#A9741C; --g-structural:#2B4C9B; --g-orient:#6B48A8; --g-ontic:#1D7F7A; --g-ground:#C2661D; --g-meaning:#5F7A23; --g-truth:#A1418F; --g-neural:#A83232;
+  --edge:#8F98A8; --tension:#C2661D;
+  --f-display:"Gloock", "Didot", Georgia, serif;
+  --f-body:"Literata", Georgia, "Times New Roman", serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F131B; --panel:#161B25; --ink:#DCE2EC; --muted:#8E98AA; --line:#2A3242; --accent:#8CA8F0;
+  --g-concept:#DDA54A; --g-structural:#7F9DF0; --g-orient:#B596F0; --g-ontic:#4FC3BB; --g-ground:#F09A4F; --g-meaning:#A8C460; --g-truth:#E07FCF; --g-neural:#EE6F6F;
+  --edge:#566075; --tension:#F09A4F; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0F131B; --panel:#161B25; --ink:#DCE2EC; --muted:#8E98AA; --line:#2A3242; --accent:#8CA8F0;
+  --g-concept:#DDA54A; --g-structural:#7F9DF0; --g-orient:#B596F0; --g-ontic:#4FC3BB; --g-ground:#F09A4F; --g-meaning:#A8C460; --g-truth:#E07FCF; --g-neural:#EE6F6F;
+  --edge:#566075; --tension:#F09A4F; color-scheme:dark }
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 28px}
+.wrap{max-width:1440px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 32px}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(30px,4.2vw,50px);line-height:1;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);max-width:62ch;margin:6px 0 0}
+.ratios{font-family:var(--f-mono);font-size:12px;color:var(--muted);letter-spacing:.06em;white-space:nowrap}
+.ratios b{color:var(--ink);font-weight:500}
+.legend{display:flex;flex-direction:column;gap:8px}
+.lrow{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-family:var(--f-mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none}
+.legend span.off{opacity:.35}
+.legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.legend .ek{display:inline-flex;align-items:center;gap:6px;cursor:default}
+.legend svg{display:block}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;min-height:760px}
+.field{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden;min-height:760px}
+.field svg{width:100%;height:100%;display:block;position:absolute;inset:0;touch-action:none}
+.hint{position:absolute;left:12px;bottom:10px;font-family:var(--f-mono);font-size:11px;color:var(--muted);pointer-events:none}
+.reset{position:absolute;right:10px;top:10px;font-family:var(--f-mono);font-size:11px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:5px 9px;cursor:pointer}
+.reset:focus-visible,.loop:focus-visible,.nb:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+aside{display:flex;flex-direction:column;gap:14px;min-width:0}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+.lab{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 8px}
+.loops{display:flex;flex-direction:column;gap:4px;max-height:560px;overflow-y:auto}
+.loop{all:unset;box-sizing:border-box;display:grid;grid-template-columns:22px 1fr;gap:8px;align-items:baseline;padding:6px 8px;border-radius:4px;cursor:pointer;width:100%}
+.loop:hover{background:var(--bg)}
+.loop.on{background:var(--bg);box-shadow:inset 2px 0 0 var(--accent)}
+.loop .n{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.loop .t{font-weight:600;font-size:14px}
+.loop .d{grid-column:2;font-size:13px;color:var(--muted);line-height:1.4}
+.loop:not(.on) .d{display:none}
+#detail h2{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.15;margin:0 0 4px;text-wrap:balance}
+#detail .grp{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em}
+#detail p{margin:8px 0}
+#detail blockquote{margin:10px 0;padding-left:12px;border-left:2px solid var(--line);font-style:italic;color:var(--muted);font-size:14px}
+.where{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.nbs{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+.nb{all:unset;cursor:pointer;font-size:13.5px;display:flex;gap:8px;align-items:baseline;padding:2px 0}
+.nb:hover .nm{text-decoration:underline}
+.nb .rel{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);min-width:64px;text-transform:uppercase;letter-spacing:.06em}
+/* graph */
+.edge{stroke:var(--edge);stroke-width:1.1;fill:none;opacity:.55}
+.edge.mirror{stroke-dasharray:4 4}
+.edge.tension{stroke:var(--tension);opacity:.6}
+.edge.dim{opacity:.07}
+.edge.hot{opacity:1;stroke-width:2.2;stroke:var(--accent)}
+.edge.loopedge{opacity:1;stroke-width:2.6;stroke:var(--accent);stroke-dasharray:7 6;animation:flow 1.2s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-26}}
+@media (prefers-reduced-motion:reduce){.edge.loopedge{animation:none}}
+.node .mark{stroke:var(--panel);stroke-width:2;cursor:pointer}
+.dl{font-family:var(--f-mono);font-size:10px;color:var(--muted);letter-spacing:.06em;font-weight:400}
+.edge.cross:not(.dim){opacity:.75}
+.node text{font-family:var(--f-body);font-size:11.5px;fill:var(--ink);paint-order:stroke;stroke:var(--panel);stroke-width:3.5px;stroke-linejoin:round;pointer-events:none}
+.node.dim{opacity:.15}
+.node.sel .mark{stroke:var(--ink);stroke-width:2.5}
+.node.inloop text{font-weight:600}
+.arrow{fill:var(--edge)}
+.arrow-hot{fill:var(--accent)}
+/* coda: the reader's circuits */
+.you{margin-top:28px;padding-top:28px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:20px}
+.you h2{font-family:var(--f-display);font-weight:400;font-size:clamp(26px,3.4vw,40px);line-height:1.05;margin:0}
+.chains{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px;counter-reset:c}
+.chain{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px 12px;counter-increment:c;display:grid;grid-template-columns:28px minmax(0,1fr);column-gap:8px}
+.chain::before{content:counter(c,upper-roman);font-family:var(--f-mono);font-size:12px;color:var(--muted);padding-top:5px}
+.chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px 0;min-width:0}
+.chips span,.chips b{font-size:13.5px;padding:3px 9px;border:1px solid var(--line);border-radius:3px;background:var(--bg)}
+.chips span+span::before,.chips span+b::before{content:"—";color:var(--muted);margin:0 7px 0 -3px}
+.chips span+span,.chips span+b{margin-left:14px;position:relative}
+.chips span+span::before,.chips span+b::before{position:absolute;left:-14px;top:50%;transform:translateY(-52%)}
+.chips span:first-child{font-weight:600;border-color:var(--g-orient)}
+.chips b{font-weight:600;color:var(--panel);background:var(--accent);border-color:var(--accent)}
+.ev{grid-column:2;margin:10px 0 0;font-size:13.5px;color:var(--muted);max-width:90ch}
+.tag{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;padding:1px 6px;border-radius:3px;margin-right:8px;border:1px solid}
+.ev-t{color:var(--g-soul);border-color:var(--g-soul)}
+.mix-t{color:var(--g-concept);border-color:var(--g-concept)}
+.inf-t{color:var(--g-truth);border-color:var(--g-truth)}
+.diffgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.diff{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.diff h3{font-family:var(--f-display);font-weight:400;font-size:24px;margin:0}
+.diff dl{margin:0;display:grid;grid-template-columns:86px minmax(0,1fr);gap:6px 10px;font-size:14px}
+.diff dt{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-top:3px}
+.diff dd{margin:0}
+.blind{margin:auto 0 0;padding-top:10px;border-top:1px dashed var(--line);font-size:14px}
+.blind span{display:block;font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--tension);margin-bottom:3px}
+.cbody{display:flex;flex-direction:column;gap:8px;min-width:0}
+.ct{font-family:var(--f-display);font-weight:400;font-size:21px;margin:0;line-height:1.1}
+.chips .ret{border-style:dashed;color:var(--muted);background:transparent}
+.cbody .ev{margin:2px 0 0;color:var(--ink)}
+.settle{margin:0;font-size:13.5px;color:var(--muted)}
+.settle span{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;margin-right:8px;color:var(--accent)}
+footer{font-size:12.5px;color:var(--muted);max-width:90ch}
+@media (max-width:900px){.main{grid-template-columns:1fr}.field{min-height:520px;height:72vh}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Metaphors We Live By</h1>
+      <p class="sub">George Lakoff and Mark Johnson argue that metaphor is a structure of thought, not a figure of speech. This graph lays out the book's ideas: nodes are concepts and named metaphors, edges show what grounds, mirrors, or strains against what, and the loops on the right are the circuits the argument keeps running.</p>
+    </div>
+    <div class="ratios">ARGUMENT IS WAR · TIME IS MONEY · MORE IS UP — 30 chapters + 2003 afterword</div>
+  </header>
+  <div class="legend" id="legend"></div>
+  <div class="main">
+    <div class="field" id="field">
+      <svg id="svg" aria-label="Network of ideas in Metaphors We Live By"></svg>
+      <button class="reset" id="reset" type="button">Reset view</button>
+      <div class="hint">Drag nodes · scroll or pinch to zoom · click to read</div>
+    </div>
+    <aside>
+      <div class="box">
+        <p class="lab">Loops — circuits in the argument</p>
+        <div class="loops" id="loops"></div>
+      </div>
+      <div class="box" id="detail"></div>
+    </aside>
+  </div>
+  <section class="you" id="circuits">
+    <div class="you-head">
+      <p class="lab">Coda — thought loops</p>
+      <h2>How the book thinks</h2>
+      <p class="sub">The big ideas the book keeps cycling through, each followed from one concept to the next until it comes back around.</p>
+    </div>
+
+    <ol class="chains">
+      <li class="chain"><div class="cbody">
+        <h3 class="ct">Up</h3>
+        <div class="chips"><span>standing upright</span><span>up</span><span>more</span><span>good</span><span>in control</span><span>how we carry ourselves</span><span class="ret">↺ standing upright</span></div>
+        <p class="ev">Bodies stand against gravity, so up feels like alertness and joy. Up then gathers quantity, goodness, status and power. Those values come back to the body as posture: heads held high, shoulders slumped.</p>
+        <p class="settle"><span>Where it settles</span>One spatial axis carrying a whole vocabulary of value.</p>
+      </div></li>
+      <li class="chain"><div class="cbody">
+        <h3 class="ct">Argument</h3>
+        <div class="chips"><span>argument</span><span>war</span><span>positions to hold</span><span>attacks and defenses</span><span>winners and losers</span><span>how people actually argue</span><span class="ret">↺ argument</span></div>
+        <p class="ev">Thinking of argument as combat gives it sides, ground and strategy. People then argue that way, and the practice makes the metaphor feel like a plain description of what arguing is.</p>
+        <p class="settle"><span>Where it settles</span>A habit that looks like a fact until you picture argument as a dance.</p>
+      </div></li>
+      <li class="chain"><div class="cbody">
+        <h3 class="ct">Time</h3>
+        <div class="chips"><span>time</span><span>money</span><span>a limited resource</span><span>budgets, schedules, hourly pay</span><span class="ret">↺ time</span></div>
+        <p class="ev">Time becomes something you spend, save and waste. Institutions are built on that idea, and living inside them makes time feel like money again.</p>
+        <p class="settle"><span>Where it settles</span>A cultural loop, not a human universal.</p>
+      </div></li>
+      <li class="chain"><div class="cbody">
+        <h3 class="ct">Communication</h3>
+        <div class="chips"><span>an idea</span><span>an object</span><span>words as containers</span><span>sending</span><span>the listener unpacks</span><span class="ret">↺ an idea</span></div>
+        <p class="ev">Ideas become things, words become boxes, talk becomes shipping. The listener is assumed to find the same object inside, so the idea comes out as it went in.</p>
+        <p class="settle"><span>Where it settles</span>Meaning starts to look like something you own rather than something worked out between people.</p>
+      </div></li>
+      <li class="chain"><div class="cbody">
+        <h3 class="ct">Warmth</h3>
+        <div class="chips"><span>being held as a child</span><span>warmth and affection together</span><span>the two linked</span><span>"a warm person"</span><span class="ret">↺ being held as a child</span></div>
+        <p class="ev">Two experiences that keep happening together become one connection. Every later use of "warm" for kindness runs the same link and strengthens it.</p>
+        <p class="settle"><span>Where it settles</span>Primary metaphor: the body teaching the mind its first abstractions.</p>
+      </div></li>
+      <li class="chain"><div class="cbody">
+        <h3 class="ct">New metaphor</h3>
+        <div class="chips"><span>a new metaphor</span><span>a new similarity</span><span>a new way of acting</span><span>a new experience</span><span class="ret">↺ a new metaphor</span></div>
+        <p class="ev">Love as a collaborative work of art shows similarities no one saw before, people act on them, and the experience they get back invites the next metaphor.</p>
+        <p class="settle"><span>Where it settles</span>Changing a metaphor can change the thing it describes.</p>
+      </div></li>
+      <li class="chain"><div class="cbody">
+        <h3 class="ct">Truth</h3>
+        <div class="chips"><span>the world</span><span>how we engage it</span><span>understanding</span><span>metaphor</span><span>what counts as true</span><span>how we act in the world</span><span class="ret">↺ the world</span></div>
+        <p class="ev">Contact with the world gives understanding a shape, much of that shape is metaphorical, truth is judged against it, and action based on those truths changes the world we engage.</p>
+        <p class="settle"><span>Where it settles</span>Neither pure fact nor pure feeling, but experience in between.</p>
+      </div></li>
+    </ol>
+  </section>
+
+
+  <footer>Built from George Lakoff and Mark Johnson, <i>Metaphors We Live By</i> (University of Chicago Press, 1980; afterword 2003). All descriptions are paraphrase.</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+const PARTS = {B:{name:"1980 text",short:"80",shape:d3.symbolCircle}, A:{name:"2003 afterword",short:"03",shape:d3.symbolDiamond}};
+const GROUPS = {
+  concept:{name:"Metaphor as concept"}, structural:{name:"Structural metaphors"}, orient:{name:"Orientation & space"},
+  ontic:{name:"Entities, containers, metonymy"}, ground:{name:"Grounding in experience"}, meaning:{name:"New meaning & similarity"},
+  truth:{name:"Truth & the two myths"}, neural:{name:"Mind & brain"}
+};
+// [id, label, group, part, where, gloss, quote]
+const N = [
+ ["pervasive","Metaphor is everyday","concept","B","Ch. 1","Metaphor isn't a poet's ornament. It runs through ordinary thought and action, mostly unnoticed, and shapes what we perceive and do.",""],
+ ["concept","Concepts, not words","concept","B","Ch. 1","The metaphor lives in the conceptual system. The expressions in a language are surface evidence of it, which is why the book collects so many of them.",""],
+ ["inTermsOf","One thing in terms of another","concept","B","Ch. 1","The book's working definition: metaphor is understanding and experiencing one kind of thing by way of another.",""],
+ ["system","Systematicity","concept","B","Ch. 2","A metaphor arrives as a package. Once time is money you can spend, save, waste, budget and run out of it, and the whole set of expressions and inferences comes along.",""],
+ ["highlight","Highlighting and hiding","concept","B","Ch. 3","Every metaphor lights up some aspects of a concept and keeps others out of view. Seeing argument as war hides how much of arguing is cooperation.",""],
+ ["partial","Partial structuring","concept","B","Ch. 11","Only part of the source is used. Theories have foundations and frameworks but no plumbing; reach for the unused part and the sentence turns figurative or comic.",""],
+ ["coherence","Coherence across metaphors","concept","B","Chs. 16–17","One concept can carry several metaphors at once. An argument is a journey, a container and a building, and they fit together where their entailments overlap.",""],
+ ["culture","Cultural coherence","concept","B","Ch. 5","A culture's deepest values line up with its spatial metaphors. 'More is better' fits 'more is up' and 'good is up'; values that clash get ranked by subculture.",""],
+ ["challenges","Apparent contradictions","concept","B","Ch. 9","Some metaphors seem to clash, like the future being ahead while the following weeks also lie 'ahead.' The clash dissolves once you see which subsystem each uses.",""],
+
+ ["argwar","ARGUMENT IS WAR","structural","B","Ch. 1","We win and lose arguments, attack positions, defend claims, shoot down points. The book asks you to imagine a culture where argument is a dance, and how alien its discourse would look.",""],
+ ["timemoney","TIME IS MONEY","structural","B","Ch. 2","Time as money, then as a limited resource, then as a valuable commodity. A metaphor tied to wage labor and hotel bills, not to human nature.",""],
+ ["conduit","The conduit metaphor","structural","B","Chs. 2–3","After Michael Reddy: ideas are objects, words are containers, communication is sending. It hides that meaning depends on context and on who is speaking.",""],
+ ["ideas","IDEAS ARE FOOD, PLANTS, PEOPLE…","structural","B","Ch. 10","One target, many sources: ideas get digested, bear fruit, are born, get sold, cut, shot down. Each source covers a slice none of the others do.",""],
+ ["buildings","THEORIES ARE BUILDINGS","structural","B","Chs. 10–11","Foundations, frameworks, buttresses, collapse. The standard example of a metaphor with a used part and an unused part.",""],
+ ["love","LOVE IS A JOURNEY, MADNESS, WAR…","structural","B","Ch. 10","Love gets several competing metaphors: a crossroads, a spell, a battle, a patient. Which one you live by changes what your relationship can be.",""],
+
+ ["orient","Orientational metaphors","orient","B","Ch. 4","Whole systems of concepts organized by space: up and down, in and out, front and back, near and far, center and periphery.",""],
+ ["happyup","HAPPY IS UP, SAD IS DOWN","orient","B","Ch. 4","Grounded in posture: a slumped body when sad, an upright one when glad. Spirits rise, moods sink.",""],
+ ["moreup","MORE IS UP","orient","B","Ch. 4","Add things to a pile and its level rises. Prices climb, numbers fall, output is up.",""],
+ ["goodup","GOOD, CONTROL, VIRTUE, REASON ARE UP","orient","B","Ch. 4","Status is high, control is over, virtue is high-minded, reason rises above feeling. One axis organizes a value system.",""],
+
+ ["ontological","Ontological metaphors","ontic","B","Ch. 6","Treating experiences as entities or substances so we can refer to them, count them, find their causes and set goals: inflation, the mind, fear.",""],
+ ["container","Containers","ontic","B","Ch. 6","Land areas, visual fields, events, activities and states all get treated as bounded containers we can be in or out of.",""],
+ ["mind","THE MIND IS A MACHINE, A BRITTLE OBJECT","ontic","B","Ch. 6","Two metaphors for the same thing with different entailments: a mind that breaks down and needs repair, or one that shatters.",""],
+ ["person","Personification","ontic","B","Ch. 7","Inflation is an adversary, life has cheated me. A thing understood as a human agent with motives, which tells you how to act toward it.",""],
+ ["metonymy","Metonymy","ontic","B","Ch. 8","One entity stands for another within the same domain: part for whole, producer for product, place for institution. Mostly for reference, and grounded in direct association.",""],
+
+ ["grounding","Grounding in experience","ground","B","Ch. 12","No metaphor can be understood apart from the experience it rests on. Up-down comes from having bodies that stand in gravity.",""],
+ ["physcult","Physical and cultural experience","ground","B","Ch. 12","Even the most physical experience is already cultural. The difference is only which experiences are more clearly delineated.",""],
+ ["gestalt","Experiential gestalts","ground","B","Ch. 15","Conversations, arguments and fights are structured wholes with participants, parts, stages, causes and purposes. Metaphor maps one whole onto another.",""],
+ ["causation","Causation","ground","B","Ch. 14","Direct manipulation, me pushing a thing, is the prototype of causation. Other kinds of cause are understood by extending it, partly metaphorically.",""],
+ ["prototype","Prototypes and family resemblance","ground","B","Ch. 18","Categories are organized around prototypes and family resemblances, not necessary and sufficient conditions. The book leans on Wittgenstein and Eleanor Rosch.",""],
+ ["interactional","Interactional properties","ground","B","Ch. 19","A thing's properties depend on how we interact with it. Whether something is a chair or a gun shows up in what we can do with it.",""],
+
+ ["definition","Definition as understanding","meaning","B","Ch. 19","Definitions are open, built up out of interactions and metaphors, rather than fixed lists of features.",""],
+ ["form","Metaphor gives meaning to form","meaning","B","Ch. 20","Grammar itself is metaphorical: more form means more content, so repetition intensifies; closeness in a sentence means closeness in meaning.",""],
+ ["newmeaning","New metaphors, new meaning","meaning","B","Ch. 21","LOVE IS A COLLABORATIVE WORK OF ART highlights effort, compromise and shared aesthetics, hides others, and can change what a relationship becomes.",""],
+ ["similarity","Metaphor creates similarity","meaning","B","Ch. 22","Similarities aren't all out there waiting to be noticed. Many are created by the metaphor that lets us see them.",""],
+ ["solution","The chemical solution","meaning","B","Ch. 22","A student hears 'the solution of my problems' as a liquid in which problems dissolve and later precipitate back out. Problems never go away for good.",""],
+ ["action","Metaphors license action","meaning","B","Ch. 23","Metaphors can become self-fulfilling. Calling the energy crisis a war set up an enemy, a mobilization and sacrifices.",""],
+
+ ["truth","Truth relative to understanding","truth","B","Chs. 23–24","A statement is true relative to an understanding of the situation it's about, and that understanding is often metaphorical.",""],
+ ["objectivism","The myth of objectivism","truth","B","Chs. 25–26","A world of objects with inherent properties, words with fixed meanings, truth as correspondence, and objective as the same thing as fair and rational.",""],
+ ["subjectivism","The myth of subjectivism","truth","B","Chs. 25, 28","Feelings, intuition and art as the real guides; meaning private, objectivity impossible. The romantic answer to objectivism.",""],
+ ["limits","Metaphor breaks objectivism","truth","B","Ch. 27","If meaning depends on understanding, and understanding on metaphor, truth can't be defined apart from people. Metaphor can't be reduced to literal paraphrase.",""],
+ ["experientialism","The experientialist synthesis","truth","B","Ch. 29","A third way: truth and meaning grounded in embodied, interactive experience. Neither cold fact nor pure feeling.",""],
+ ["imaginative","Imaginative rationality","truth","B","Chs. 29–30","Reason and imagination aren't opposed. Metaphor is imagination doing rational work.",""],
+ ["selfunderstanding","Understanding each other and ourselves","truth","B","Ch. 30","Communication across cultures, therapy, ritual, aesthetic experience and politics all run on finding the right metaphors.",""],
+
+ ["fallacies","Four persistent fallacies","neural","A","Afterword","That metaphor is a matter of words, that it rests on objective similarity, that concepts are all literal, and that rational thought doesn't depend on the body. All four are false.",""],
+ ["inference","Metaphor is inference","neural","A","Afterword","The heart of metaphor: reasoning learned in sensory-motor domains like space and objects gets reused to reason about abstract domains.",""],
+ ["primary","Primary metaphor","neural","A","Afterword","After Joseph Grady: hundreds of simple metaphors such as MORE IS UP and AFFECTION IS WARMTH arise from correlations in everyday experience.",""],
+ ["conflation","Conflation in childhood","neural","A","Afterword","After Christopher Johnson: a child first uses 'see' only about vision, then for seeing-and-knowing at once, and only later separates the two.",""],
+ ["neuralmaps","Neural maps","neural","A","Afterword","After Srinivas Narayanan: domains active together get physically linked by circuitry. You can't choose not to think metaphorically.",""],
+ ["enact","Enactment","neural","A","Afterword","Imagining runs on the same brain regions as perceiving and moving. Metaphorical inference is carried out in the source domain and its results passed along.",""],
+ ["composition","Metaphor composition","neural","A","Afterword","Complex metaphors are built from primary ones. Sonnet 73 combines life as light, as heat and as a cycle; the Grim Reaper adds metonymy.",""],
+ ["blending","Conceptual blending","neural","A","Afterword","After Fauconnier and Turner: two mental spaces fused into a new concept, like a pizza topped with lox and crème fraîche.",""],
+ ["metaformeta","Metaphors for metaphor","neural","A","Afterword","The theory needed its own metaphors: first a mathematical mapping, then an overhead projector, then a neural map. Each one fixed a flaw in the last.",""],
+ ["corrections","Corrections","neural","A","Afterword","The split into structural, orientational and ontological metaphors was artificial, and ARGUMENT IS WAR really grows out of childhood struggle, not war.",""],
+ ["applications","Applications","neural","A","Afterword","Law, politics, mathematics, science, literature and philosophy have all been reread through conceptual metaphor since 1980.",""],
+];
+const nodes = N.map(([id,label,group,d,where,gloss,quote])=>({id,label,group,d,where,gloss,quote}));
+const byId = Object.fromEntries(nodes.map(n=>[n.id,n]));
+const E = [
+ ["pervasive","concept","d","because"],["concept","inTermsOf","d","defined as"],["inTermsOf","system","d","brings"],
+ ["system","highlight","d","so it"],["highlight","partial","d","because it is"],["partial","coherence","d","so several combine"],
+ ["coherence","challenges","d","tested by"],["culture","coherence","d","a case of"],["system","timemoney","d","example"],
+ ["concept","argwar","d","first example"],["argwar","highlight","d","hides cooperation"],["timemoney","culture","d","belongs to"],
+ ["conduit","highlight","d","hides context"],["ideas","coherence","d","many sources"],["buildings","partial","d","used and unused"],
+ ["love","newmeaning","d","competes with"],["ideas","conduit","m","ideas as objects"],["argwar","buildings","m","argument as building"],
+ ["orient","happyup","d","includes"],["orient","moreup","d","includes"],["orient","goodup","d","includes"],
+ ["happyup","grounding","d","grounded in posture"],["moreup","grounding","d","grounded in piles"],["goodup","culture","d","organizes"],
+ ["moreup","goodup","d","coheres with"],["challenges","orient","d","resolved by"],
+ ["ontological","container","d","includes"],["ontological","person","d","extended by"],["ontological","mind","d","example"],
+ ["metonymy","person","t","not the same as"],["metonymy","grounding","d","direct association"],["container","conduit","m","words as containers"],
+ ["grounding","physcult","d","complicated by"],["grounding","gestalt","d","organized as"],["gestalt","argwar","d","maps onto"],
+ ["causation","gestalt","d","a dimension of"],["causation","grounding","d","emergent from"],["prototype","causation","d","prototype of"],
+ ["prototype","definition","d","replaces"],["interactional","definition","d","feeds"],["interactional","objectivism","t","denies inherent properties"],
+ ["definition","form","d","extends to"],["form","orient","m","closeness is space"],["newmeaning","similarity","d","creates"],
+ ["similarity","solution","d","example"],["solution","action","d","guides"],["action","newmeaning","d","reshapes"],
+ ["action","argwar","m","we act on it"],["action","truth","d","bears on"],["truth","objectivism","t","rejects"],
+ ["objectivism","subjectivism","t","opposed by"],["objectivism","conduit","d","relies on"],["objectivism","limits","d","broken by"],
+ ["limits","truth","d","implies"],["subjectivism","experientialism","d","synthesized in"],["objectivism","experientialism","d","synthesized in"],
+ ["experientialism","imaginative","d","calls for"],["imaginative","selfunderstanding","d","serves"],["experientialism","grounding","m","same basis"],
+ ["fallacies","concept","d","restates"],["fallacies","objectivism","m","old myth again"],["inference","primary","d","learned as"],
+ ["conflation","primary","d","produces"],["primary","neuralmaps","d","realized as"],["neuralmaps","enact","d","run by"],
+ ["enact","inference","d","carries"],["primary","composition","d","combine in"],["composition","blending","m","overlaps with"],
+ ["metaformeta","partial","d","projection fails on"],["metaformeta","neuralmaps","d","settles on"],["corrections","orient","t","drops the type"],
+ ["corrections","argwar","t","re-grounds"],["corrections","primary","d","in light of"],["primary","moreup","m","the old example"],
+ ["primary","happyup","m","now primary"],["metonymy","corrections","d","clarified in"],["applications","action","d","law, politics"],
+ ["neuralmaps","grounding","m","the body again"],["inference","system","m","entailments"],["selfunderstanding","love","d","in relationships"],
+ ["neuralmaps","pervasive","d","explains"],["highlight","limits","d","shows partiality"],["imaginative","truth","d","reframes"],["partial","system","d","limits"],["grounding","conflation","d","in childhood"],["neuralmaps","concept","d","instantiates"],["action","culture","d","becomes practice"],["culture","argwar","d","naturalizes"],["action","grounding","d","new experience"],["concept","system","d","organized as"],["system","action","d","guides"],["highlight","action","d","steers"],["concept","culture","d","varies with"],["primary","culture","t","universal vs. cultural"],
+];
+const LOOPS = [
+ {t:"Experience in, behavior out",d:"Bodies in the world correlate experiences, correlations become primary metaphors, those structure concepts, concepts bring whole systems of inference, and we act on them, which produces the experiences the next child learns from.",seq:["grounding","conflation","primary","neuralmaps","concept","system","action","grounding"]},
+ {t:"How a metaphor stops looking like one",d:"ARGUMENT IS WAR hides cooperation, the hidden part drops from discussion, people argue like soldiers, and the culture's practice makes the metaphor look like a plain description.",seq:["argwar","highlight","action","culture","argwar"]},
+ {t:"Up, up, up",d:"Posture, piles and gravity give up its meaning; happy, more, good, rational and in-control all stack on that one axis, and the culture's values fall into line with it.",seq:["orient","happyup","grounding","moreup","goodup","culture","coherence","challenges","orient"]},
+ {t:"The myth that hides its metaphor",d:"Objectivism says meanings are fixed objects passed from mind to mind, which is the conduit metaphor; once you see it's a metaphor, truth has to be relative to understanding, which objectivism rejects.",seq:["objectivism","conduit","highlight","limits","truth","objectivism"]},
+ {t:"Between the two myths",d:"Objectivism and subjectivism each answer the other's weakness. The experientialist alternative grounds truth in understanding, which objectivism then denies, restarting the quarrel.",seq:["objectivism","subjectivism","experientialism","imaginative","truth","objectivism"]},
+ {t:"New metaphor, new world",d:"A new metaphor creates similarities that weren't there, guides action, and the action makes the metaphor fit better.",seq:["newmeaning","similarity","solution","action","newmeaning"]},
+ {t:"Metaphors for metaphor",d:"Mapping couldn't add new things to the target; projection mapped too much; partial structuring needed a better picture, and the neural map settled it, at least for now.",seq:["metaformeta","partial","system","inference","enact","neuralmaps","metaformeta"]},
+ {t:"The afterword rewires the book",d:"Twenty-three years later the authors drop the three types, rebuild ARGUMENT IS WAR on childhood struggle, and treat the old orientational examples as primary metaphors.",seq:["corrections","argwar","gestalt","grounding","conflation","primary","happyup","orient","corrections"]},
+];
+const INTRO = `
+   <p class="lab">How to read it</p>
+   <h2>Thought runs on borrowed structure</h2>
+   <p>The book's claim is that most abstract thought is understood through more concrete experience, and that this borrowing is conceptual, systematic, and mostly unconscious. The graph follows the argument from everyday examples to grounding, to a rejection of both objectivism and subjectivism.</p>
+   <p>Circles are from the 1980 text and diamonds from the 2003 afterword, where the authors rebuild the theory on neuroscience and correct parts of the book.</p>
+   <p>Good places to start: <button class="nb" data-id="argwar" type="button"><span class="nm">ARGUMENT IS WAR</span></button> <button class="nb" data-id="highlight" type="button"><span class="nm">Highlighting and hiding</span></button> <button class="nb" data-id="primary" type="button"><span class="nm">Primary metaphor</span></button> <button class="nb" data-id="experientialism" type="button"><span class="nm">The experientialist synthesis</span></button></p>`;
+
+const links = E.map(([s,t,k,r])=>({source:s,target:t,kind:k,rel:r}));
+const key = (a,b)=>a<b?a+"|"+b:b+"|"+a;
+const edgeKeys = new Set(links.map(l=>key(l.source,l.target)));
+LOOPS.forEach(L=>L.seq.forEach((id,i)=>{ if(!byId[id]) console.error("missing",id); if(i===0) return; const a=L.seq[i-1]; if(!edgeKeys.has(key(a,id))){edgeKeys.add(key(a,id)); links.push({source:a,target:id,kind:"d",rel:"loops to"});}}));
+links.forEach(l=>{ if(!byId[l.source]||!byId[l.target]) console.error("bad edge",l.source,l.target); });
+
+const deg = {}; links.forEach(l=>{deg[l.source]=(deg[l.source]||0)+1; deg[l.target]=(deg[l.target]||0)+1;});
+nodes.forEach(n=>n.r = 4.5 + Math.sqrt(deg[n.id]||1)*2.4);
+
+const gcol = g => `var(--g-${g})`;
+const SHAPE = Object.fromEntries(Object.entries(PARTS).map(([k,v])=>[k,v.shape]));
+const symPath = (d,scale=1)=> d3.symbol().type(SHAPE[d.d]).size(Math.PI*(d.r*scale)**2*(SHAPE[d.d]===d3.symbolCircle?1:0.95))();
+const shapeIcon = k => `<svg width="12" height="12" viewBox="-6 -6 12 12"><path d="${d3.symbol().type(SHAPE[k]).size(60)()}" fill="var(--muted)"/></svg>`;
+
+// legend
+const hidden = new Set(), hiddenD = new Set();
+const legend = document.getElementById("legend");
+function chip(html, onT){ const s=document.createElement("span"); s.innerHTML=html; s.tabIndex=0; s.setAttribute("role","button");
+  const tog=()=>{onT(); s.classList.toggle("off"); applyVis();}; s.onclick=tog; s.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tog();}}; return s; }
+const row1=document.createElement("div"); row1.className="lrow";
+Object.entries(PARTS).forEach(([k,v])=>row1.appendChild(chip(`${shapeIcon(k)}${v.name}`,()=>hiddenD.has(k)?hiddenD.delete(k):hiddenD.add(k))));
+row1.insertAdjacentHTML("beforeend",`
+ <span class="ek"><svg width="26" height="8"><line x1="0" y1="4" x2="26" y2="4" stroke="var(--edge)" stroke-width="1.5"/></svg>grounds</span>
+ <span class="ek"><svg width="26" height="8"><line x1="0" y1="4" x2="26" y2="4" stroke="var(--edge)" stroke-width="1.5" stroke-dasharray="4 4"/></svg>mirrors</span>
+ <span class="ek"><svg width="26" height="8"><line x1="0" y1="4" x2="26" y2="4" stroke="var(--tension)" stroke-width="1.5"/></svg>strains against</span>`);
+const row2=document.createElement("div"); row2.className="lrow";
+Object.entries(GROUPS).forEach(([k,v])=>row2.appendChild(chip(`<i style="background:${gcol(k)}"></i>${v.name}`,()=>hidden.has(k)?hidden.delete(k):hidden.add(k))));
+legend.append(row1,row2);
+
+// graph
+const svg = d3.select("#svg");
+const field = document.getElementById("field");
+let W = field.clientWidth, H = field.clientHeight;
+const defs = svg.append("defs");
+[["arr","arrow"],["arrh","arrow-hot"]].forEach(([id,cls])=>defs.append("marker").attr("id",id).attr("viewBox","0 -4 8 8").attr("refX",8).attr("refY",0)
+  .attr("markerWidth",6).attr("markerHeight",6).attr("orient","auto").append("path").attr("d","M0,-4L8,0L0,4").attr("class",cls));
+const g = svg.append("g");
+const zoom = d3.zoom().scaleExtent([0.25,3]).on("zoom",e=>g.attr("transform",e.transform));
+svg.call(zoom).on("dblclick.zoom",null);
+
+const gkeys = Object.keys(GROUPS);
+function anchors(){ const R=Math.min(W,H)*0.33; const o={}; gkeys.forEach((k,i)=>{const a=-Math.PI/2+i*2*Math.PI/gkeys.length; o[k]={x:W/2+R*Math.cos(a)*1.2,y:H/2+R*Math.sin(a)};}); return o;}
+let A = anchors();
+
+const sim = d3.forceSimulation(nodes)
+ .force("link",d3.forceLink(links).id(d=>d.id).distance(l=>l.source.group===l.target.group?50:105).strength(0.3))
+ .force("charge",d3.forceManyBody().strength(-210))
+ .force("collide",d3.forceCollide(d=>d.r+14))
+ .force("x",d3.forceX(d=>A[d.group].x).strength(0.1))
+ .force("y",d3.forceY(d=>A[d.group].y).strength(0.1));
+
+const edge = g.append("g").selectAll("path").data(links).join("path")
+  .attr("class",d=>"edge "+(d.kind==="m"?"mirror":d.kind==="t"?"tension":"")+(d.source.d!==d.target.d?" cross":"")).attr("marker-end","url(#arr)");
+const node = g.append("g").selectAll("g").data(nodes).join("g").attr("class","node")
+  .call(d3.drag().on("start",(e,d)=>{if(!e.active)sim.alphaTarget(.2).restart();d.fx=d.x;d.fy=d.y;})
+    .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y;}).on("end",(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}))
+  .on("click",(e,d)=>{e.stopPropagation(); select(d.id);});
+node.append("path").attr("class","mark").attr("d",d=>symPath(d)).attr("fill",d=>gcol(d.group));
+node.append("text").text(d=>d.label).attr("x",d=>d.r+4).attr("y",4);
+node.append("title").text(d=>`${d.label} · ${PARTS[d.d].name}`);
+
+sim.on("tick",()=>{
+  edge.attr("d",d=>{const dx=d.target.x-d.source.x, dy=d.target.y-d.source.y, L=Math.hypot(dx,dy)||1;
+    const tx=d.target.x-dx/L*(d.target.r+3), ty=d.target.y-dy/L*(d.target.r+3);
+    const mx=(d.source.x+tx)/2 - dy*0.08, my=(d.source.y+ty)/2 + dx*0.08;
+    return `M${d.source.x},${d.source.y}Q${mx},${my} ${tx},${ty}`;});
+  node.attr("transform",d=>`translate(${d.x},${d.y})`);
+});
+
+svg.on("click",()=>clearAll());
+document.getElementById("reset").onclick=()=>{svg.transition().duration(500).call(zoom.transform,d3.zoomIdentity); clearAll();};
+new ResizeObserver(()=>{W=field.clientWidth;H=field.clientHeight;A=anchors();sim.force("x").x(d=>A[d.group].x);sim.force("y").y(d=>A[d.group].y);sim.alpha(.3).restart();}).observe(field);
+
+let selected=null, loopIdx=null;
+const isHidden = d => hidden.has(d.group)||hiddenD.has(d.d);
+function applyVis(){
+  node.attr("display",d=>isHidden(d)?"none":null);
+  edge.attr("display",d=>isHidden(d.source)||isHidden(d.target)?"none":null);
+}
+function clearAll(){ selected=null; loopIdx=null; render(); showIntro(); }
+function render(){
+  document.querySelectorAll(".loop").forEach((b,i)=>{b.classList.toggle("on",i===loopIdx); b.setAttribute("aria-pressed",i===loopIdx);});
+  if(loopIdx!==null){
+    const seq=LOOPS[loopIdx].seq, ids=new Set(seq), pairs=new Set(seq.slice(1).map((id,i)=>key(seq[i],id)));
+    node.classed("dim",d=>!ids.has(d.id)).classed("inloop",d=>ids.has(d.id)).classed("sel",d=>d.id===selected);
+    edge.classed("dim",d=>!pairs.has(key(d.source.id,d.target.id))).classed("loopedge",d=>pairs.has(key(d.source.id,d.target.id))).classed("hot",false)
+      .attr("marker-end",d=>pairs.has(key(d.source.id,d.target.id))?"url(#arrh)":"url(#arr)");
+    return;
+  }
+  node.classed("inloop",false);
+  edge.classed("loopedge",false);
+  if(selected){
+    const nb=new Set([selected]); links.forEach(l=>{if(l.source.id===selected)nb.add(l.target.id); if(l.target.id===selected)nb.add(l.source.id);});
+    node.classed("dim",d=>!nb.has(d.id)).classed("sel",d=>d.id===selected);
+    const hot=d=>d.source.id===selected||d.target.id===selected;
+    edge.classed("dim",d=>!hot(d)).classed("hot",hot).attr("marker-end",d=>hot(d)?"url(#arrh)":"url(#arr)");
+  } else {
+    node.classed("dim",false).classed("sel",false);
+    edge.classed("dim",false).classed("hot",false).attr("marker-end","url(#arr)");
+  }
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+const nbBtn = (o,rel)=>`<button class="nb" data-id="${o.id}" type="button"><span class="rel">${esc(rel)}</span><span class="nm">${esc(o.label)}</span><span class="dl">${PARTS[o.d].short}</span></button>`;
+function select(id){
+  selected=id; render(); const n=byId[id];
+  const out=links.filter(l=>l.source.id===id).map(l=>({o:l.target,rel:l.rel}));
+  const inc=links.filter(l=>l.target.id===id).map(l=>({o:l.source,rel:l.rel}));
+  const inLoops=LOOPS.map((L,i)=>L.seq.includes(id)?i:-1).filter(i=>i>=0);
+  document.getElementById("detail").innerHTML=`
+   <div class="grp" style="color:${gcol(n.group)}">${GROUPS[n.group].name}</div>
+   <h2>${esc(n.label)}</h2>
+   <div class="where">${esc(n.where)} · ${PARTS[n.d].name}</div>
+   <p>${esc(n.gloss)}</p>
+   ${n.quote?`<blockquote>“${esc(n.quote)}”</blockquote>`:""}
+   ${out.length?`<p class="lab" style="margin-top:12px">Feeds into</p><div class="nbs">${out.map(x=>nbBtn(x.o,x.rel)).join("")}</div>`:""}
+   ${inc.length?`<p class="lab" style="margin-top:12px">Fed by</p><div class="nbs">${inc.map(x=>nbBtn(x.o,x.rel)).join("")}</div>`:""}
+   ${inLoops.length?`<p class="lab" style="margin-top:12px">Part of loops</p><div class="nbs">${inLoops.map(i=>`<button class="nb" data-loop="${i}" type="button"><span class="rel">loop ${i+1}</span><span class="nm">${esc(LOOPS[i].t)}</span></button>`).join("")}</div>`:""}`;
+  document.querySelectorAll("#detail .nb").forEach(b=>b.onclick=()=>{ if(b.dataset.loop){loopIdx=+b.dataset.loop; render();} else {loopIdx=null; select(b.dataset.id);} });
+}
+function showIntro(){
+  document.getElementById("detail").innerHTML=INTRO;
+  document.querySelectorAll("#detail .nb").forEach(b=>b.onclick=()=>select(b.dataset.id));
+}
+const loopsEl=document.getElementById("loops");
+LOOPS.forEach((L,i)=>{
+  const ds=[...new Set(L.seq.map(id=>byId[id].d))].map(k=>PARTS[k].short).join("+");
+  const b=document.createElement("button"); b.className="loop"; b.type="button"; b.setAttribute("aria-pressed","false");
+  b.innerHTML=`<span class="n">${String(i+1).padStart(2,"0")}</span><span class="t">${esc(L.t)} <span class="dl">${ds}</span></span><span class="d">${esc(L.d)}<br><span class="where">${L.seq.map(id=>esc(byId[id].label)).join(" → ")}</span></span>`;
+  b.onclick=()=>{ loopIdx = loopIdx===i?null:i; render(); };
+  loopsEl.appendChild(b);
+});
+showIntro();
+</script>
+
+</body>
+</html>
